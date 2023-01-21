@@ -1,4 +1,4 @@
-namespace FNAECSTemplate.Components
+namespace Enamel.Components
 {
     /*
     this is a component. in ECS, a component is a store of data. never put logic on a component. 

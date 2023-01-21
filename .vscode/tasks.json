@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/FNAECSTemplate/FNAECSTemplate.csproj",
+                "${workspaceFolder}/Enamel/Enamel.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/FNAECSTemplate/FNAECSTemplate.csproj",
+                "${workspaceFolder}/Enamel/Enamel.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/FNAECSTemplate/FNAECSTemplate.csproj"
+                "${workspaceFolder}/Enamel/Enamel.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

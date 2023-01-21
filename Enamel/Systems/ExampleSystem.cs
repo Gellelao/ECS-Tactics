@@ -1,9 +1,9 @@
 using System;
 using MoonTools.ECS;
-using FNAECSTemplate.Components;
+using Enamel.Components;
 
 
-namespace FNAECSTemplate.Systems
+namespace Enamel.Systems
 {
     /*
     this is a system. systems can read and modify components and entities. 

@@ -3,10 +3,10 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
-using FNAECSTemplate.Components;
+using Enamel.Components;
 using FontStashSharp;
 
-namespace FNAECSTemplate.Renderers
+namespace Enamel.Renderers
 {
     /*
     this is a renderer. a renderer is just like a system, 

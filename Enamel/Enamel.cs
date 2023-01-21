@@ -3,14 +3,14 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
-using FNAECSTemplate.Systems;
-using FNAECSTemplate.Components;
-using FNAECSTemplate.Renderers;
+using Enamel.Systems;
+using Enamel.Components;
+using Enamel.Renderers;
 using FontStashSharp;
 
-namespace FNAECSTemplate
+namespace Enamel
 {
-    public class Game1 : Game
+    public class Enamel : Game
     {
         GraphicsDeviceManager GraphicsDeviceManager { get; }
 
@@ -27,12 +27,12 @@ namespace FNAECSTemplate
         [STAThread]
         internal static void Main()
         {
-            using (Game1 game = new Game1())
+            using (Enamel game = new Enamel())
             {
                 game.Run();
             }
         }
-        private Game1()
+        private Enamel()
         {
             //setup our graphics device, default window size, etc
             //here is where i will make a plea to you, intrepid game developer:
