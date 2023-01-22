@@ -20,7 +20,7 @@ namespace Enamel.Systems
             a filter will, every frame, get us every single entity that matches its criteria.
             */
             ExampleFilter = FilterBuilder
-                            .Include<ExampleComponent>()
+                            .Include<TextureIndexComponent>()
                             .Build();
         }
 
@@ -38,7 +38,7 @@ namespace Enamel.Systems
                 in the component store. we have to call Set() to update the component store so that
                 other systems can read our changes and they'll persist across frames.
                 */
-                Set(example, new ExampleComponent(rnd.NextSingle()));
+                //Set(example, new ExampleComponent(rnd.NextSingle()));
             }
         }
     }

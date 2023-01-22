@@ -61,7 +61,7 @@ namespace Enamel.Renderers
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
                     Color.White,
-                    45, // rotation,
+                    0, // rotation,
                     Vector2.Zero, // origin
                     Vector2.One, // scaling
                     SpriteEffects.None,

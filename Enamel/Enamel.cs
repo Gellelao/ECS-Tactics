@@ -20,7 +20,6 @@ namespace Enamel
         */
         static World World { get; } = new World();
         static ExampleSystem? ExampleSystem;
-        static ExampleRenderer? ExampleRenderer;
         static TextureIndexRenderer? TextureIndexRenderer;
 
         SpriteBatch SpriteBatch;
@@ -83,7 +82,7 @@ namespace Enamel
                 ));
 
             // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-            Textures = new Texture2D[1];
+            Textures = new Texture2D[5];
 
             var whitePixel = new Texture2D(GraphicsDevice, 1, 1);
             whitePixel.SetData(new Color[] { Color.White });
@@ -95,7 +94,10 @@ namespace Enamel
             SpriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
 
-            Textures[0] = tileTexture;
+            var groundTexture = Content.Load<Texture2D>("Ground");
+
+            Textures[0] = groundTexture;
+            Textures[1] = tileTexture;
 
             /*
             SYSTEMS
@@ -113,7 +115,6 @@ namespace Enamel
             */
 
             //same as above, but for the renderer
-            ExampleRenderer = new ExampleRenderer(World, SpriteBatch, FontSystem);
             TextureIndexRenderer = new TextureIndexRenderer(World, SpriteBatch, Textures);
 
             /*
@@ -122,7 +123,7 @@ namespace Enamel
             
             var e = World.CreateEntity();
             World.Set<TextureIndexComponent>(e, new TextureIndexComponent(0));
-            World.Set<PositionComponent>(e, new PositionComponent(500, 500));
+            World.Set<PositionComponent>(e, new PositionComponent(100, 100));
 
             base.LoadContent();
         }
@@ -152,7 +153,7 @@ namespace Enamel
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue); //set the color of the background. cornflower blue is XNA tradition.
+            GraphicsDevice.Clear(Color.Black); //set the color of the background. cornflower blue is XNA tradition.
 
             /*
             call renderers here.
