@@ -7,6 +7,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Renderers;
 using FontStashSharp;
+using System.Collections.Generic;
 
 namespace Enamel
 {
@@ -20,9 +21,12 @@ namespace Enamel
         static World World { get; } = new World();
         static ExampleSystem? ExampleSystem;
         static ExampleRenderer? ExampleRenderer;
+        static TextureIndexRenderer? TextureIndexRenderer;
 
         SpriteBatch SpriteBatch;
         FontSystem FontSystem;
+
+        Texture2D[] Textures;
 
         [STAThread]
         internal static void Main()
@@ -32,6 +36,7 @@ namespace Enamel
                 game.Run();
             }
         }
+
         private Enamel()
         {
             //setup our graphics device, default window size, etc
@@ -77,6 +82,21 @@ namespace Enamel
                     )
                 ));
 
+            // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
+            Textures = new Texture2D[1];
+
+            var whitePixel = new Texture2D(GraphicsDevice, 1, 1);
+            whitePixel.SetData(new Color[] { Color.White });
+
+            var tileTexture = new RenderTarget2D(GraphicsDevice, 80, 80);
+            GraphicsDevice.SetRenderTarget(tileTexture);
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(whitePixel, new Rectangle(0, 0, 80, 80), Color.White);
+            SpriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
+            Textures[0] = tileTexture;
+
             /*
             SYSTEMS
             */
@@ -94,16 +114,15 @@ namespace Enamel
 
             //same as above, but for the renderer
             ExampleRenderer = new ExampleRenderer(World, SpriteBatch, FontSystem);
+            TextureIndexRenderer = new TextureIndexRenderer(World, SpriteBatch, Textures);
 
             /*
             ENTITIES
             */
-
-            for (int i = 0; i < 10; i++)
-            {
-                var e = World.CreateEntity();
-                World.Set<ExampleComponent>(e, new ExampleComponent(0f));
-            }
+            
+            var e = World.CreateEntity();
+            World.Set<TextureIndexComponent>(e, new TextureIndexComponent(0));
+            World.Set<PositionComponent>(e, new PositionComponent(500, 500));
 
             base.LoadContent();
         }
@@ -141,7 +160,7 @@ namespace Enamel
             if you are thinking about passing the game time to a renderer
             in order to do something, try doing it some other way. you'll thank me later.
             */
-            ExampleRenderer.Draw();
+            TextureIndexRenderer.Draw();
             base.Draw(gameTime);
         }
     }
