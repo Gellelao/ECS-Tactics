@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
 using Enamel.Components;
-using System.Collections.Generic;
 
 namespace Enamel.Renderers
 {
@@ -50,10 +49,16 @@ namespace Enamel.Renderers
             the rectangle parameter. there are many tools out there that will spit out a packed texture
             and JSON metadata to get your rectangles from. i recommend cram: https://gitea.moonside.games/MoonsideGames/Cram
             */
-            SpriteBatch.Begin();
+            SpriteBatch.Begin(SpriteSortMode.Deferred,
+				BlendState.AlphaBlend,
+				SamplerState.PointClamp,
+				DepthStencilState.None,
+				RasterizerState.CullCounterClockwise,
+				null,
+				Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
             foreach (var entity in TextureIndexFilter.Entities)
             {
-                var indexComponent = Get<TextureIndexComponent>(entity); //getting a component is much like setting a component
+                var indexComponent = Get<TextureIndexComponent>(entity);
                 var positionComponent = Get<PositionComponent>(entity);
 
                 SpriteBatch.Draw(

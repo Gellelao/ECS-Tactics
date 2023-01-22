@@ -7,7 +7,6 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Renderers;
 using FontStashSharp;
-using System.Collections.Generic;
 
 namespace Enamel
 {
@@ -27,6 +26,10 @@ namespace Enamel
 
         Texture2D[] Textures;
 
+        private const int ScreenWidth = 1024;
+        private const int ScreenHeight = 768;
+        private RenderTarget2D _renderTarget;
+
         [STAThread]
         internal static void Main()
         {
@@ -44,9 +47,10 @@ namespace Enamel
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            GraphicsDeviceManager.PreferredBackBufferWidth = 1024;
-            GraphicsDeviceManager.PreferredBackBufferHeight = 768;
+            GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
+            GraphicsDeviceManager.PreferMultiSampling = false;
 
             IsFixedTimeStep = false;
             IsMouseVisible = true;
@@ -80,6 +84,8 @@ namespace Enamel
                         Content.RootDirectory, "opensans.ttf"
                     )
                 ));
+
+            _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/2, ScreenHeight/2);
 
             // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
             Textures = new Texture2D[5];
@@ -134,8 +140,6 @@ namespace Enamel
             base.UnloadContent();
         }
 
-
-
         protected override void Update(GameTime gameTime)
         {
             /*
@@ -153,15 +157,27 @@ namespace Enamel
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black); //set the color of the background. cornflower blue is XNA tradition.
+            GraphicsDevice.SetRenderTarget(_renderTarget);
+            GraphicsDevice.Clear(Color.Black);
 
             /*
-            call renderers here.
             renderers don't get passed the game time. 
-            if you are thinking about passing the game time to a renderer
-            in order to do something, try doing it some other way. you'll thank me later.
+            render to the smaller renderTarget, then upscale after
             */
             TextureIndexRenderer.Draw();
+
+            GraphicsDevice.SetRenderTarget(null);
+
+            SpriteBatch.Begin(SpriteSortMode.Deferred,
+				BlendState.AlphaBlend,
+				SamplerState.PointClamp,
+				DepthStencilState.None,
+				RasterizerState.CullCounterClockwise,
+				null,
+				Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
+            SpriteBatch.Draw(_renderTarget, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
+            SpriteBatch.End();
+
             base.Draw(gameTime);
         }
     }
