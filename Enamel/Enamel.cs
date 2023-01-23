@@ -18,7 +18,7 @@ namespace Enamel
         the World is the place where all our entities go.
         */
         static World World { get; } = new World();
-        static ExampleSystem? ExampleSystem;
+        static GridToScreenCoordSystem? GridToScreenCoordSystem;
         static TextureIndexRenderer? TextureIndexRenderer;
 
         SpriteBatch SpriteBatch;
@@ -28,7 +28,13 @@ namespace Enamel
 
         private const int ScreenWidth = 1024;
         private const int ScreenHeight = 768;
+        private const int TileWidth = 42;
+        private const int TileHeight = 29;
+        private const int MapWidth = 8;
+        private const int MapHeight = 8;
         private RenderTarget2D _renderTarget;
+        private Entity[,] WorldGrid;
+
 
         [STAThread]
         internal static void Main()
@@ -59,25 +65,14 @@ namespace Enamel
         //you'll want to do most setup in LoadContent() rather than your constructor.
         protected override void LoadContent()
         {
+            _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/2, ScreenHeight/2);
+            WorldGrid = new Entity[8,8];
+
             /*
             CONTENT
             */
-
-            /*
-            SpriteBatch is FNA/XNA's abstraction for drawing sprites on the screen.
-            you want to do is send all the sprites to the GPU at once, 
-            it's much more efficient to send one huge batch than to send sprites piecemeal. 
-            See more in the Renderers/ExampleRenderer.cs. 
-            */
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            /*
-            this is from FontStashSharp. it allows us to load a font and render it at any 
-            size we like, complete with effects like blurring and stroke. 
-            you can add more than one font to a FontSystem if you have different fonts
-            for different languages. FontStashSharp will pick the first font that
-            has the characters you're trying to draw, and will otherwise draw the Unicode Tofu (little rectangle)
-            */
             FontSystem = new FontSystem();
             FontSystem.AddFont(File.ReadAllBytes(
                     Path.Combine(
@@ -85,25 +80,11 @@ namespace Enamel
                     )
                 ));
 
-            _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/2, ScreenHeight/2);
-
             // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
             Textures = new Texture2D[5];
 
-            var whitePixel = new Texture2D(GraphicsDevice, 1, 1);
-            whitePixel.SetData(new Color[] { Color.White });
-
-            var tileTexture = new RenderTarget2D(GraphicsDevice, 80, 80);
-            GraphicsDevice.SetRenderTarget(tileTexture);
-            SpriteBatch.Begin();
-            SpriteBatch.Draw(whitePixel, new Rectangle(0, 0, 80, 80), Color.White);
-            SpriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
-
-            var groundTexture = Content.Load<Texture2D>("Ground");
-
-            Textures[0] = groundTexture;
-            Textures[1] = tileTexture;
+            Textures[0] = Content.Load<Texture2D>("Ground");
+            Textures[1] = Content.Load<Texture2D>("Shadow");
 
             /*
             SYSTEMS
@@ -114,7 +95,7 @@ namespace Enamel
             you can pass in information that these systems might need to their constructors.
             it doesn't matter what order you create the systems in, we'll specify in what order they run later.
             */
-            ExampleSystem = new ExampleSystem(World);
+            GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
 
             /*
             RENDERERS
@@ -126,10 +107,14 @@ namespace Enamel
             /*
             ENTITIES
             */
+
+            var player1 = World.CreateEntity();
+            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(1));
+            World.Set<GridCoordComponent>(player1, new GridCoordComponent(1, 1));
             
-            var e = World.CreateEntity();
-            World.Set<TextureIndexComponent>(e, new TextureIndexComponent(0));
-            World.Set<PositionComponent>(e, new PositionComponent(100, 100));
+            var ground = World.CreateEntity();
+            World.Set<TextureIndexComponent>(ground, new TextureIndexComponent(0));
+            World.Set<PositionComponent>(ground, new PositionComponent(100, 100));
 
             base.LoadContent();
         }
@@ -150,7 +135,7 @@ namespace Enamel
             over the order systems run in, and whether they run at all.
             */
 
-            ExampleSystem.Update(gameTime.ElapsedGameTime);
+            GridToScreenCoordSystem.Update(gameTime.ElapsedGameTime);
             World.FinishUpdate(); //always call this at the end of your update function.
             base.Update(gameTime);
         }

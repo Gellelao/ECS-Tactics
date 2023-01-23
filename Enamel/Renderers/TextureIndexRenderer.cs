@@ -26,7 +26,7 @@ namespace Enamel.Renderers
         {
             SpriteBatch = spriteBatch;
             Textures = textures;
-            TextureIndexFilter = FilterBuilder //for information about this, see Systems/ExampleSystem.cs
+            TextureIndexFilter = FilterBuilder
                 .Include<TextureIndexComponent>()
                 .Build();
         }
