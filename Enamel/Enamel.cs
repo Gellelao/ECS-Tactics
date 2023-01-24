@@ -92,6 +92,7 @@ namespace Enamel
             Textures[0] = Content.Load<Texture2D>("Ground");
             Textures[1] = Content.Load<Texture2D>("Shadow");
             Textures[2] = redPixel;
+            Textures[3] = Content.Load<Texture2D>("Wizard");
 
             /*
             SYSTEMS
@@ -119,12 +120,15 @@ namespace Enamel
 
             for(var i = 0; i <  8; i++){
                 for(var j = 0;  j <  8; j++){
-                        var player1 = World.CreateEntity();
-                        World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(1));
-                        World.Set<GridCoordComponent>(player1, new GridCoordComponent(i, j));
-                        World.Set<DebugCoordComponent>(player1, new DebugCoordComponent(i, j));
                 }
             }
+            
+            var player1 = World.CreateEntity();
+            var playerSpriteIndex = 3;
+            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(playerSpriteIndex));
+            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[playerSpriteIndex].Width/2, (int)(Textures[playerSpriteIndex].Height*0.8)));
+            World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
+            //World.Set<DebugCoordComponent>(player1, new DebugCoordComponent(i, j));
             
             var ground = World.CreateEntity();
             World.Set<TextureIndexComponent>(ground, new TextureIndexComponent(0));

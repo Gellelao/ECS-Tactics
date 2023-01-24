@@ -60,6 +60,12 @@ namespace Enamel.Renderers
             {
                 var indexComponent = Get<TextureIndexComponent>(entity);
                 var positionComponent = Get<PositionComponent>(entity);
+            
+                var origin = Vector2.Zero;
+                if(Has<SpriteOriginComponent>(entity)){
+                    var originComponent = Get<SpriteOriginComponent>(entity);
+                    origin = new Vector2(originComponent.X, originComponent.Y);
+                }
 
                 SpriteBatch.Draw(
                     Textures[indexComponent.Index],
@@ -67,7 +73,7 @@ namespace Enamel.Renderers
                     null,
                     Color.White,
                     0, // rotation,
-                    Vector2.Zero, // origin
+                    origin, // origin
                     Vector2.One, // scaling
                     SpriteEffects.None,
                     0
