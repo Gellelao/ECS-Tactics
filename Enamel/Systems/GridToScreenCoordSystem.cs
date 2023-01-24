@@ -30,7 +30,7 @@ namespace Enamel.Systems
             {
                 var gridCoordComponent = Get<GridCoordComponent>(entity);
                 var screenCoords = GridToScreenCoords(gridCoordComponent.X, gridCoordComponent.Y);
-                Set(entity, new PositionComponent((int)screenCoords.X, (int)screenCoords.Y));
+                Set(entity, new PositionComponent((int)Math.Round(screenCoords.X), (int)Math.Round(screenCoords.Y)));
             }
         }
 

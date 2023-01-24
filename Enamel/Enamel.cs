@@ -7,6 +7,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Renderers;
 using FontStashSharp;
+using Microsoft.Xna.Framework.Input;
 
 namespace Enamel
 {
@@ -19,7 +20,9 @@ namespace Enamel
         */
         static World World { get; } = new World();
         static GridToScreenCoordSystem? GridToScreenCoordSystem;
+        static InputSystem? InputSystem;
         static TextureIndexRenderer? TextureIndexRenderer;
+        static TextRenderer? TextRenderer;
 
         SpriteBatch SpriteBatch;
         FontSystem FontSystem;
@@ -28,8 +31,8 @@ namespace Enamel
 
         private const int ScreenWidth = 1024;
         private const int ScreenHeight = 768;
-        private const int TileWidth = 42;
-        private const int TileHeight = 29;
+        private const int TileWidth = 40;
+        private const int TileHeight = 20;
         private const int MapWidth = 8;
         private const int MapHeight = 8;
         private RenderTarget2D _renderTarget;
@@ -83,8 +86,12 @@ namespace Enamel
             // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
             Textures = new Texture2D[5];
 
+            var redPixel = new Texture2D(GraphicsDevice, 1, 1);
+            redPixel.SetData(new Color[] { Color.Red });
+
             Textures[0] = Content.Load<Texture2D>("Ground");
             Textures[1] = Content.Load<Texture2D>("Shadow");
+            Textures[2] = redPixel;
 
             /*
             SYSTEMS
@@ -96,6 +103,7 @@ namespace Enamel
             it doesn't matter what order you create the systems in, we'll specify in what order they run later.
             */
             GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
+            InputSystem = new InputSystem(World);
 
             /*
             RENDERERS
@@ -103,18 +111,24 @@ namespace Enamel
 
             //same as above, but for the renderer
             TextureIndexRenderer = new TextureIndexRenderer(World, SpriteBatch, Textures);
+            TextRenderer = new TextRenderer(World, SpriteBatch, FontSystem);
 
             /*
             ENTITIES
             */
 
-            var player1 = World.CreateEntity();
-            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(1));
-            World.Set<GridCoordComponent>(player1, new GridCoordComponent(1, 1));
+            for(var i = 0; i <  8; i++){
+                for(var j = 0;  j <  8; j++){
+                        var player1 = World.CreateEntity();
+                        World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(1));
+                        World.Set<GridCoordComponent>(player1, new GridCoordComponent(i, j));
+                        World.Set<DebugCoordComponent>(player1, new DebugCoordComponent(i, j));
+                }
+            }
             
             var ground = World.CreateEntity();
             World.Set<TextureIndexComponent>(ground, new TextureIndexComponent(0));
-            World.Set<PositionComponent>(ground, new PositionComponent(100, 100));
+            World.Set<PositionComponent>(ground, new PositionComponent(0, 0));
 
             base.LoadContent();
         }
@@ -136,6 +150,7 @@ namespace Enamel
             */
 
             GridToScreenCoordSystem.Update(gameTime.ElapsedGameTime);
+            InputSystem.Update(gameTime.ElapsedGameTime);
             World.FinishUpdate(); //always call this at the end of your update function.
             base.Update(gameTime);
         }
@@ -150,6 +165,7 @@ namespace Enamel
             render to the smaller renderTarget, then upscale after
             */
             TextureIndexRenderer.Draw();
+            TextRenderer.Draw();
 
             GraphicsDevice.SetRenderTarget(null);
 
