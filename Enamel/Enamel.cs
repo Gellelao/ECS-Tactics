@@ -36,7 +36,8 @@ namespace Enamel
         private const int MapWidth = 8;
         private const int MapHeight = 8;
         private RenderTarget2D _renderTarget;
-        private Entity[,] WorldGrid;
+        private Entity[,] GroundGrid;
+        private Entity[,] EntityGrid;
 
 
         [STAThread]
@@ -69,7 +70,8 @@ namespace Enamel
         protected override void LoadContent()
         {
             _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/2, ScreenHeight/2);
-            WorldGrid = new Entity[8,8];
+            GroundGrid = new Entity[MapWidth, MapHeight];
+            EntityGrid = new Entity[MapWidth, MapHeight];
 
             /*
             CONTENT
@@ -89,10 +91,9 @@ namespace Enamel
             var redPixel = new Texture2D(GraphicsDevice, 1, 1);
             redPixel.SetData(new Color[] { Color.Red });
 
-            Textures[0] = Content.Load<Texture2D>("Ground");
-            Textures[1] = Content.Load<Texture2D>("Shadow");
-            Textures[2] = redPixel;
-            Textures[3] = Content.Load<Texture2D>("Wizard");
+            Textures[0] = redPixel;
+            Textures[1] = Content.Load<Texture2D>("Tile");
+            Textures[2] = Content.Load<Texture2D>("Wizard");
 
             /*
             SYSTEMS
@@ -104,7 +105,7 @@ namespace Enamel
             it doesn't matter what order you create the systems in, we'll specify in what order they run later.
             */
             GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
-            InputSystem = new InputSystem(World);
+            InputSystem = new InputSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
 
             /*
             RENDERERS
@@ -117,22 +118,23 @@ namespace Enamel
             /*
             ENTITIES
             */
-
-            for(var i = 0; i <  8; i++){
-                for(var j = 0;  j <  8; j++){
-                }
-            }
             
             var player1 = World.CreateEntity();
-            var playerSpriteIndex = 3;
+            var playerSpriteIndex = 2;
             World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(playerSpriteIndex));
             World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[playerSpriteIndex].Width/2, (int)(Textures[playerSpriteIndex].Height*0.8)));
             World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
-            //World.Set<DebugCoordComponent>(player1, new DebugCoordComponent(i, j));
-            
-            var ground = World.CreateEntity();
-            World.Set<TextureIndexComponent>(ground, new TextureIndexComponent(0));
-            World.Set<PositionComponent>(ground, new PositionComponent(0, 0));
+
+            var tileSpriteIndex = 1;
+            for(var x = 0; x < 8; x++){
+                for(var y = 0;  y < 8; y++){
+                    var tile = World.CreateEntity();
+                    World.Set<TextureIndexComponent>(tile, new TextureIndexComponent(tileSpriteIndex));
+                    World.Set<GridCoordComponent>(tile, new GridCoordComponent(x, y));
+                    World.Set<DebugCoordComponent>(tile, new DebugCoordComponent(x, y));
+                    World.Set<SpriteOriginComponent>(tile, new SpriteOriginComponent(TileWidth/2, TileHeight/2));
+                }
+            }
 
             base.LoadContent();
         }
@@ -145,14 +147,6 @@ namespace Enamel
 
         protected override void Update(GameTime gameTime)
         {
-            /*
-            here we call all our system update functions. 
-            call them in the order you want them to run. 
-            other ECS libraries have a master "update" function that does this for you,
-            but moontools.ecs does not. this lets you have more control
-            over the order systems run in, and whether they run at all.
-            */
-
             GridToScreenCoordSystem.Update(gameTime.ElapsedGameTime);
             InputSystem.Update(gameTime.ElapsedGameTime);
             World.FinishUpdate(); //always call this at the end of your update function.

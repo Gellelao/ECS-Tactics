@@ -42,7 +42,7 @@ namespace Enamel.Renderers
                     _fontSystem.GetFont(12),
                     String.Format("{0}, {1}", debugCoordComponent.X, debugCoordComponent.Y),
                     new Vector2(positionComponent.X, positionComponent.Y),
-                    Color.Red
+                    Color.Blue
                 );
             }
             #endif

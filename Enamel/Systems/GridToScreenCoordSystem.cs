@@ -36,7 +36,7 @@ namespace Enamel.Systems
 
         private Vector2 GridToScreenCoords(int gridX, int gridY){
             var screenX = _tileWidth * gridX / 2 +
-                          _tileWidth *_mapHeight / 2 -
+                          _tileWidth * _mapHeight / 2 -
                           _tileWidth * gridY / 2;
             var screenY = (_mapHeight - gridY - 1) * _tileHeight / 2 +
                           _mapWidth * _tileHeight / 2  -

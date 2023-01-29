@@ -82,7 +82,7 @@ namespace Enamel.Renderers
                 // Draw red origin pixel if in debug mode
                 #if DEBUG
                 SpriteBatch.Draw(
-                    Textures[2],
+                    Textures[0],
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
                     Color.White,
