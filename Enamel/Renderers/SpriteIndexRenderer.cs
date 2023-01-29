@@ -16,13 +16,13 @@ namespace Enamel.Renderers
     there are advantages to both ([lcd soundsystem voice] advantages! advantages!),
     but the monolith-style renderer can be more useful in a 3D context.
     */
-    public class TextureIndexRenderer : MoonTools.ECS.Renderer
+    public class SpriteIndexRenderer : MoonTools.ECS.Renderer
     {
         private Filter TextureIndexFilter { get; }
         private SpriteBatch SpriteBatch { get; }
         private Texture2D[] Textures;
 
-        public TextureIndexRenderer(World world, SpriteBatch spriteBatch, Texture2D[] textures) : base(world)
+        public SpriteIndexRenderer(World world, SpriteBatch spriteBatch, Texture2D[] textures) : base(world)
         {
             SpriteBatch = spriteBatch;
             Textures = textures;

@@ -12,8 +12,10 @@ namespace Enamel.Systems
         private int _tileHeight;
         private int _mapWidth;
         private int _mapHeight;
+        private readonly int _xOffset;
+        private readonly int _yOffset;
 
-        public GridToScreenCoordSystem(World world, int tileWidth, int tileHeight, int mapWidth, int mapHeight) : base(world)
+        public GridToScreenCoordSystem(World world, int tileWidth, int tileHeight, int mapWidth, int mapHeight, int xOffset, int yOffset) : base(world)
         {
             GridCoordFilter = FilterBuilder
                             .Include<GridCoordComponent>()
@@ -22,6 +24,8 @@ namespace Enamel.Systems
             _tileHeight = tileHeight;
             _mapWidth = mapWidth;
             _mapHeight = mapHeight;
+            _xOffset = xOffset;
+            _yOffset = yOffset;
         }
 
         public override void Update(TimeSpan delta)
@@ -30,7 +34,7 @@ namespace Enamel.Systems
             {
                 var gridCoordComponent = Get<GridCoordComponent>(entity);
                 var screenCoords = GridToScreenCoords(gridCoordComponent.X, gridCoordComponent.Y);
-                Set(entity, new PositionComponent((int)Math.Round(screenCoords.X), (int)Math.Round(screenCoords.Y)));
+                Set(entity, new PositionComponent((int)Math.Round(screenCoords.X) + _xOffset, (int)Math.Round(screenCoords.Y) + _yOffset));
             }
         }
 

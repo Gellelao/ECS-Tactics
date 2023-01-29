@@ -7,7 +7,6 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Renderers;
 using FontStashSharp;
-using Microsoft.Xna.Framework.Input;
 
 namespace Enamel
 {
@@ -21,7 +20,7 @@ namespace Enamel
         static World World { get; } = new World();
         static GridToScreenCoordSystem? GridToScreenCoordSystem;
         static InputSystem? InputSystem;
-        static TextureIndexRenderer? TextureIndexRenderer;
+        static SpriteIndexRenderer? MapRenderer;
         static TextRenderer? TextRenderer;
 
         SpriteBatch SpriteBatch;
@@ -35,6 +34,7 @@ namespace Enamel
         private const int TileHeight = 20;
         private const int MapWidth = 8;
         private const int MapHeight = 8;
+        private const int UpscaleFactor = 2;
         private RenderTarget2D _renderTarget;
         private Entity[,] GroundGrid;
         private Entity[,] EntityGrid;
@@ -69,7 +69,7 @@ namespace Enamel
         //you'll want to do most setup in LoadContent() rather than your constructor.
         protected override void LoadContent()
         {
-            _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/2, ScreenHeight/2);
+            _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
             GroundGrid = new Entity[MapWidth, MapHeight];
             EntityGrid = new Entity[MapWidth, MapHeight];
 
@@ -104,15 +104,20 @@ namespace Enamel
             you can pass in information that these systems might need to their constructors.
             it doesn't matter what order you create the systems in, we'll specify in what order they run later.
             */
-            GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
-            InputSystem = new InputSystem(World, TileWidth, TileHeight, MapWidth, MapHeight);
+            // I think these only work if the map is square but it probably will be
+            var mapWidthInPixels = TileWidth * MapWidth * UpscaleFactor;
+            var mapHeightInPixels = TileHeight * MapHeight * UpscaleFactor;
+            var xOffset = (ScreenWidth - mapWidthInPixels) / 2 / UpscaleFactor;
+            var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
+            GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
+            InputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
 
             /*
             RENDERERS
             */
 
             //same as above, but for the renderer
-            TextureIndexRenderer = new TextureIndexRenderer(World, SpriteBatch, Textures);
+            MapRenderer = new SpriteIndexRenderer(World, SpriteBatch, Textures);
             TextRenderer = new TextRenderer(World, SpriteBatch, FontSystem);
 
             /*
@@ -162,7 +167,7 @@ namespace Enamel
             renderers don't get passed the game time. 
             render to the smaller renderTarget, then upscale after
             */
-            TextureIndexRenderer.Draw();
+            MapRenderer.Draw();
             TextRenderer.Draw();
 
             GraphicsDevice.SetRenderTarget(null);
