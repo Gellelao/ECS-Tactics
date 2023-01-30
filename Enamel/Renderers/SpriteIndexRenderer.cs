@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
 using Enamel.Components;
+using Enamel.Enums;
 
 namespace Enamel.Renderers
 {
@@ -82,7 +83,7 @@ namespace Enamel.Renderers
                 // Draw red origin pixel if in debug mode
                 #if DEBUG
                 SpriteBatch.Draw(
-                    Textures[0],
+                    Textures[(int)Sprite.RedPixel],
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
                     Color.White,

@@ -7,6 +7,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Renderers;
 using FontStashSharp;
+using Enamel.Enums;
 
 namespace Enamel
 {
@@ -93,9 +94,9 @@ namespace Enamel
             var redPixel = new Texture2D(GraphicsDevice, 1, 1);
             redPixel.SetData(new Color[] { Color.Red });
 
-            Textures[0] = redPixel;
-            Textures[1] = Content.Load<Texture2D>("Tile");
-            Textures[2] = Content.Load<Texture2D>("Wizard");
+            Textures[(int)Sprite.RedPixel] = redPixel;
+            Textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
+            Textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
 
             /*
             SYSTEMS
@@ -126,16 +127,15 @@ namespace Enamel
             */
             
             var player1 = World.CreateEntity();
-            var playerSpriteIndex = 2;
-            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent(playerSpriteIndex));
-            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[playerSpriteIndex].Width/2, (int)(Textures[playerSpriteIndex].Height*0.8)));
+            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent((int)Sprite.Player1));
+            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[(int)Sprite.Player1].Width/2, (int)(Textures[(int)Sprite.Player1].Height*0.8)));
             World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
 
-            var tileSpriteIndex = 1;
+
             for(var x = 7; x >= 0; x--){
                 for(var y = 7;  y >= 0; y--){
                     var tile = World.CreateEntity();
-                    World.Set<TextureIndexComponent>(tile, new TextureIndexComponent(tileSpriteIndex));
+                    World.Set<TextureIndexComponent>(tile, new TextureIndexComponent((int)Sprite.Tile));
                     World.Set<GridCoordComponent>(tile, new GridCoordComponent(x, y));
                     World.Set<DebugCoordComponent>(tile, new DebugCoordComponent(x, y));
                 }
