@@ -36,8 +36,8 @@ namespace Enamel
         private const int MapHeight = 8;
         private const int UpscaleFactor = 2;
         private RenderTarget2D _renderTarget;
-        private Entity[,] GroundGrid;
-        private Entity[,] EntityGrid;
+        //private Entity[,] GroundGrid;
+        //private Entity[,] EntityGrid;
 
 
         [STAThread]
@@ -70,8 +70,10 @@ namespace Enamel
         protected override void LoadContent()
         {
             _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
-            GroundGrid = new Entity[MapWidth, MapHeight];
-            EntityGrid = new Entity[MapWidth, MapHeight];
+
+            // Not actually populated yet since entities are tracked by World anyway
+            //GroundGrid = new Entity[MapWidth, MapHeight];
+            //EntityGrid = new Entity[MapWidth, MapHeight];
 
             /*
             CONTENT
@@ -105,9 +107,8 @@ namespace Enamel
             it doesn't matter what order you create the systems in, we'll specify in what order they run later.
             */
             // I think these only work if the map is square but it probably will be
-            var mapWidthInPixels = TileWidth * MapWidth * UpscaleFactor;
             var mapHeightInPixels = TileHeight * MapHeight * UpscaleFactor;
-            var xOffset = (ScreenWidth - mapWidthInPixels) / 2 / UpscaleFactor;
+            var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;//(ScreenWidth - mapWidthInPixels) / 2 / UpscaleFactor;
             var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
             GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
             InputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
@@ -131,13 +132,12 @@ namespace Enamel
             World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
 
             var tileSpriteIndex = 1;
-            for(var x = 0; x < 8; x++){
-                for(var y = 0;  y < 8; y++){
+            for(var x = 7; x >= 0; x--){
+                for(var y = 7;  y >= 0; y--){
                     var tile = World.CreateEntity();
                     World.Set<TextureIndexComponent>(tile, new TextureIndexComponent(tileSpriteIndex));
                     World.Set<GridCoordComponent>(tile, new GridCoordComponent(x, y));
                     World.Set<DebugCoordComponent>(tile, new DebugCoordComponent(x, y));
-                    World.Set<SpriteOriginComponent>(tile, new SpriteOriginComponent(TileWidth/2, TileHeight/2));
                 }
             }
 

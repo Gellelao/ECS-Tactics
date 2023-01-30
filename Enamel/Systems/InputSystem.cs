@@ -38,21 +38,20 @@ namespace Enamel.Systems
         }
 
         private void OnRelease(int mouseX, int mouseY){
-            Console.WriteLine($"mouseX: {mouseX}, mouseY: {mouseY}");
             var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
-            Console.WriteLine($"X: {gridCoords.X}, Y: {gridCoords.Y}");
         }
 
         private Vector2 ScreenToGridCoords(int mouseX, int mouseY)
         {
-            float mouseFloatX = mouseX - _xOffset;
+            float mouseFloatX = mouseX - (_tileWidth/2) - _xOffset;
             float mouseFloatY = mouseY - _yOffset;
             float tileWidthFloat = _tileWidth;
             float tileHeightFloat = _tileHeight;
 
-            var gridX = mouseFloatX / _tileWidth + mouseFloatY / tileHeightFloat;
+            var gridX = mouseFloatY / tileHeightFloat + mouseFloatX / _tileWidth;
             var gridY = mouseFloatY / tileHeightFloat - mouseFloatX / _tileWidth;
-            return new Vector2((int)Math.Floor(gridX)-4, (int)Math.Floor(gridY)+4);
+            
+            return new Vector2((int)Math.Floor(gridX), (int)Math.Floor(gridY));
         }
     }
 }
