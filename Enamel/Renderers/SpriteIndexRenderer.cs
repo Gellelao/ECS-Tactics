@@ -80,6 +80,20 @@ namespace Enamel.Renderers
                     0
                 );
 
+                if(Has<SelectedComponent>(entity)){
+                    SpriteBatch.Draw(
+                        Textures[(int)Sprite.Selection],
+                        new Vector2(positionComponent.X, positionComponent.Y),
+                        null,
+                        Color.White,
+                        0, // rotation,
+                        origin, // origin
+                        Vector2.One, // scaling
+                        SpriteEffects.None,
+                        0
+                    );
+                }
+
                 // Draw red origin pixel if in debug mode
                 #if DEBUG
                 SpriteBatch.Draw(

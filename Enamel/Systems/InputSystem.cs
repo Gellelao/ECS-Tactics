@@ -2,11 +2,14 @@ using System;
 using MoonTools.ECS;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using Enamel.Components;
+using Enamel.Components.Messages;
 
 namespace Enamel.Systems
 {
     public class InputSystem : MoonTools.ECS.System
     {
+        private Filter _selectableCoordFilter { get; }
 	    private MouseState mousePrevious = new MouseState();
         private readonly int _upscaleFactor;
         private readonly int _tileWidth;
@@ -18,6 +21,10 @@ namespace Enamel.Systems
 
         public InputSystem(World world, int upscaleFactor, int tileWidth, int tileHeight, int mapWidth, int mapHeight, int xOffset, int yOffset) : base(world)
         {
+            _selectableCoordFilter = FilterBuilder
+                .Include<GridCoordComponent>()
+                .Include<SelectableComponent>()
+                .Build();
             _upscaleFactor = upscaleFactor;
             _tileWidth = tileWidth;
             _tileHeight = tileHeight;
@@ -32,13 +39,22 @@ namespace Enamel.Systems
             var mouseCurrent = Mouse.GetState();
             if (mouseCurrent.LeftButton == ButtonState.Released && mousePrevious.LeftButton == ButtonState.Pressed)
             {
-                OnRelease(mouseCurrent.X, mouseCurrent.Y);
+                OnLeftButtonRelease(mouseCurrent.X, mouseCurrent.Y);
             }
             mousePrevious = mouseCurrent;
         }
 
-        private void OnRelease(int mouseX, int mouseY){
-            var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
+        private void OnLeftButtonRelease(int mouseX, int mouseY){
+            // Will want to check button clicks before grid coords, in case there is a popup window over the grid
+            var clickedCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
+            foreach (var entity in _selectableCoordFilter.Entities)
+            {
+                var gridCoordComponent = Get<GridCoordComponent>(entity);
+                if(clickedCoords.X == gridCoordComponent.X && clickedCoords.Y == gridCoordComponent.Y)
+                {
+                    Send(new Select(entity));
+                }
+            }
         }
 
         private Vector2 ScreenToGridCoords(int mouseX, int mouseY)

@@ -4,6 +4,7 @@ namespace Enamel.Enums
     {
         RedPixel,
         Tile,
-        Player1
+        Player1,
+        Selection
     }
 }

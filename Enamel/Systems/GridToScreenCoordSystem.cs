@@ -7,7 +7,7 @@ namespace Enamel.Systems
 {
     public class GridToScreenCoordSystem : MoonTools.ECS.System
     {
-        private Filter GridCoordFilter { get; }
+        private Filter _gridCoordFilter { get; }
         private int _tileWidth;
         private int _tileHeight;
         private int _mapWidth;
@@ -17,7 +17,7 @@ namespace Enamel.Systems
 
         public GridToScreenCoordSystem(World world, int tileWidth, int tileHeight, int mapWidth, int mapHeight, int xOffset, int yOffset) : base(world)
         {
-            GridCoordFilter = FilterBuilder
+            _gridCoordFilter = FilterBuilder
                             .Include<GridCoordComponent>()
                             .Build();
             _tileWidth = tileWidth;
@@ -30,7 +30,7 @@ namespace Enamel.Systems
 
         public override void Update(TimeSpan delta)
         {
-            foreach (var entity in GridCoordFilter.Entities)
+            foreach (var entity in _gridCoordFilter.Entities)
             {
                 var gridCoordComponent = Get<GridCoordComponent>(entity);
                 var screenCoords = GridToScreenCoords(gridCoordComponent.X, gridCoordComponent.Y);

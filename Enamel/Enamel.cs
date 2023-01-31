@@ -21,6 +21,7 @@ namespace Enamel
         static World World { get; } = new World();
         static GridToScreenCoordSystem? GridToScreenCoordSystem;
         static InputSystem? InputSystem;
+        static SelectionSystem? SelectionSystem;
         static SpriteIndexRenderer? MapRenderer;
         static TextRenderer? TextRenderer;
 
@@ -97,6 +98,7 @@ namespace Enamel
             Textures[(int)Sprite.RedPixel] = redPixel;
             Textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
             Textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
+            Textures[(int)Sprite.Selection] = Content.Load<Texture2D>("TileSelection");
 
             /*
             SYSTEMS
@@ -113,6 +115,7 @@ namespace Enamel
             var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
             GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
             InputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
+            SelectionSystem = new SelectionSystem(World);
 
             /*
             RENDERERS
@@ -130,6 +133,13 @@ namespace Enamel
             World.Set<TextureIndexComponent>(player1, new TextureIndexComponent((int)Sprite.Player1));
             World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[(int)Sprite.Player1].Width/2, (int)(Textures[(int)Sprite.Player1].Height*0.8)));
             World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
+            World.Set<SelectableComponent>(player1, new SelectableComponent());
+
+            var player2 = World.CreateEntity();
+            World.Set<TextureIndexComponent>(player2, new TextureIndexComponent((int)Sprite.Player1));
+            World.Set<SpriteOriginComponent>(player2, new SpriteOriginComponent(Textures[(int)Sprite.Player1].Width/2, (int)(Textures[(int)Sprite.Player1].Height*0.8)));
+            World.Set<GridCoordComponent>(player2, new GridCoordComponent(4, 6));
+            World.Set<SelectableComponent>(player2, new SelectableComponent());
 
 
             for(var x = 7; x >= 0; x--){
@@ -154,6 +164,7 @@ namespace Enamel
         {
             GridToScreenCoordSystem.Update(gameTime.ElapsedGameTime);
             InputSystem.Update(gameTime.ElapsedGameTime);
+            SelectionSystem.Update(gameTime.ElapsedGameTime);
             World.FinishUpdate(); //always call this at the end of your update function.
             base.Update(gameTime);
         }
