@@ -68,6 +68,20 @@ namespace Enamel.Renderers
                     origin = new Vector2(originComponent.X, originComponent.Y);
                 }
 
+                if(Has<SelectedComponent>(entity)){
+                    SpriteBatch.Draw(
+                        Textures[(int)Sprite.Selection],
+                        new Vector2(positionComponent.X, positionComponent.Y),
+                        null,
+                        Color.White,
+                        0, // rotation,
+                        Vector2.Zero, // origin
+                        Vector2.One, // scaling
+                        SpriteEffects.None,
+                        0
+                    );
+                }
+
                 SpriteBatch.Draw(
                     Textures[indexComponent.Index],
                     new Vector2(positionComponent.X, positionComponent.Y),
@@ -79,20 +93,6 @@ namespace Enamel.Renderers
                     SpriteEffects.None,
                     0
                 );
-
-                if(Has<SelectedComponent>(entity)){
-                    SpriteBatch.Draw(
-                        Textures[(int)Sprite.Selection],
-                        new Vector2(positionComponent.X, positionComponent.Y),
-                        null,
-                        Color.White,
-                        0, // rotation,
-                        origin, // origin
-                        Vector2.One, // scaling
-                        SpriteEffects.None,
-                        0
-                    );
-                }
 
                 // Draw red origin pixel if in debug mode
                 #if DEBUG

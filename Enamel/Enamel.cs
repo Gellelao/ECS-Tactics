@@ -98,7 +98,7 @@ namespace Enamel
             Textures[(int)Sprite.RedPixel] = redPixel;
             Textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
             Textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
-            Textures[(int)Sprite.Selection] = Content.Load<Texture2D>("TileSelection");
+            Textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
 
             /*
             SYSTEMS
@@ -131,13 +131,19 @@ namespace Enamel
             
             var player1 = World.CreateEntity();
             World.Set<TextureIndexComponent>(player1, new TextureIndexComponent((int)Sprite.Player1));
-            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(Textures[(int)Sprite.Player1].Width/2, (int)(Textures[(int)Sprite.Player1].Height*0.8)));
+            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(
+                Textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
+                (int)(Textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
+            );
             World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
             World.Set<SelectableComponent>(player1, new SelectableComponent());
 
             var player2 = World.CreateEntity();
             World.Set<TextureIndexComponent>(player2, new TextureIndexComponent((int)Sprite.Player1));
-            World.Set<SpriteOriginComponent>(player2, new SpriteOriginComponent(Textures[(int)Sprite.Player1].Width/2, (int)(Textures[(int)Sprite.Player1].Height*0.8)));
+            World.Set<SpriteOriginComponent>(player2, new SpriteOriginComponent(
+                Textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
+                (int)(Textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
+            );
             World.Set<GridCoordComponent>(player2, new GridCoordComponent(4, 6));
             World.Set<SelectableComponent>(player2, new SelectableComponent());
 
