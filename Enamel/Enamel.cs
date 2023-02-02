@@ -18,17 +18,17 @@ namespace Enamel
         /*
         the World is the place where all our entities go.
         */
-        static World World { get; } = new World();
-        static GridToScreenCoordSystem? GridToScreenCoordSystem;
-        static InputSystem? InputSystem;
-        static SelectionSystem? SelectionSystem;
-        static SpriteIndexRenderer? MapRenderer;
-        static TextRenderer? TextRenderer;
+        private static World World { get; } = new();
+        private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
+        private static InputSystem? _inputSystem;
+        private static SelectionSystem? _selectionSystem;
+        private static SpriteIndexRenderer? _mapRenderer;
+        private static TextRenderer? _textRenderer;
 
-        SpriteBatch SpriteBatch;
-        FontSystem FontSystem;
+        private SpriteBatch _spriteBatch;
+        private FontSystem _fontSystem;
 
-        Texture2D[] Textures;
+        private Texture2D[] _textures;
 
         private const int ScreenWidth = 1024;
         private const int ScreenHeight = 768;
@@ -45,10 +45,8 @@ namespace Enamel
         [STAThread]
         internal static void Main()
         {
-            using (Enamel game = new Enamel())
-            {
-                game.Run();
-            }
+            using var game = new Enamel();
+            game.Run();
         }
 
         private Enamel()
@@ -80,25 +78,25 @@ namespace Enamel
             /*
             CONTENT
             */
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            FontSystem = new FontSystem();
-            FontSystem.AddFont(File.ReadAllBytes(
+            _fontSystem = new FontSystem();
+            _fontSystem.AddFont(File.ReadAllBytes(
                     Path.Combine(
                         Content.RootDirectory, "opensans.ttf"
                     )
                 ));
 
             // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-            Textures = new Texture2D[5];
+            _textures = new Texture2D[5];
 
             var redPixel = new Texture2D(GraphicsDevice, 1, 1);
-            redPixel.SetData(new Color[] { Color.Red });
+            redPixel.SetData(new[] { Color.Red });
 
-            Textures[(int)Sprite.RedPixel] = redPixel;
-            Textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
-            Textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
-            Textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
+            _textures[(int)Sprite.RedPixel] = redPixel;
+            _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
+            _textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
+            _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
 
             /*
             SYSTEMS
@@ -113,64 +111,58 @@ namespace Enamel
             var mapHeightInPixels = TileHeight * MapHeight * UpscaleFactor;
             var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;//(ScreenWidth - mapWidthInPixels) / 2 / UpscaleFactor;
             var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
-            GridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
-            InputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
-            SelectionSystem = new SelectionSystem(World);
+            _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
+            _inputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
+            _selectionSystem = new SelectionSystem(World);
 
             /*
             RENDERERS
             */
 
             //same as above, but for the renderer
-            MapRenderer = new SpriteIndexRenderer(World, SpriteBatch, Textures);
-            TextRenderer = new TextRenderer(World, SpriteBatch, FontSystem);
+            _mapRenderer = new SpriteIndexRenderer(World, _spriteBatch, _textures);
+            _textRenderer = new TextRenderer(World, _spriteBatch, _fontSystem);
 
             /*
             ENTITIES
             */
             
             var player1 = World.CreateEntity();
-            World.Set<TextureIndexComponent>(player1, new TextureIndexComponent((int)Sprite.Player1));
-            World.Set<SpriteOriginComponent>(player1, new SpriteOriginComponent(
-                Textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
-                (int)(Textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
+            World.Set(player1, new TextureIndexComponent((int)Sprite.Player1));
+            World.Set(player1, new SpriteOriginComponent(
+                _textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
+                (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
             );
-            World.Set<GridCoordComponent>(player1, new GridCoordComponent(3, 2));
-            World.Set<SelectableComponent>(player1, new SelectableComponent());
+            World.Set(player1, new GridCoordComponent(3, 2));
+            World.Set(player1, new SelectableComponent());
 
             var player2 = World.CreateEntity();
-            World.Set<TextureIndexComponent>(player2, new TextureIndexComponent((int)Sprite.Player1));
-            World.Set<SpriteOriginComponent>(player2, new SpriteOriginComponent(
-                Textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
-                (int)(Textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
+            World.Set(player2, new TextureIndexComponent((int)Sprite.Player1));
+            World.Set(player2, new SpriteOriginComponent(
+                _textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
+                (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
             );
-            World.Set<GridCoordComponent>(player2, new GridCoordComponent(4, 6));
-            World.Set<SelectableComponent>(player2, new SelectableComponent());
+            World.Set(player2, new GridCoordComponent(4, 6));
+            World.Set(player2, new SelectableComponent());
 
 
             for(var x = 7; x >= 0; x--){
                 for(var y = 7;  y >= 0; y--){
                     var tile = World.CreateEntity();
-                    World.Set<TextureIndexComponent>(tile, new TextureIndexComponent((int)Sprite.Tile));
-                    World.Set<GridCoordComponent>(tile, new GridCoordComponent(x, y));
-                    World.Set<DebugCoordComponent>(tile, new DebugCoordComponent(x, y));
+                    World.Set(tile, new TextureIndexComponent((int)Sprite.Tile));
+                    World.Set(tile, new GridCoordComponent(x, y));
+                    World.Set(tile, new DebugCoordComponent(x, y));
                 }
             }
 
             base.LoadContent();
         }
 
-        //sometimes content needs to be unloaded, but it usually doesn't.
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
-        }
-
         protected override void Update(GameTime gameTime)
         {
-            GridToScreenCoordSystem.Update(gameTime.ElapsedGameTime);
-            InputSystem.Update(gameTime.ElapsedGameTime);
-            SelectionSystem.Update(gameTime.ElapsedGameTime);
+            _gridToScreenCoordSystem?.Update(gameTime.ElapsedGameTime);
+            _inputSystem?.Update(gameTime.ElapsedGameTime);
+            _selectionSystem?.Update(gameTime.ElapsedGameTime);
             World.FinishUpdate(); //always call this at the end of your update function.
             base.Update(gameTime);
         }
@@ -184,20 +176,20 @@ namespace Enamel
             renderers don't get passed the game time. 
             render to the smaller renderTarget, then upscale after
             */
-            MapRenderer.Draw();
-            TextRenderer.Draw();
+            _mapRenderer?.Draw();
+            _textRenderer?.Draw();
 
             GraphicsDevice.SetRenderTarget(null);
 
-            SpriteBatch.Begin(SpriteSortMode.Deferred,
+            _spriteBatch.Begin(SpriteSortMode.Deferred,
 				BlendState.AlphaBlend,
 				SamplerState.PointClamp,
 				DepthStencilState.None,
 				RasterizerState.CullCounterClockwise,
 				null,
 				Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
-            SpriteBatch.Draw(_renderTarget, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
-            SpriteBatch.End();
+            _spriteBatch.Draw(_renderTarget, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

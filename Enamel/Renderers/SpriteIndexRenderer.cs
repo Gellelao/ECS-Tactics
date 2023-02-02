@@ -17,16 +17,16 @@ namespace Enamel.Renderers
     there are advantages to both ([lcd soundsystem voice] advantages! advantages!),
     but the monolith-style renderer can be more useful in a 3D context.
     */
-    public class SpriteIndexRenderer : MoonTools.ECS.Renderer
+    public class SpriteIndexRenderer : Renderer
     {
         private Filter TextureIndexFilter { get; }
         private SpriteBatch SpriteBatch { get; }
-        private Texture2D[] Textures;
+        private readonly Texture2D[] _textures;
 
         public SpriteIndexRenderer(World world, SpriteBatch spriteBatch, Texture2D[] textures) : base(world)
         {
             SpriteBatch = spriteBatch;
-            Textures = textures;
+            _textures = textures;
             TextureIndexFilter = FilterBuilder
                 .Include<TextureIndexComponent>()
                 .Build();
@@ -70,7 +70,7 @@ namespace Enamel.Renderers
 
                 if(Has<SelectedComponent>(entity)){
                     SpriteBatch.Draw(
-                        Textures[(int)Sprite.Selection],
+                        _textures[(int)Sprite.Selection],
                         new Vector2(positionComponent.X, positionComponent.Y),
                         null,
                         Color.White,
@@ -83,7 +83,7 @@ namespace Enamel.Renderers
                 }
 
                 SpriteBatch.Draw(
-                    Textures[indexComponent.Index],
+                    _textures[indexComponent.Index],
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
                     Color.White,
@@ -97,7 +97,7 @@ namespace Enamel.Renderers
                 // Draw red origin pixel if in debug mode
                 #if DEBUG
                 SpriteBatch.Draw(
-                    Textures[(int)Sprite.RedPixel],
+                    _textures[(int)Sprite.RedPixel],
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
                     Color.White,
