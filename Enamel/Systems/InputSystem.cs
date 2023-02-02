@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using MoonTools.ECS;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
@@ -33,11 +34,25 @@ namespace Enamel.Systems
         public override void Update(TimeSpan delta)
         {
             var mouseCurrent = Mouse.GetState();
+            OnUpdate(mouseCurrent.X, mouseCurrent.Y);
             if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
             {
                 OnLeftButtonRelease(mouseCurrent.X, mouseCurrent.Y);
             }
             _mousePrevious = mouseCurrent;
+        }
+
+        private void OnUpdate(int mouseX, int mouseY)
+        {
+            var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
+            foreach (var entity in SelectableCoordFilter.Entities)
+            {
+                var gridCoordComponent = Get<GridCoordComponent>(entity);
+                if((int)gridCoords.X == gridCoordComponent.X && (int)gridCoords.Y == gridCoordComponent.Y)
+                {
+                    Send(new Highlight(entity));
+                }
+            }
         }
 
         private void OnLeftButtonRelease(int mouseX, int mouseY){

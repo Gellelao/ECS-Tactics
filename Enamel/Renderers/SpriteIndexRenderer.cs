@@ -67,6 +67,12 @@ namespace Enamel.Renderers
                     var originComponent = Get<SpriteOriginComponent>(entity);
                     origin = new Vector2(originComponent.X, originComponent.Y);
                 }
+                
+                var tint = Color.White;
+                if(Has<HighlightedComponent>(entity))
+                {
+                    tint = Color.Cornsilk;
+                }
 
                 if(Has<SelectedComponent>(entity)){
                     SpriteBatch.Draw(
@@ -86,7 +92,7 @@ namespace Enamel.Renderers
                     _textures[indexComponent.Index],
                     new Vector2(positionComponent.X, positionComponent.Y),
                     null,
-                    Color.White,
+                    tint,
                     0, // rotation,
                     origin, // origin
                     Vector2.One, // scaling
