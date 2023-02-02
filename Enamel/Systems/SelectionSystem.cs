@@ -8,26 +8,26 @@ namespace Enamel.Systems
 {
     public class SelectionSystem : MoonTools.ECS.System
     {
-        private Filter _selectableFilter { get; }
-        private Filter _selectedFilter { get; }
+        private Filter SelectableFilter { get; }
+        private Filter SelectedFilter { get; }
 
         public SelectionSystem(World world) : base(world)
         {
-            _selectableFilter = FilterBuilder
+            SelectableFilter = FilterBuilder
                 .Include<SelectableComponent>()
                 .Build();
-            _selectedFilter = FilterBuilder
+            SelectedFilter = FilterBuilder
                 .Include<SelectedComponent>()
                 .Build();
         }
 
         public override void Update(TimeSpan delta)
         {
-            foreach (var entity in _selectableFilter.Entities)
+            foreach (var entity in SelectableFilter.Entities)
             {
                 if (SomeMessageWithEntity<Select>(entity))
                 {
-                    foreach (var selectedEntity in _selectedFilter.Entities){
+                    foreach (var selectedEntity in SelectedFilter.Entities){
                         Remove<SelectedComponent>(selectedEntity);
                     }
                     Set(entity, new SelectedComponent());

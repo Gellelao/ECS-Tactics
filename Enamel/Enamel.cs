@@ -109,10 +109,10 @@ namespace Enamel
             */
             // I think these only work if the map is square but it probably will be
             var mapHeightInPixels = TileHeight * MapHeight * UpscaleFactor;
-            var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;//(ScreenWidth - mapWidthInPixels) / 2 / UpscaleFactor;
+            var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;
             var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
             _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
-            _inputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, MapWidth, MapHeight, xOffset, yOffset);
+            _inputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, xOffset, yOffset);
             _selectionSystem = new SelectionSystem(World);
 
             /*
