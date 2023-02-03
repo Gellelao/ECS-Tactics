@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using MoonTools.ECS;
 using Microsoft.Xna.Framework.Input;
@@ -10,7 +11,8 @@ namespace Enamel.Systems
 {
     public class InputSystem : MoonTools.ECS.System
     {
-        private Filter SelectableCoordFilter { get; }
+        private Filter SelectableFilter { get; }
+        private Filter GridCoordFilter { get; }
 	    private MouseState _mousePrevious;
         private readonly int _upscaleFactor;
         private readonly int _tileWidth;
@@ -20,10 +22,8 @@ namespace Enamel.Systems
 
         public InputSystem(World world, int upscaleFactor, int tileWidth, int tileHeight, int xOffset, int yOffset) : base(world)
         {
-            SelectableCoordFilter = FilterBuilder
-                .Include<GridCoordComponent>()
-                .Include<SelectableComponent>()
-                .Build();
+            SelectableFilter = FilterBuilder.Include<SelectableComponent>().Build();
+            GridCoordFilter = FilterBuilder.Include<GridCoordComponent>().Build();
             _upscaleFactor = upscaleFactor;
             _tileWidth = tileWidth;
             _tileHeight = tileHeight;
@@ -45,10 +45,10 @@ namespace Enamel.Systems
         private void OnUpdate(int mouseX, int mouseY)
         {
             var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
-            foreach (var entity in SelectableCoordFilter.Entities)
+            foreach (var entity in GridCoordFilter.Entities)
             {
-                var gridCoordComponent = Get<GridCoordComponent>(entity);
-                if((int)gridCoords.X == gridCoordComponent.X && (int)gridCoords.Y == gridCoordComponent.Y)
+                var (x, y) = Get<GridCoordComponent>(entity);
+                if((int)gridCoords.X == x && (int)gridCoords.Y == y)
                 {
                     Send(new Highlight(entity));
                 }
@@ -58,10 +58,10 @@ namespace Enamel.Systems
         private void OnLeftButtonRelease(int mouseX, int mouseY){
             // Will want to check button clicks before grid coords, in case there is a popup window over the grid
             var clickedCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
-            foreach (var entity in SelectableCoordFilter.Entities)
+            foreach (var entity in SelectableFilter.Entities.Intersect(GridCoordFilter.Entities))
             {
-                var gridCoordComponent = Get<GridCoordComponent>(entity);
-                if((int)clickedCoords.X == gridCoordComponent.X && (int)clickedCoords.Y == gridCoordComponent.Y)
+                var (x, y) = Get<GridCoordComponent>(entity);
+                if((int)clickedCoords.X == x && (int)clickedCoords.Y == y)
                 {
                     Send(new Select(entity));
                 }

@@ -71,7 +71,7 @@ namespace Enamel.Renderers
                 var tint = Color.White;
                 if(Has<HighlightedComponent>(entity))
                 {
-                    tint = Color.Cornsilk;
+                    tint = Constants.HighlightColour;
                 }
 
                 if(Has<SelectedComponent>(entity)){
