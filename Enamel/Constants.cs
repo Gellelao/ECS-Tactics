@@ -4,5 +4,5 @@ namespace Enamel;
 
 public static class Constants
 {
-    public static Color HighlightColour = Color.Gold;
+    public static readonly Color HighlightColour = Color.Gold;
 }

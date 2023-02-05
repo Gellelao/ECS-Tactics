@@ -1,4 +1,3 @@
-namespace Enamel.Components
-{
-    public readonly record struct DebugCoordComponent(int X, int Y);
-}
+namespace Enamel.Components;
+
+public readonly record struct DebugCoordComponent(int X, int Y);

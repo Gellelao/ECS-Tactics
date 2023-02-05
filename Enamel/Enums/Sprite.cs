@@ -1,10 +1,10 @@
-namespace Enamel.Enums
+namespace Enamel.Enums;
+
+public enum Sprite
 {
-    public enum Sprite
-    {
-        RedPixel,
-        Tile,
-        Player1,
-        Selection
-    }
+    RedPixel,
+    Tile,
+    Player1,
+    Selection,
+    SelectPreview
 }

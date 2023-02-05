@@ -1,4 +1,3 @@
-namespace Enamel.Components
-{
-    public readonly record struct SelectableComponent();
-}
+namespace Enamel.Components;
+
+public readonly record struct SelectableComponent;
