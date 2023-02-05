@@ -22,7 +22,7 @@ public class InputSystem : MoonTools.ECS.System
 
     public InputSystem(World world, int upscaleFactor, int tileWidth, int tileHeight, int xOffset, int yOffset) : base(world)
     {
-        SelectableFilter = FilterBuilder.Include<SelectableComponent>().Build();
+        SelectableFilter = FilterBuilder.Include<SelectableFlag>().Build();
         GridCoordFilter = FilterBuilder.Include<GridCoordComponent>().Build();
         _upscaleFactor = upscaleFactor;
         _tileWidth = tileWidth;

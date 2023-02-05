@@ -30,7 +30,7 @@ public class SpriteIndexRenderer : Renderer
         _textures = textures;
         TextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
-            .Exclude<GroundTileComponent>()
+            .Exclude<GroundTileFlag>()
             .Build();
     }
 
@@ -71,12 +71,12 @@ public class SpriteIndexRenderer : Renderer
             }
 
             var tint = Color.White;
-            if(Has<HighlightedComponent>(entity))
+            if(Has<HighlightedFlag>(entity))
             {
                 tint = Constants.HighlightColour;
             }
 
-            if(Has<SelectedComponent>(entity)){
+            if(Has<SelectedFlag>(entity)){
                 SpriteBatch.Draw(
                     _textures[(int)Sprite.Selection],
                     new Vector2(positionComponent.X, positionComponent.Y),

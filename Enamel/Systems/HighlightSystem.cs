@@ -12,21 +12,21 @@ public class HighlightSystem : MoonTools.ECS.System
 
     public HighlightSystem(World world) : base(world)
     {
-        HighlightedFilter = FilterBuilder.Include<HighlightedComponent>().Build();
+        HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
         GridCoordComponentFilter = FilterBuilder.Include<GridCoordComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
         foreach (var selectedEntity in HighlightedFilter.Entities){
-            Remove<HighlightedComponent>(selectedEntity);
+            Remove<HighlightedFlag>(selectedEntity);
         }
 
         foreach (var entity in GridCoordComponentFilter.Entities)
         {
             if (SomeMessageWithEntity<Highlight>(entity))
             {
-                Set(entity, new HighlightedComponent());
+                Set(entity, new HighlightedFlag());
             }
         }
     }

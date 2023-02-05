@@ -37,8 +37,6 @@ public class Enamel : Game
     private const int ScreenHeight = 768;
     private const int TileWidth = 40;
     private const int TileHeight = 20;
-    private const int MapWidth = 8;
-    private const int MapHeight = 8;
     private const int UpscaleFactor = 2;
     private RenderTarget2D _renderTarget;
     //private Entity[,] GroundGrid;
@@ -112,7 +110,7 @@ public class Enamel : Game
         it doesn't matter what order you create the systems in, we'll specify in what order they run later.
         */
         // I think these only work if the map is square but it probably will be
-        var mapHeightInPixels = TileHeight * MapHeight * UpscaleFactor;
+        var mapHeightInPixels = TileHeight * Constants.MapHeight * UpscaleFactor;
         var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;
         var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
@@ -140,7 +138,7 @@ public class Enamel : Game
             (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
         );
         World.Set(player1, new GridCoordComponent(3, 2));
-        World.Set(player1, new SelectableComponent());
+        World.Set(player1, new SelectableFlag());
         World.Set(player1, new MovementRangeComponent(2));
 
         var player2 = World.CreateEntity();
@@ -150,7 +148,8 @@ public class Enamel : Game
             (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
         );
         World.Set(player2, new GridCoordComponent(4, 6));
-        World.Set(player2, new SelectableComponent());
+        World.Set(player2, new SelectableFlag());
+        World.Set(player2, new MovementRangeComponent(1));
 
 
         for(var x = 7; x >= 0; x--){
@@ -159,7 +158,7 @@ public class Enamel : Game
                 World.Set(tile, new TextureIndexComponent((int)Sprite.Tile));
                 World.Set(tile, new GridCoordComponent(x, y));
                 World.Set(tile, new DebugCoordComponent(x, y));
-                World.Set(tile, new GroundTileComponent());
+                World.Set(tile, new GroundTileFlag());
             }
         }
 

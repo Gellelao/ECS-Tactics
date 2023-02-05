@@ -18,7 +18,7 @@ public class GroundRenderer : Renderer
         _textures = textures;
         GroundTextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
-            .Include<GroundTileComponent>()
+            .Include<GroundTileFlag>()
             .Build();
     }
     

@@ -13,10 +13,10 @@ public class SelectionSystem : MoonTools.ECS.System
     public SelectionSystem(World world) : base(world)
     {
         SelectableCoordFilter = FilterBuilder
-            .Include<SelectableComponent>()
+            .Include<SelectableFlag>()
             .Include<GridCoordComponent>()
             .Build();
-        SelectedFilter = FilterBuilder.Include<SelectedComponent>().Build();
+        SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -26,9 +26,9 @@ public class SelectionSystem : MoonTools.ECS.System
             if (SomeMessageWithEntity<Select>(entity))
             {
                 foreach (var selectedEntity in SelectedFilter.Entities){
-                    Remove<SelectedComponent>(selectedEntity);
+                    Remove<SelectedFlag>(selectedEntity);
                 }
-                Set(entity, new SelectedComponent());
+                Set(entity, new SelectedFlag());
             }
         }
     }

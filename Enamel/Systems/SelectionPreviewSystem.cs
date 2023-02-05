@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection.Metadata;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Enums;
@@ -27,6 +28,7 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         if (!selectMessages.IsEmpty)
         {
             _previewEntities.ForEach(e => Destroy(e));
+            _previewEntities = new List<Entity>();
         }
 
         foreach (var message in selectMessages)
@@ -43,12 +45,15 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
 
     private void CreatePreviewEntities(Vector2 origin, int range)
     {
-        var diameter = 1 + 2 * range;
-        for (var x = 0; x < diameter; x++)
+        for (var x = 0; x < Constants.MapWidth; x++)
         {
-            for (var y = 0; y < diameter; y++)
+            for (var y = 0; y < Constants.MapHeight; y++)
             {
-                CreatePreview(x, y);
+                var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
+                if (distance <= range)
+                {
+                    CreatePreview(x, y);
+                }
             }
         }
     }
@@ -58,7 +63,6 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         var preview = _world.CreateEntity();
         Set(preview, new GridCoordComponent(x, y));
         Set(preview, new TextureIndexComponent((int) Sprite.SelectPreview));
-        Set(preview, new SpriteOriginComponent(0, 1));
         _previewEntities.Add(preview);
     }
 }
