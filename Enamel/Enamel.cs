@@ -21,9 +21,10 @@ public class Enamel : Game
     private static World World { get; } = new();
     private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
     private static InputSystem? _inputSystem;
-    private static SelectionSystem? _selectionSystem;
+    private static UnitSelectionSystem? _unitSelectionSystem;
     private static HighlightSystem? _highlightSystem;
     private static SelectionPreviewSystem? _selectionPreviewSystem;
+    private static MoveSystem? _moveSystem;
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -115,9 +116,10 @@ public class Enamel : Game
         var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
         _inputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, xOffset, yOffset);
-        _selectionSystem = new SelectionSystem(World);
+        _unitSelectionSystem = new UnitSelectionSystem(World);
         _highlightSystem = new HighlightSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
+        _moveSystem = new MoveSystem(World);
 
         /*
         RENDERERS
@@ -167,11 +169,13 @@ public class Enamel : Game
 
     protected override void Update(GameTime gameTime)
     {
-        _inputSystem?.Update(gameTime.ElapsedGameTime);
-        _selectionSystem?.Update(gameTime.ElapsedGameTime);
-        _highlightSystem?.Update(gameTime.ElapsedGameTime);
-        _selectionPreviewSystem?.Update(gameTime.ElapsedGameTime);
-        _gridToScreenCoordSystem?.Update(gameTime.ElapsedGameTime); // This must be the last one to run before draw
+        var elapsedTime = gameTime.ElapsedGameTime;
+        _inputSystem?.Update(elapsedTime);
+        _unitSelectionSystem?.Update(elapsedTime);
+        _highlightSystem?.Update(elapsedTime);
+        _moveSystem?.Update(elapsedTime);
+        _selectionPreviewSystem?.Update(elapsedTime); // This has to run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
+        _gridToScreenCoordSystem?.Update(elapsedTime); // This needs to run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.
         base.Update(gameTime);
     }

@@ -11,8 +11,7 @@ namespace Enamel.Systems;
 
 public class InputSystem : MoonTools.ECS.System
 {
-    private Filter SelectableFilter { get; }
-    private Filter GridCoordFilter { get; }
+    private Filter SelectableGridCoordFilter { get; }
     private MouseState _mousePrevious;
     private readonly int _upscaleFactor;
     private readonly int _tileWidth;
@@ -22,8 +21,10 @@ public class InputSystem : MoonTools.ECS.System
 
     public InputSystem(World world, int upscaleFactor, int tileWidth, int tileHeight, int xOffset, int yOffset) : base(world)
     {
-        SelectableFilter = FilterBuilder.Include<SelectableFlag>().Build();
-        GridCoordFilter = FilterBuilder.Include<GridCoordComponent>().Build();
+        SelectableGridCoordFilter = FilterBuilder
+            .Include<GridCoordComponent>()
+            .Include<SelectableFlag>()
+            .Build();
         _upscaleFactor = upscaleFactor;
         _tileWidth = tileWidth;
         _tileHeight = tileHeight;
@@ -45,12 +46,12 @@ public class InputSystem : MoonTools.ECS.System
     private void OnUpdate(int mouseX, int mouseY)
     {
         var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
-        foreach (var entity in GridCoordFilter.Entities)
+        foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)gridCoords.X == x && (int)gridCoords.Y == y)
             {
-                Send(new Highlight(entity));
+                Send(new HighlightMessage(entity));
             }
         }
     }
@@ -58,12 +59,12 @@ public class InputSystem : MoonTools.ECS.System
     private void OnLeftButtonRelease(int mouseX, int mouseY){
         // Will want to check button clicks before grid coords, in case there is a popup window over the grid
         var clickedCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
-        foreach (var entity in SelectableFilter.Entities.Intersect(GridCoordFilter.Entities))
+        foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)clickedCoords.X == x && (int)clickedCoords.Y == y)
             {
-                Send(new Select(entity));
+                Send(new SelectMessage(entity));
             }
         }
     }

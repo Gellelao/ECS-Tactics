@@ -5,16 +5,17 @@ using Enamel.Components.Messages;
 
 namespace Enamel.Systems;
 
-public class SelectionSystem : MoonTools.ECS.System
+public class UnitSelectionSystem : MoonTools.ECS.System
 {
     private Filter SelectableCoordFilter { get; }
     private Filter SelectedFilter { get; }
 
-    public SelectionSystem(World world) : base(world)
+    public UnitSelectionSystem(World world) : base(world)
     {
         SelectableCoordFilter = FilterBuilder
             .Include<SelectableFlag>()
             .Include<GridCoordComponent>()
+            .Exclude<MovementPreviewFlag>()
             .Build();
         SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();
     }
@@ -23,7 +24,7 @@ public class SelectionSystem : MoonTools.ECS.System
     {
         foreach (var entity in SelectableCoordFilter.Entities)
         {
-            if (SomeMessageWithEntity<Select>(entity))
+            if (SomeMessageWithEntity<SelectMessage>(entity))
             {
                 foreach (var selectedEntity in SelectedFilter.Entities){
                     Remove<SelectedFlag>(selectedEntity);

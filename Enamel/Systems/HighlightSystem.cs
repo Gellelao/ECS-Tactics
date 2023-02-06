@@ -24,7 +24,7 @@ public class HighlightSystem : MoonTools.ECS.System
 
         foreach (var entity in GridCoordComponentFilter.Entities)
         {
-            if (SomeMessageWithEntity<Highlight>(entity))
+            if (SomeMessageWithEntity<HighlightMessage>(entity))
             {
                 Set(entity, new HighlightedFlag());
             }
