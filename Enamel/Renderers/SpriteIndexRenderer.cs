@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
@@ -79,7 +78,7 @@ public class SpriteIndexRenderer : Renderer
             if(Has<SelectedFlag>(entity)){
                 SpriteBatch.Draw(
                     _textures[(int)Sprite.Selection],
-                    new Vector2(positionComponent.X, positionComponent.Y),
+                    positionComponent.ToVector,
                     null,
                     Color.White,
                     0, // rotation,
@@ -92,7 +91,7 @@ public class SpriteIndexRenderer : Renderer
 
             SpriteBatch.Draw(
                 _textures[indexComponent.Index],
-                new Vector2(positionComponent.X, positionComponent.Y),
+                positionComponent.ToVector,
                 null,
                 tint,
                 0, // rotation,

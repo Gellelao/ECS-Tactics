@@ -51,12 +51,12 @@ public class MoveSystem : MoonTools.ECS.System
 
     private PositionComponent MoveTowards(PositionComponent current, MovingToPositionComponent target, TimeSpan deltaTime)
     {
-        var x = current.X;
-        var y = current.Y;
-        if (x < target.X) x += (int)(2 * Constants.MoveSpeed*deltaTime.Ticks);
-        if (x > target.X) x -= (int)(2 * Constants.MoveSpeed*deltaTime.Ticks);
-        if (y < target.Y) y += (int)(Constants.MoveSpeed*deltaTime.Ticks);
-        if (y > target.Y) y -= (int)(Constants.MoveSpeed*deltaTime.Ticks);
+        float x = current.X;
+        float y = current.Y;
+        if (x < target.X) x += (float)(2 * Constants.MoveSpeed*deltaTime.TotalSeconds);
+        if (x > target.X) x -= (float)(2 * Constants.MoveSpeed*deltaTime.TotalSeconds);
+        if (y < target.Y) y += (float)(Constants.MoveSpeed*deltaTime.TotalSeconds);
+        if (y > target.Y) y -= (float)(Constants.MoveSpeed*deltaTime.TotalSeconds);
         return new PositionComponent(x, y);
     }
 }
