@@ -11,6 +11,9 @@
 		<None Include="*.targets" />
 		<None Include="app.config" />
 	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MoonTools.Structs" Version="3.0.1" />
+  </ItemGroup>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
