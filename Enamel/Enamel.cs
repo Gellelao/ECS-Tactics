@@ -141,7 +141,7 @@ public class Enamel : Game
         );
         World.Set(player1, new GridCoordComponent(3, 2));
         World.Set(player1, new SelectableFlag());
-        World.Set(player1, new MovementRangeComponent(2));
+        World.Set(player1, new MovementRangeComponent(3));
 
         var player2 = World.CreateEntity();
         World.Set(player2, new TextureIndexComponent((int)Sprite.Player1));

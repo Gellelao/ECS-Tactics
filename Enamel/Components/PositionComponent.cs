@@ -16,11 +16,6 @@ public readonly struct PositionComponent
             return new Vector2(numericVector.X, numericVector.Y);
         }
     }
-
-    public PositionComponent(Position2D position)
-    {
-        Position = position;
-    }
     
     public PositionComponent(float x, float y)
     {

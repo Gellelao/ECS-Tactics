@@ -1,3 +1,3 @@
 ﻿namespace Enamel.Components;
 
-public readonly record struct MovingToPositionComponent(int X, int Y);
+public readonly record struct MovingToPositionComponent(int ScreenX, int ScreenY, int GridX, int GridY);
