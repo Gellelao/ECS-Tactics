@@ -37,7 +37,6 @@ public class MoveSystem : MoonTools.ECS.System
             var targetGridPosition = Get<GridCoordComponent>(entity);
             foreach (var selectedEntity in SelectedUnitFilter.Entities)
             {
-                // Could store the grid coords on the MovingToPositionComponent as well, so we know what GridCoord to give it once movement completes
                 Set(selectedEntity, new MovingToPositionComponent(targetScreenPosition.X, targetScreenPosition.Y, targetGridPosition.X, targetGridPosition.Y));
                 Remove<GridCoordComponent>(selectedEntity);
             }
@@ -49,12 +48,15 @@ public class MoveSystem : MoonTools.ECS.System
             var positionComponent = Get<PositionComponent>(entity);
             var targetPosition = Get<MovingToPositionComponent>(entity);
             var newPosition = MoveTowards(positionComponent, targetPosition, delta);
-            // If at destination, put the gridComponent back on at the target grid coords
+            // If at destination, reapply the gridComponent with the target grid coords
             var newPositionVector = newPosition.ToVector;
             if ((int)Math.Round(newPositionVector.X) == targetPosition.ScreenX && (int)Math.Round(newPositionVector.Y) == targetPosition.ScreenY)
             {
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToPositionComponent>(entity);
+                // Danger, issuing a select message outside of the InputSystem!!
+                // This is so the selectionPreview system knows to display the preview again
+                Send(new SelectMessage(entity));
             }
             // Otherwise, move the screenpos
             else
