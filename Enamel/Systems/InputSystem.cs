@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using MoonTools.ECS;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;

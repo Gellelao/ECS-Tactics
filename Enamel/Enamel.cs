@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
 using Enamel.Systems;
 using Enamel.Components;
+using Enamel.Components.Messages;
 using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
@@ -90,14 +91,16 @@ public class Enamel : Game
         ));
 
         // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-        _textures = new Texture2D[5];
+        _textures = new Texture2D[10];
 
         var redPixel = new Texture2D(GraphicsDevice, 1, 1);
         redPixel.SetData(new[] { Color.Red });
 
         _textures[(int)Sprite.RedPixel] = redPixel;
         _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
-        _textures[(int)Sprite.Player1] = Content.Load<Texture2D>("Wizard");
+        _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
+        _textures[(int)Sprite.RedCube] = Content.Load<Texture2D>("redCube");
+        _textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
         _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
 
@@ -133,26 +136,9 @@ public class Enamel : Game
         /*
         ENTITIES
         */
-        var player1 = World.CreateEntity();
-        World.Set(player1, new TextureIndexComponent((int)Sprite.Player1));
-        World.Set(player1, new SpriteOriginComponent(
-            _textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
-            (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
-        );
-        World.Set(player1, new GridCoordComponent(3, 2));
-        World.Set(player1, new SelectableFlag());
-        World.Set(player1, new MovementRangeComponent(3));
-
-        var player2 = World.CreateEntity();
-        World.Set(player2, new TextureIndexComponent((int)Sprite.Player1));
-        World.Set(player2, new SpriteOriginComponent(
-            _textures[(int)Sprite.Player1].Width/2 - TileWidth/2,
-            (int)(_textures[(int)Sprite.Player1].Height*0.8 - TileHeight/2))
-        );
-        World.Set(player2, new GridCoordComponent(4, 6));
-        World.Set(player2, new SelectableFlag());
-        World.Set(player2, new MovementRangeComponent(1));
-
+        CreatePlayer(PlayerNumber.PlayerOne, Sprite.GreenCube, 1, 1);
+        CreatePlayer(PlayerNumber.PlayerTwo, Sprite.RedCube, 2, 4);
+        CreatePlayer(PlayerNumber.PlayerThree, Sprite.YellowCube, 5, 7);
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
@@ -206,5 +192,19 @@ public class Enamel : Game
         _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    private void CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
+    {
+        var playerEntity = World.CreateEntity();
+        World.Set(playerEntity, new TextureIndexComponent((int)sprite));
+        World.Set(playerEntity, new SpriteOriginComponent(
+            _textures[(int)sprite].Width/2 - TileWidth/2,
+            (int)(_textures[(int)sprite].Height*0.45 - TileHeight/2))
+        );
+        World.Set(playerEntity, new GridCoordComponent(x, y));
+        World.Set(playerEntity, new SelectableFlag());
+        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DefaultMovesPerTurn));
+        World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
     }
 }

@@ -4,7 +4,9 @@ public enum Sprite
 {
     RedPixel,
     Tile,
-    Player1,
+    GreenCube,
+    RedCube,
+    YellowCube,
     Selection,
     SelectPreview
 }

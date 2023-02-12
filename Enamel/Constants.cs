@@ -8,4 +8,5 @@ public static class Constants
     public static readonly int MapWidth = 8;
     public static readonly int MapHeight = 8;
     public static readonly int MoveSpeed = 20;
+    public static readonly int DefaultMovesPerTurn = 3;
 }

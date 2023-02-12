@@ -33,11 +33,11 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         foreach (var message in selectMessages)
         {
             var entity = message.Entity;
-            if (Has<MovementRangeComponent>(entity))
+            if (Has<MovesPerTurnComponent>(entity))
             {
                 var gridCoordComponent = Get<GridCoordComponent>(entity);
                 var pos = new Vector2(gridCoordComponent.X, gridCoordComponent.Y);
-                CreatePreviewEntities(pos, Get<MovementRangeComponent>(entity).Range);
+                CreatePreviewEntities(pos, 1);
             }
         }
     }
