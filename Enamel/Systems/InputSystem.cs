@@ -10,6 +10,7 @@ namespace Enamel.Systems;
 public class InputSystem : MoonTools.ECS.System
 {
     private Filter SelectableGridCoordFilter { get; }
+    private Filter ClickableUIFilter { get; }
     private MouseState _mousePrevious;
     private readonly int _upscaleFactor;
     private readonly int _tileWidth;
@@ -21,7 +22,11 @@ public class InputSystem : MoonTools.ECS.System
     {
         SelectableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
-            .Include<SelectableFlag>()
+            .Exclude<DisabledFlag>()
+            .Build();
+        ClickableUIFilter = FilterBuilder
+            .Include<OnClickComponent>()
+            .Exclude<DisabledFlag>()
             .Build();
         _upscaleFactor = upscaleFactor;
         _tileWidth = tileWidth;
@@ -43,7 +48,20 @@ public class InputSystem : MoonTools.ECS.System
 
     private void OnUpdate(int mouseX, int mouseY)
     {
-        var gridCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
+        mouseX /= _upscaleFactor;
+        mouseY /= _upscaleFactor;
+
+        foreach (var button in ClickableUIFilter.Entities)
+        {
+            var dimensions = Get<DimensionsComponent>(button);
+            var position = Get<PositionComponent>(button);
+            if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
+            {
+                Send(new HighlightMessage(button));
+            }
+        }
+
+        var gridCoords = ScreenToGridCoords(mouseX, mouseY);
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
@@ -78,5 +96,11 @@ public class InputSystem : MoonTools.ECS.System
         var gridY = mouseFloatY / tileHeightFloat - mouseFloatX / tileWidthFloat;
             
         return new Vector2((int)Math.Floor(gridX), (int)Math.Floor(gridY));
+    }
+
+    private bool MouseInRectangle(int mouseX, int mouseY, int rectX, int rectY, int rectWidth, int rectHeight)
+    {
+        return mouseX > rectX && mouseX < rectX + rectWidth &&
+               mouseY > rectY && mouseY < rectY + rectHeight;
     }
 }

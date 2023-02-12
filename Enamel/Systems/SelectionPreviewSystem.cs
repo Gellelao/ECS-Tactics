@@ -62,7 +62,6 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         var preview = _world.CreateEntity();
         Set(preview, new GridCoordComponent(x, y));
         Set(preview, new TextureIndexComponent((int) Sprite.SelectPreview));
-        Set(preview, new SelectableFlag());
         Set(preview, new MovementPreviewFlag());
         _previewEntities.Add(preview);
     }

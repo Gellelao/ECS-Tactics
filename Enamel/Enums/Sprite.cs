@@ -8,5 +8,6 @@ public enum Sprite
     RedCube,
     YellowCube,
     Selection,
-    SelectPreview
+    SelectPreview,
+    GreenRectangle
 }

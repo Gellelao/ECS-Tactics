@@ -75,6 +75,7 @@ public class SpriteIndexRenderer : Renderer
                 tint = Constants.HighlightColour;
             }
 
+            // Draw the selection square under the unit if selected
             if(Has<SelectedFlag>(entity)){
                 SpriteBatch.Draw(
                     _textures[(int)Sprite.Selection],
@@ -89,6 +90,7 @@ public class SpriteIndexRenderer : Renderer
                 );
             }
 
+            // Draw the unit itself
             SpriteBatch.Draw(
                 _textures[indexComponent.Index],
                 positionComponent.ToVector,

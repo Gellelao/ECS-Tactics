@@ -96,7 +96,17 @@ public class Enamel : Game
         var redPixel = new Texture2D(GraphicsDevice, 1, 1);
         redPixel.SetData(new[] { Color.Red });
 
+        var greenPixel = new Texture2D(GraphicsDevice, 1, 1);
+        greenPixel.SetData(new[] { Color.ForestGreen });
+        var greenRectangle = new RenderTarget2D(GraphicsDevice, 40, 20);
+        GraphicsDevice.SetRenderTarget(greenRectangle);
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(greenPixel, new Rectangle(0, 0, 40, 20), Color.White);
+        _spriteBatch.End();
+        GraphicsDevice.SetRenderTarget(null);
+
         _textures[(int)Sprite.RedPixel] = redPixel;
+        _textures[(int)Sprite.GreenRectangle] = greenRectangle;
         _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
         _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
         _textures[(int)Sprite.RedCube] = Content.Load<Texture2D>("redCube");
@@ -140,12 +150,19 @@ public class Enamel : Game
         CreatePlayer(PlayerNumber.PlayerTwo, Sprite.RedCube, 2, 4);
         CreatePlayer(PlayerNumber.PlayerThree, Sprite.YellowCube, 5, 7);
 
+        var button = World.CreateEntity();
+        World.Set(button, new PositionComponent(400, 300));
+        World.Set(button, new DimensionsComponent(40, 20));
+        World.Set(button, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(button, new OnClickComponent(ClickEvent.EndTurn));
+
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
                 var tile = World.CreateEntity();
                 World.Set(tile, new TextureIndexComponent((int)Sprite.Tile));
                 World.Set(tile, new GridCoordComponent(x, y));
                 World.Set(tile, new DebugCoordComponent(x, y));
+                World.Set(tile, new DisabledFlag());
                 World.Set(tile, new GroundTileFlag());
             }
         }
@@ -203,7 +220,6 @@ public class Enamel : Game
             (int)(_textures[(int)sprite].Height*0.45 - TileHeight/2))
         );
         World.Set(playerEntity, new GridCoordComponent(x, y));
-        World.Set(playerEntity, new SelectableFlag());
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DefaultMovesPerTurn));
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
     }

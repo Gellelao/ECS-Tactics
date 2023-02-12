@@ -50,7 +50,8 @@ public class MoveSystem : MoonTools.ECS.System
             var newPosition = MoveTowards(positionComponent, targetPosition, delta);
             // If at destination, reapply the gridComponent with the target grid coords
             var newPositionVector = newPosition.ToVector;
-            if ((int)Math.Round(newPositionVector.X) == targetPosition.ScreenX && (int)Math.Round(newPositionVector.Y) == targetPosition.ScreenY)
+            if (Math.Abs(Math.Round(newPositionVector.X) - targetPosition.ScreenX) <= 1 &&
+                Math.Abs(Math.Round(newPositionVector.Y) - targetPosition.ScreenY) <= 1)
             {
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToPositionComponent>(entity);

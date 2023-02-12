@@ -21,6 +21,7 @@ public class TurnSystem : MoonTools.ECS.System
             if (!SomeMessageWithEntity<StartTurnMessage>(entity)) continue;
 
             var movesThisTurn = Get<MovesPerTurnComponent>(entity).Amount;
+            // Still to do: Stop re-selecting moved units if remaining moves = 0, and add this system to the main file, and add something that can send the StartTurnMessage
             Set(entity, new RemainingMovesComponent(movesThisTurn));
         }
     }

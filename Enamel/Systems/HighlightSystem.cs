@@ -8,12 +8,12 @@ namespace Enamel.Systems;
 public class HighlightSystem : MoonTools.ECS.System
 {
     private Filter HighlightedFilter { get; }
-    private Filter GridCoordComponentFilter { get; }
+    private Filter TextureIndexFilter { get; }
 
     public HighlightSystem(World world) : base(world)
     {
         HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
-        GridCoordComponentFilter = FilterBuilder.Include<GridCoordComponent>().Build();
+        TextureIndexFilter = FilterBuilder.Include<TextureIndexComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -22,7 +22,7 @@ public class HighlightSystem : MoonTools.ECS.System
             Remove<HighlightedFlag>(selectedEntity);
         }
 
-        foreach (var entity in GridCoordComponentFilter.Entities)
+        foreach (var entity in TextureIndexFilter.Entities)
         {
             if (SomeMessageWithEntity<HighlightMessage>(entity))
             {

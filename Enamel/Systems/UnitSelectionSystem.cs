@@ -13,9 +13,9 @@ public class UnitSelectionSystem : MoonTools.ECS.System
     public UnitSelectionSystem(World world) : base(world)
     {
         SelectableCoordFilter = FilterBuilder
-            .Include<SelectableFlag>()
             .Include<GridCoordComponent>()
             .Exclude<MovementPreviewFlag>()
+            .Exclude<DisabledFlag>()
             .Build();
         SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();
     }
