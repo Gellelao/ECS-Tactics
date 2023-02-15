@@ -2,7 +2,8 @@
 
 public enum PlayerNumber
 {
-    PlayerOne,
-    PlayerTwo,
-    PlayerThree
+    One,
+    Two,
+    Three,
+    Four
 }

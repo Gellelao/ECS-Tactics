@@ -146,9 +146,9 @@ public class Enamel : Game
         /*
         ENTITIES
         */
-        CreatePlayer(PlayerNumber.PlayerOne, Sprite.GreenCube, 1, 1);
-        CreatePlayer(PlayerNumber.PlayerTwo, Sprite.RedCube, 2, 4);
-        CreatePlayer(PlayerNumber.PlayerThree, Sprite.YellowCube, 5, 7);
+        CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
+        CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
+        CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
         var button = World.CreateEntity();
         World.Set(button, new PositionComponent(400, 300));

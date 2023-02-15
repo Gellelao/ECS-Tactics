@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Enums;
 
 namespace Enamel.Systems;
 
@@ -51,6 +52,7 @@ public class InputSystem : MoonTools.ECS.System
         mouseX /= _upscaleFactor;
         mouseY /= _upscaleFactor;
 
+        // Button hovers
         foreach (var button in ClickableUIFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
@@ -61,6 +63,7 @@ public class InputSystem : MoonTools.ECS.System
             }
         }
 
+        // Unit hovers
         var gridCoords = ScreenToGridCoords(mouseX, mouseY);
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
@@ -73,7 +76,27 @@ public class InputSystem : MoonTools.ECS.System
     }
 
     private void OnLeftButtonRelease(int mouseX, int mouseY){
-        // Will want to check button clicks before grid coords, in case there is a popup window over the grid
+        // Button clicks
+        foreach (var button in ClickableUIFilter.Entities)
+        {
+            var dimensions = Get<DimensionsComponent>(button);
+            var position = Get<PositionComponent>(button);
+            if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
+            {
+                // May be better to have "buttonClickMessage" and a dedicated ButtonSystem, but for now this works
+                var onClick = Get<OnClickComponent>(button);
+                switch (onClick.ClickEvent)
+                {
+                    case ClickEvent.EndTurn:
+                        Send(new StartTurnMessage(button));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        // Unit clicks
         var clickedCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
