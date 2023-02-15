@@ -39,19 +39,19 @@ public class InputSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         var mouseCurrent = Mouse.GetState();
-        OnUpdate(mouseCurrent.X, mouseCurrent.Y);
+
+        var mouseX = mouseCurrent.X / _upscaleFactor;
+        var mouseY = mouseCurrent.Y / _upscaleFactor;
+        OnUpdate(mouseX, mouseY);
         if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
         {
-            OnLeftButtonRelease(mouseCurrent.X, mouseCurrent.Y);
+            OnLeftButtonRelease(mouseX, mouseY);
         }
         _mousePrevious = mouseCurrent;
     }
 
     private void OnUpdate(int mouseX, int mouseY)
     {
-        mouseX /= _upscaleFactor;
-        mouseY /= _upscaleFactor;
-
         // Button hovers
         foreach (var button in ClickableUIFilter.Entities)
         {
@@ -88,7 +88,9 @@ public class InputSystem : MoonTools.ECS.System
                 switch (onClick.ClickEvent)
                 {
                     case ClickEvent.EndTurn:
-                        Send(new StartTurnMessage(button));
+                        // Little awkward, because the button is really just the holder for the message, and none of the
+                        // button properties are used at the other end (the TurnSystem)
+                        Send(new EndTurnMessage(button));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -97,7 +99,7 @@ public class InputSystem : MoonTools.ECS.System
         }
 
         // Unit clicks
-        var clickedCoords = ScreenToGridCoords(mouseX/_upscaleFactor, mouseY/_upscaleFactor);
+        var clickedCoords = ScreenToGridCoords(mouseX, mouseY);
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);

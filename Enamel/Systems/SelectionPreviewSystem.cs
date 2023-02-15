@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Cryptography;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Enums;
@@ -10,13 +11,13 @@ namespace Enamel.Systems;
 
 public class SelectionPreviewSystem : MoonTools.ECS.System
 {
-    private List<Entity> _previewEntities;
+    private Filter PreviewFilter { get; }
     private World _world;
 
     public SelectionPreviewSystem(World world) : base(world)
     {
+        PreviewFilter = FilterBuilder.Include<MovementPreviewFlag>().Build();
         _world = world;
-        _previewEntities = new List<Entity>();
     }
 
     public override void Update(TimeSpan delta)
@@ -24,10 +25,12 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         var selectMessages = ReadMessages<SelectMessage>();
 
         // Clear existing previews when a selection is made
-        if (!selectMessages.IsEmpty)
+        if (!selectMessages.IsEmpty || SomeMessage<EndTurnMessage>())
         {
-            _previewEntities.ForEach(e => Destroy(e));
-            _previewEntities = new List<Entity>();
+            foreach (var preview in PreviewFilter.Entities)
+            {
+                Destroy(preview);
+            }
         }
 
         foreach (var message in selectMessages)
@@ -63,6 +66,5 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         Set(preview, new GridCoordComponent(x, y));
         Set(preview, new TextureIndexComponent((int) Sprite.SelectPreview));
         Set(preview, new MovementPreviewFlag());
-        _previewEntities.Add(preview);
     }
 }

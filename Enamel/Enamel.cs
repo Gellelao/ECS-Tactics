@@ -26,6 +26,7 @@ public class Enamel : Game
     private static HighlightSystem? _highlightSystem;
     private static SelectionPreviewSystem? _selectionPreviewSystem;
     private static MoveSystem? _moveSystem;
+    private static TurnSystem? _turnSystem;
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -133,6 +134,7 @@ public class Enamel : Game
         _highlightSystem = new HighlightSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _moveSystem = new MoveSystem(World);
+        _turnSystem = new TurnSystem(World);
 
         /*
         RENDERERS
@@ -176,6 +178,7 @@ public class Enamel : Game
         _inputSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime);
         _highlightSystem?.Update(elapsedTime);
+        _turnSystem?.Update(elapsedTime);
         _moveSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // This has to run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // This needs to run near the end so entities can have their PositionComponent attached before the renderer tries to access it
