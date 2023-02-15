@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Security.Cryptography;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Enums;
@@ -12,11 +10,15 @@ namespace Enamel.Systems;
 public class SelectionPreviewSystem : MoonTools.ECS.System
 {
     private Filter PreviewFilter { get; }
+    private Filter ImpassableGridCoordFilter { get; }
     private World _world;
 
     public SelectionPreviewSystem(World world) : base(world)
     {
         PreviewFilter = FilterBuilder.Include<MovementPreviewFlag>().Build();
+        ImpassableGridCoordFilter = FilterBuilder
+            .Include<GridCoordComponent>()
+            .Include<ImpassableFlag>().Build();
         _world = world;
     }
 
@@ -38,19 +40,20 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
             var entity = message.Entity;
             if (Has<MovesPerTurnComponent>(entity))
             {
-                var gridCoordComponent = Get<GridCoordComponent>(entity);
-                var pos = new Vector2(gridCoordComponent.X, gridCoordComponent.Y);
-                CreatePreviewEntities(pos, 1);
+                var (x, y) = Get<GridCoordComponent>(entity);
+                var pos = new Vector2(x, y);
+                CreatePreviewEntities(pos, 1, false);
             }
         }
     }
 
-    private void CreatePreviewEntities(Vector2 origin, int range)
+    private void CreatePreviewEntities(Vector2 origin, int range, bool previewOnImpassableTiles)
     {
         for (var x = 0; x < Constants.MapWidth; x++)
         {
             for (var y = 0; y < Constants.MapHeight; y++)
             {
+                if (!previewOnImpassableTiles && ImpassableUnitAtCoord(x, y)) continue;
                 var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
                 if (distance <= range)
                 {
@@ -58,6 +61,20 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
                 }
             }
         }
+    }
+
+    private bool ImpassableUnitAtCoord(int x, int y)
+    {
+        foreach (var entity in ImpassableGridCoordFilter.Entities)
+        {
+            var (entityX, entityY) = Get<GridCoordComponent>(entity);
+            if (entityX == x && entityY == y)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void CreatePreview(int x, int y)

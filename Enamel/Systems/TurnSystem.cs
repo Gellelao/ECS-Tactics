@@ -43,8 +43,6 @@ public class TurnSystem : MoonTools.ECS.System
                 Set(entity, new DisabledFlag());
                 Remove<SelectedFlag>(entity);
             }
-
-            // Still to do: Stop re-selecting moved units if remaining moves = 0
         }
     }
 

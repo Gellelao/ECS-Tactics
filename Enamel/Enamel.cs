@@ -224,6 +224,7 @@ public class Enamel : Game
         );
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DefaultMovesPerTurn));
+        World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
     }
 }
