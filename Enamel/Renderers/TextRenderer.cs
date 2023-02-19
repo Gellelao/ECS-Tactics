@@ -4,12 +4,14 @@ using MoonTools.ECS;
 using Enamel.Components;
 using FontStashSharp;
 using System;
+using Enamel.Components.UI;
 
 namespace Enamel.Renderers;
 
-public class TextRenderer : MoonTools.ECS.Renderer
+public class TextRenderer : Renderer
 {
     private Filter DebugCoordFilter { get; }
+    private Filter TextFilter { get; }
     private SpriteBatch SpriteBatch { get; }
     private readonly FontSystem _fontSystem;
 
@@ -20,6 +22,7 @@ public class TextRenderer : MoonTools.ECS.Renderer
         DebugCoordFilter = FilterBuilder
             .Include<DebugCoordComponent>()
             .Build();
+        TextFilter = FilterBuilder.Include<TextComponent>().Include<PositionComponent>().Build();
     }
 
     public void Draw()
@@ -32,6 +35,22 @@ public class TextRenderer : MoonTools.ECS.Renderer
             null,
             Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
 
+        // Draw regular text
+        foreach (var entity in TextFilter.Entities)
+        {
+            var (textIndex, size, colour) = Get<TextComponent>(entity);
+            var text = TextStorage.GetString(textIndex);
+            var positionComponent = Get<PositionComponent>(entity);
+
+            SpriteBatch.DrawString(
+                _fontSystem.GetFont(size),
+                text,
+                new Vector2(positionComponent.X, positionComponent.Y),
+                colour
+            );
+        }
+
+        // Draw debug text
 #if DEBUG
         foreach (var entity in DebugCoordFilter.Entities)
         {

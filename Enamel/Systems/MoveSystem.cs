@@ -85,10 +85,10 @@ public class MoveSystem : MoonTools.ECS.System
         var currentVector = current.ToVector;
         var x = currentVector.X;
         var y = currentVector.Y;
-        if (x < target.ScreenX) x += (float)(2 * Constants.MoveSpeed*deltaTime.TotalSeconds);
-        if (x > target.ScreenX) x -= (float)(2 * Constants.MoveSpeed*deltaTime.TotalSeconds);
-        if (y < target.ScreenY) y += (float)(Constants.MoveSpeed*deltaTime.TotalSeconds);
-        if (y > target.ScreenY) y -= (float)(Constants.MoveSpeed*deltaTime.TotalSeconds);
+        if (x < target.ScreenX) x += (float)(2 * Constants.MOVE_SPEED*deltaTime.TotalSeconds);
+        if (x > target.ScreenX) x -= (float)(2 * Constants.MOVE_SPEED*deltaTime.TotalSeconds);
+        if (y < target.ScreenY) y += (float)(Constants.MOVE_SPEED*deltaTime.TotalSeconds);
+        if (y > target.ScreenY) y -= (float)(Constants.MOVE_SPEED*deltaTime.TotalSeconds);
         return new PositionComponent(x, y);
     }
 }

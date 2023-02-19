@@ -6,6 +6,7 @@ using MoonTools.ECS;
 using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
@@ -125,7 +126,7 @@ public class Enamel : Game
         it doesn't matter what order you create the systems in, we'll specify in what order they run later.
         */
         // I think these only work if the map is square but it probably will be
-        var mapHeightInPixels = TileHeight * Constants.MapHeight * UpscaleFactor;
+        var mapHeightInPixels = TileHeight * Constants.MAP_HEIGHT * UpscaleFactor;
         var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;
         var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
@@ -168,6 +169,12 @@ public class Enamel : Game
                 World.Set(tile, new GroundTileFlag());
             }
         }
+
+        var turnTracker = World.CreateEntity();
+        World.Set(turnTracker, new TurnIndexComponent(-1));
+        World.Set(turnTracker, new PositionComponent(200, 10));
+
+        World.Send(new EndTurnMessage());
 
         base.LoadContent();
     }
@@ -223,7 +230,7 @@ public class Enamel : Game
             (int)(_textures[(int)sprite].Height*0.45 - TileHeight/2))
         );
         World.Set(playerEntity, new GridCoordComponent(x, y));
-        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DefaultMovesPerTurn));
+        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
     }

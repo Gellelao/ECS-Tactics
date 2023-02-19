@@ -2,6 +2,7 @@
 using System.Linq;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.UI;
 using Enamel.Enums;
 using MoonTools.ECS;
 
@@ -10,7 +11,6 @@ namespace Enamel.Systems;
 public class TurnSystem : MoonTools.ECS.System
 {
     private Filter ControlledByPlayerFilter { get; }
-    private int _currentPlayerTurnIndex;
 
     public TurnSystem(World world) : base(world)
     {
@@ -21,11 +21,11 @@ public class TurnSystem : MoonTools.ECS.System
     {
         if (!SomeMessage<EndTurnMessage>()) return;
 
-        // At this point, we know we can proceed with ending the turn, and no longer need to the entity, which is
+        // At this point, we know we can proceed with ending the turn, and no longer need the entity, which is
         // the button that was clicked
         var numberOfPlayers = ControlledByPlayerFilter.Entities.Count();
-        IncrementTurnIndex(numberOfPlayers);
-        var nextPlayer = GetTurnOrder(numberOfPlayers)[_currentPlayerTurnIndex];
+        var turnIndex = IncrementTurnIndex(numberOfPlayers);
+        var nextPlayer = GetTurnOrder(numberOfPlayers)[turnIndex];
 
         foreach (var entity in ControlledByPlayerFilter.Entities)
         {
@@ -46,11 +46,22 @@ public class TurnSystem : MoonTools.ECS.System
         }
     }
 
-    private void IncrementTurnIndex(int numberOfPlayers)
+    private int IncrementTurnIndex(int numberOfPlayers)
     {
+        var turnTracker = GetSingletonEntity<TurnIndexComponent>();
+        var turnIndex = Get<TurnIndexComponent>(turnTracker).Index;
+        turnIndex++;
+
         var turnOrder = GetTurnOrder(numberOfPlayers);
-        _currentPlayerTurnIndex++;
-        if (_currentPlayerTurnIndex >= turnOrder.Length) _currentPlayerTurnIndex = 0;
+        if (turnIndex >= turnOrder.Length) turnIndex = 0;
+
+        Set(turnTracker, new TurnIndexComponent(turnIndex));
+        Set(turnTracker, new TextComponent(
+            TextStorage.GetId($"Current player: {turnOrder[turnIndex]}"),
+            Constants.CURRENT_TURN_TEXT_SIZE,
+            Constants.CURRENT_TURN_TEXT_COLOUR)
+        );
+        return turnIndex;
     }
 
     private static PlayerNumber[] GetTurnOrder(int numberOfPlayers)

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.UI;
 using Enamel.Enums;
 
 namespace Enamel.Systems;

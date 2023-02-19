@@ -49,9 +49,9 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
 
     private void CreatePreviewEntities(Vector2 origin, int range, bool previewOnImpassableTiles)
     {
-        for (var x = 0; x < Constants.MapWidth; x++)
+        for (var x = 0; x < Constants.MAP_WIDTH; x++)
         {
-            for (var y = 0; y < Constants.MapHeight; y++)
+            for (var y = 0; y < Constants.MAP_HEIGHT; y++)
             {
                 if (!previewOnImpassableTiles && ImpassableUnitAtCoord(x, y)) continue;
                 var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
