@@ -89,9 +89,7 @@ public class InputSystem : MoonTools.ECS.System
                 switch (onClick.ClickEvent)
                 {
                     case ClickEvent.EndTurn:
-                        // Little awkward, because the button is really just the holder for the message, and none of the
-                        // button properties are used at the other end (the TurnSystem)
-                        Send(new EndTurnMessage(button));
+                        Send(new EndTurnMessage());
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
