@@ -172,6 +172,7 @@ public class Enamel : Game
 
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
+        World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
 
         World.Send(new EndTurnMessage());

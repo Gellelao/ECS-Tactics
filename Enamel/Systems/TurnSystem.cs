@@ -21,9 +21,8 @@ public class TurnSystem : MoonTools.ECS.System
     {
         if (!SomeMessage<EndTurnMessage>()) return;
 
-        // At this point, we know we can proceed with ending the turn, and no longer need the entity, which is
-        // the button that was clicked
-        var numberOfPlayers = ControlledByPlayerFilter.Entities.Count();
+        // At this point there must be an end turn message, so proceed with ending the turn
+        var numberOfPlayers = GetSingleton<PlayerCountComponent>().NumberOfPlayers;
         var turnIndex = IncrementTurnIndex(numberOfPlayers);
         var nextPlayer = GetTurnOrder(numberOfPlayers)[turnIndex];
 
