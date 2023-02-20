@@ -150,6 +150,7 @@ public class Enamel : Game
         ENTITIES
         */
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
+        CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
