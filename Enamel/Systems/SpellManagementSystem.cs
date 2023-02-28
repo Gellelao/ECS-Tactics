@@ -4,30 +4,36 @@ using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
 using Enamel.Enums;
+using Enamel.Exceptions;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
 public class SpellManagementSystem : MoonTools.ECS.System
 {
-    private Filter ControlledByPlayerFilter { get; }
     private Filter SpellIdFilter { get; }
 
     public SpellManagementSystem(World world) : base(world)
     {
-        ControlledByPlayerFilter = FilterBuilder.Include<ControlledByPlayerComponent>().Build();
         SpellIdFilter = FilterBuilder.Include<SpellIdComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
-        foreach (var entity in ControlledByPlayerFilter.Entities)
-        {
-            if (!SomeMessageWithEntity<LearnSpellMessage>(entity)) continue;
+        if (!SomeMessage<LearnSpellMessage>()) return;
 
-            var spellId = ReadMessageWithEntity<LearnSpellMessage>(entity).SpellId;
-            var spellEntity = GetSpell(spellId);
-            Relate(entity, spellEntity, new HasSpellRelation());
+        var spellId = ReadMessage<LearnSpellMessage>().SpellId;
+        var spellEntity = GetSpell(spellId);
+
+        try
+        {
+            var currentlySelectedPlayer = GetSingletonEntity<SelectedFlag>();
+
+            Relate(currentlySelectedPlayer, spellEntity, new HasSpellRelation());
+        }
+        catch (IndexOutOfRangeException)
+        {
+            Console.WriteLine("No selected player to learn spell!!!");
         }
     }
 
@@ -39,6 +45,6 @@ public class SpellManagementSystem : MoonTools.ECS.System
             if (id == spellId) return spell;
         }
 
-        throw new KeyNotFoundException($"Did not find spell with id {spellId}");
+        throw new SpellNotFoundException($"Did not find spell with id {spellId}");
     }
 }

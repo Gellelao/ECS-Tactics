@@ -157,11 +157,18 @@ public class Enamel : Game
         CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
-        var button = World.CreateEntity();
-        World.Set(button, new PositionComponent(400, 300));
-        World.Set(button, new DimensionsComponent(40, 20));
-        World.Set(button, new TextureIndexComponent((int)Sprite.GreenRectangle));
-        World.Set(button, new OnClickComponent(ClickEvent.EndTurn));
+        var endTurnButton = World.CreateEntity();
+        World.Set(endTurnButton, new PositionComponent(400, 300));
+        World.Set(endTurnButton, new DimensionsComponent(40, 20));
+        World.Set(endTurnButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
+
+        var learnFireballButton = World.CreateEntity();
+        World.Set(learnFireballButton, new PositionComponent(100, 200));
+        World.Set(learnFireballButton, new DimensionsComponent(40, 20));
+        World.Set(learnFireballButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell));
+        World.Set(learnFireballButton, new SpellToLearnOnClickComponent(SpellId.Fireball));
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){

@@ -6,6 +6,7 @@ using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.UI;
 using Enamel.Enums;
+using Enamel.Exceptions;
 
 namespace Enamel.Systems;
 
@@ -90,6 +91,14 @@ public class InputSystem : MoonTools.ECS.System
                 {
                     case ClickEvent.EndTurn:
                         Send(new EndTurnMessage());
+                        break;
+                    case ClickEvent.LearnSpell:
+                        if (!Has<SpellToLearnOnClickComponent>(button))
+                            throw new ComponentNotFoundException(
+                                "The LearnSpell click event requires the button entity to also have a SpellToLearnOnClick component");
+                        var spellToLearnOnClick = Get<SpellToLearnOnClickComponent>(button).SpellId;
+
+                        Send(new LearnSpellMessage(spellToLearnOnClick));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
