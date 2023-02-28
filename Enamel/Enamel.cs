@@ -164,11 +164,18 @@ public class Enamel : Game
         World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
 
         var learnFireballButton = World.CreateEntity();
-        World.Set(learnFireballButton, new PositionComponent(100, 200));
+        World.Set(learnFireballButton, new PositionComponent(50, 200));
         World.Set(learnFireballButton, new DimensionsComponent(40, 20));
         World.Set(learnFireballButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
         World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnFireballButton, new SpellToLearnOnClickComponent(SpellId.Fireball));
+
+        var learnArcaneBlockButton = World.CreateEntity();
+        World.Set(learnArcaneBlockButton, new PositionComponent(50, 230));
+        World.Set(learnArcaneBlockButton, new DimensionsComponent(40, 20));
+        World.Set(learnArcaneBlockButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell));
+        World.Set(learnArcaneBlockButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBlock));
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
@@ -186,8 +193,11 @@ public class Enamel : Game
         World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
 
-        var spell = World.CreateEntity();
-        World.Set(spell, new SpellIdComponent(SpellId.Fireball));
+        var fireball = World.CreateEntity();
+        World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
+
+        var arcaneBlock = World.CreateEntity();
+        World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
 
         World.Send(new EndTurnMessage());
 
