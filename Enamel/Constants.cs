@@ -12,7 +12,9 @@ public static class Constants
     public const int MOVE_SPEED = 20;
     public const int DEFAULT_MOVES_PER_TURN = 3;
     public const int CURRENT_TURN_TEXT_SIZE = 20;
-    public static readonly Color CURRENT_TURN_TEXT_COLOUR = Color.White;
+    public const int SPELL_CARD_TEXT_SIZE = 10;
+    public static readonly Color CurrentTurnTextColour = Color.White;
+    public static readonly Color SpellCardTextColour = Color.Black;
     public static readonly PlayerNumber[] TwoPlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One};
 
     public static readonly PlayerNumber[] ThreePlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three,

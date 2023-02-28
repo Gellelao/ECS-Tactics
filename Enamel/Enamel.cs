@@ -109,8 +109,18 @@ public class Enamel : Game
         _spriteBatch.End();
         GraphicsDevice.SetRenderTarget(null);
 
+        var yellowPixel = new Texture2D(GraphicsDevice, 1, 1);
+        yellowPixel.SetData(new[] { Color.Yellow });
+        var yellowSquare = new RenderTarget2D(GraphicsDevice, 30, 30);
+        GraphicsDevice.SetRenderTarget(yellowSquare);
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(yellowPixel, new Rectangle(0, 0, 30, 30), Color.White);
+        _spriteBatch.End();
+        GraphicsDevice.SetRenderTarget(null);
+
         _textures[(int)Sprite.RedPixel] = redPixel;
         _textures[(int)Sprite.GreenRectangle] = greenRectangle;
+        _textures[(int)Sprite.YellowSquare] = yellowSquare;
         _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("Tile");
         _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
         _textures[(int)Sprite.RedCube] = Content.Load<Texture2D>("redCube");

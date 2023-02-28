@@ -3,5 +3,6 @@
 public enum ClickEvent
 {
     EndTurn,
-    LearnSpell
+    LearnSpell,
+    PrepSpell
 }

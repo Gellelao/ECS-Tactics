@@ -100,6 +100,15 @@ public class InputSystem : MoonTools.ECS.System
 
                         Send(new LearnSpellMessage(spellToLearnOnClick));
                         break;
+                    case ClickEvent.PrepSpell:
+                        if (!Has<SpellToPrepOnClickComponent>(button))
+                            throw new ComponentNotFoundException(
+                                "The PrepSpell click event requires the button entity to also have a SpellToPrepOnClickComponent component");
+                        var spellToPrepOnClick = Get<SpellToPrepOnClickComponent>(button).SpellId;
+
+                        Console.WriteLine($"Prepping {spellToPrepOnClick}");
+
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

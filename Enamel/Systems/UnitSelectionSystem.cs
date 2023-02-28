@@ -3,22 +3,29 @@ using MoonTools.ECS;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Components.UI;
+using Enamel.Enums;
+using Enamel.Extensions;
 
 namespace Enamel.Systems;
 
 public class UnitSelectionSystem : MoonTools.ECS.System
 {
+    private readonly World _world;
     private Filter SelectableCoordFilter { get; }
     private Filter SelectedFilter { get; }
+    private Filter SpellCardFilter { get; }
 
     public UnitSelectionSystem(World world) : base(world)
     {
+        _world = world;
         SelectableCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
             .Exclude<MovementPreviewFlag>()
             .Exclude<DisabledFlag>()
             .Build();
         SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();
+        SpellCardFilter = FilterBuilder.Include<SpellToPrepOnClickComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -30,6 +37,12 @@ public class UnitSelectionSystem : MoonTools.ECS.System
             foreach (var selectedEntity in SelectedFilter.Entities){
                 Remove<SelectedFlag>(selectedEntity);
             }
+
+            foreach (var spellCard in SpellCardFilter.Entities)
+            {
+                Destroy(spellCard);
+            }
+
             Set(entity, new SelectedFlag());
             CreateSpellCardsForEntity(entity);
         }
@@ -37,10 +50,20 @@ public class UnitSelectionSystem : MoonTools.ECS.System
 
     private void CreateSpellCardsForEntity(Entity entity)
     {
+        var x = 0;
         foreach (var (spell, _) in OutRelations<HasSpellRelation>(entity))
         {
-            var spellId = Get<SpellIdComponent>(spell);
-            Console.WriteLine($"Selected players knows spell {spellId}");
+            var spellIdComponent = Get<SpellIdComponent>(spell);
+            Console.WriteLine($"Selected players knows spell {spellIdComponent}");
+
+            var spellCard = _world.CreateEntity();
+            Set(spellCard, new PositionComponent(x, 320));
+            Set(spellCard, new DimensionsComponent(30, 30));
+            Set(spellCard, new TextureIndexComponent((int) Sprite.YellowSquare));
+            Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Constants.SPELL_CARD_TEXT_SIZE, Constants.SpellCardTextColour));
+            Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
+            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
+            x += 40;
         }
     }
 }

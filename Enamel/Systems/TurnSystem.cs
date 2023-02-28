@@ -58,7 +58,7 @@ public class TurnSystem : MoonTools.ECS.System
         Set(turnTracker, new TextComponent(
             TextStorage.GetId($"Current player: {turnOrder[turnIndex]}"),
             Constants.CURRENT_TURN_TEXT_SIZE,
-            Constants.CURRENT_TURN_TEXT_COLOUR)
+            Constants.CurrentTurnTextColour)
         );
         return turnIndex;
     }
