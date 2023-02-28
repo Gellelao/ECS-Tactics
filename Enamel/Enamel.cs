@@ -28,6 +28,8 @@ public class Enamel : Game
     private static SelectionPreviewSystem? _selectionPreviewSystem;
     private static MoveSystem? _moveSystem;
     private static TurnSystem? _turnSystem;
+    private static SpellManagementSystem? _spellManagementSystem;
+
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -136,6 +138,7 @@ public class Enamel : Game
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _moveSystem = new MoveSystem(World);
         _turnSystem = new TurnSystem(World);
+        _spellManagementSystem = new SpellManagementSystem(World);
 
         /*
         RENDERERS
@@ -176,6 +179,9 @@ public class Enamel : Game
         World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
 
+        var spell = World.CreateEntity();
+        World.Set(spell, new SpellIdComponent(SpellId.Fireball));
+
         World.Send(new EndTurnMessage());
 
         base.LoadContent();
@@ -189,6 +195,7 @@ public class Enamel : Game
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _moveSystem?.Update(elapsedTime);
+        _spellManagementSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // This has to run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // This needs to run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.
