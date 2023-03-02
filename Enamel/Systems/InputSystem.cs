@@ -107,6 +107,7 @@ public class InputSystem : MoonTools.ECS.System
                         var spellToPrepOnClick = Get<SpellToPrepOnClickComponent>(button).SpellId;
 
                         Console.WriteLine($"Prepping {spellToPrepOnClick}");
+                        Send(new PrepSpellMessage(spellToPrepOnClick));
 
                         break;
                     default:

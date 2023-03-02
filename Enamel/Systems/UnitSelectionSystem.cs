@@ -50,20 +50,21 @@ public class UnitSelectionSystem : MoonTools.ECS.System
 
     private void CreateSpellCardsForEntity(Entity entity)
     {
-        var x = 0;
+        var screenX = 0;
+        var (gridOriginX, gridOriginY) = Get<GridCoordComponent>(entity);
         foreach (var (spell, _) in OutRelations<HasSpellRelation>(entity))
         {
             var spellIdComponent = Get<SpellIdComponent>(spell);
             Console.WriteLine($"Selected players knows spell {spellIdComponent}");
 
             var spellCard = _world.CreateEntity();
-            Set(spellCard, new PositionComponent(x, 320));
+            Set(spellCard, new PositionComponent(screenX, 320));
             Set(spellCard, new DimensionsComponent(30, 30));
             Set(spellCard, new TextureIndexComponent((int) Sprite.YellowSquare));
             Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Constants.SPELL_CARD_TEXT_SIZE, Constants.SpellCardTextColour));
             Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
-            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
-            x += 40;
+            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId, gridOriginX, gridOriginY));
+            screenX += 40;
         }
     }
 }

@@ -2,4 +2,4 @@
 
 namespace Enamel.Components.UI;
 
-public readonly record struct SpellToPrepOnClickComponent(SpellId SpellId);
+public readonly record struct SpellToPrepOnClickComponent(SpellId SpellId, int GridX, int GridY);

@@ -26,7 +26,7 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
     {
         var selectMessages = ReadMessages<SelectMessage>();
 
-        // Clear existing previews when a selection is made
+        // Clear existing previews when a selection is made or turn is ended
         if (!selectMessages.IsEmpty || SomeMessage<EndTurnMessage>())
         {
             foreach (var preview in PreviewFilter.Entities)
