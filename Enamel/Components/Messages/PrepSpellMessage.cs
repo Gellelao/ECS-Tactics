@@ -2,4 +2,4 @@
 
 namespace Enamel.Components.Messages;
 
-public readonly record struct PrepSpellMessage(SpellId SpellId);
+public readonly record struct PrepSpellMessage(SpellId SpellId, int OriginGridX, int OriginGridY);

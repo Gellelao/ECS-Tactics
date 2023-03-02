@@ -6,6 +6,7 @@ using MoonTools.ECS;
 using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.Spells;
 using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
@@ -203,11 +204,14 @@ public class Enamel : Game
         World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
 
+        // Spells
         var fireball = World.CreateEntity();
         World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
+        World.Set(fireball, new CastRangeComponent(3));
 
         var arcaneBlock = World.CreateEntity();
         World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
+        World.Set(arcaneBlock, new CastRangeComponent(1));
 
         World.Send(new EndTurnMessage());
 
