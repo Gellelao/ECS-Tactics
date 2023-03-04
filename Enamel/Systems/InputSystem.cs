@@ -49,6 +49,10 @@ public class InputSystem : MoonTools.ECS.System
         {
             OnLeftButtonRelease(mouseX, mouseY);
         }
+        if (mouseCurrent.RightButton == ButtonState.Released && _mousePrevious.RightButton == ButtonState.Pressed)
+        {
+            Send(new CancelMessage());
+        }
         _mousePrevious = mouseCurrent;
     }
 

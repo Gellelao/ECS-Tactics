@@ -30,6 +30,7 @@ public class Enamel : Game
     private static MoveSystem? _moveSystem;
     private static TurnSystem? _turnSystem;
     private static SpellManagementSystem? _spellManagementSystem;
+    private static PlayerButtonsSystem? _playerButtonsSystem;
 
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
@@ -150,6 +151,7 @@ public class Enamel : Game
         _moveSystem = new MoveSystem(World);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World);
+        _playerButtonsSystem = new PlayerButtonsSystem(World);
 
         /*
         RENDERERS
@@ -222,11 +224,12 @@ public class Enamel : Game
     {
         var elapsedTime = gameTime.ElapsedGameTime;
         _inputSystem?.Update(elapsedTime);
-        _unitSelectionSystem?.Update(elapsedTime);
+        _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _moveSystem?.Update(elapsedTime);
         _spellManagementSystem?.Update(elapsedTime);
+        _playerButtonsSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // This has to run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // This needs to run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.

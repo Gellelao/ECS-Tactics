@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using Enamel.Components;
 using Enamel.Components.Messages;
@@ -10,13 +11,15 @@ namespace Enamel.Systems;
 
 public class SelectionPreviewSystem : SpellSystem
 {
-    private Filter PreviewFilter { get; }
+    private Filter MovementPreviewFilter { get; }
+    private Filter SpellPreviewFilter { get; }
     private Filter ImpassableGridCoordFilter { get; }
     private World _world;
 
     public SelectionPreviewSystem(World world) : base(world)
     {
-        PreviewFilter = FilterBuilder.Include<MovementPreviewFlag>().Build();
+        MovementPreviewFilter = FilterBuilder.Include<MovementPreviewFlag>().Build();
+        SpellPreviewFilter = FilterBuilder.Include<SpellPreviewFlag>().Build();
         ImpassableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
             .Include<ImpassableFlag>().Build();
@@ -27,33 +30,72 @@ public class SelectionPreviewSystem : SpellSystem
     {
         var selectMessages = ReadMessages<SelectMessage>();
 
-        // Clear existing previews when a selection is made or turn is ended
+        // Clear all existing previews when a selection is made or turn is ended
         if (!selectMessages.IsEmpty || SomeMessage<EndTurnMessage>())
         {
-            foreach (var preview in PreviewFilter.Entities)
-            {
-                Destroy(preview);
-            }
+            DestroyMovementPreviews();
+            DestroySpellPreviews();
+        }
+
+        // Destroy only spell previews when cancel received
+        if (SomeMessage<CancelMessage>())
+        {
+            DestroySpellPreviews();
+
+            // Re-create any movement previews that we destroyed when prepping the spell
+            CreateMovementPreviews(GetSingletonEntity<SelectedFlag>());
         }
 
         foreach (var message in selectMessages)
         {
-            var entity = message.Entity;
-            if (Has<MovesPerTurnComponent>(entity))
-            {
-                var (x, y) = Get<GridCoordComponent>(entity);
-                var pos = new Vector2(x, y);
-                CreatePreviewEntities(pos, 1, false, e => Set(e, new MovementPreviewFlag()));
-            }
+            CreateMovementPreviews(message.Entity);
         }
 
         if (SomeMessage<PrepSpellMessage>())
         {
-            var spellToPrepMessage = ReadMessage<PrepSpellMessage>();
-            var origin = new Vector2(spellToPrepMessage.OriginGridX, spellToPrepMessage.OriginGridY);
-            var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
-            var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
-            CreatePreviewEntities(origin, spellRange, true, e => Set(e, new SpellPreviewFlag()));
+            // Destroy movement previews so there's no ambiguity on the clicked tile
+            DestroyMovementPreviews();
+
+            CreateSpellPreviews();
+        }
+    }
+
+    private void CreateMovementPreviews(Entity movingUnit)
+    {
+        if (Has<MovesPerTurnComponent>(movingUnit))
+        {
+            var (x, y) = Get<GridCoordComponent>(movingUnit);
+            var pos = new Vector2(x, y);
+            CreatePreviewEntities(pos, 1, false, e => Set(e, new MovementPreviewFlag()));
+        }
+    }
+
+    private void CreateSpellPreviews()
+    {
+        // Clear existing previews first
+        DestroySpellPreviews();
+
+        var spellToPrepMessage = ReadMessage<PrepSpellMessage>();
+        var origin = new Vector2(spellToPrepMessage.OriginGridX, spellToPrepMessage.OriginGridY);
+        var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
+        var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
+        CreatePreviewEntities(origin, spellRange, true, e => Set(e, new SpellPreviewFlag()));
+    }
+
+    private void DestroyMovementPreviews()
+    {
+
+        foreach (var preview in MovementPreviewFilter.Entities)
+        {
+            Destroy(preview);
+        }
+    }
+
+    private void DestroySpellPreviews()
+    {
+        foreach (var preview in SpellPreviewFilter.Entities)
+        {
+            Destroy(preview);
         }
     }
 
