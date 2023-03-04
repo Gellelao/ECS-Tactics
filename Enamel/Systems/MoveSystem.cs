@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Enamel.Components;
 using Enamel.Components.Messages;
-using Microsoft.Xna.Framework;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -10,16 +8,12 @@ namespace Enamel.Systems;
 public class MoveSystem : MoonTools.ECS.System
 {
     private Filter MovePreviewFilter { get; }
-    private Filter SelectedUnitFilter { get; }
     private Filter MovingUnitsFilter { get; }
     
     public MoveSystem(World world) : base(world)
     {
         MovePreviewFilter = FilterBuilder
             .Include<MovementPreviewFlag>()
-            .Build();
-        SelectedUnitFilter = FilterBuilder
-            .Include<SelectedFlag>()
             .Build();
         MovingUnitsFilter = FilterBuilder
             .Include<MovingToPositionComponent>()
@@ -35,11 +29,9 @@ public class MoveSystem : MoonTools.ECS.System
             
             var targetScreenPosition = Get<PositionComponent>(entity);
             var targetGridPosition = Get<GridCoordComponent>(entity);
-            foreach (var selectedEntity in SelectedUnitFilter.Entities)
-            {
-                Set(selectedEntity, new MovingToPositionComponent(targetScreenPosition.X, targetScreenPosition.Y, targetGridPosition.X, targetGridPosition.Y));
-                Remove<GridCoordComponent>(selectedEntity);
-            }
+            var selectedEntity = GetSingletonEntity<SelectedFlag>();
+            Set(selectedEntity, new MovingToPositionComponent(targetScreenPosition.X, targetScreenPosition.Y, targetGridPosition.X, targetGridPosition.Y));
+            Remove<GridCoordComponent>(selectedEntity);
         }
         
         // Shift entities that are already moving

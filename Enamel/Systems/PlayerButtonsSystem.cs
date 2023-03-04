@@ -42,12 +42,11 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
     private void CreateSpellCardsForEntity(Entity entity)
     {
         var screenX = 0;
-        var (gridOriginX, gridOriginY) = Get<GridCoordComponent>(entity);
         var spells = OutRelations<HasSpellRelation>(entity);
         foreach (var (spell, _) in spells)
         {
             var spellIdComponent = Get<SpellIdComponent>(spell);
-            Console.WriteLine($"Selected players knows spell {spellIdComponent}");
+            Console.WriteLine($"Selected player knows spell {spellIdComponent}");
 
             var spellCard = _world.CreateEntity();
             Set(spellCard, new PositionComponent(screenX, 320));

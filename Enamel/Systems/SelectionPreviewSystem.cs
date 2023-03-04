@@ -3,6 +3,7 @@ using System.Numerics;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
+using Enamel.Components.UI;
 using Enamel.Enums;
 using MoonTools.ECS;
 
@@ -78,7 +79,11 @@ public class SelectionPreviewSystem : SpellSystem
         var origin = new Vector2(spellToPrepMessage.OriginGridX, spellToPrepMessage.OriginGridY);
         var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
         var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
-        CreatePreviewEntities(origin, spellRange, true, e => Set(e, new SpellPreviewFlag()));
+        CreatePreviewEntities(origin, spellRange, true, e =>
+        {
+            Set(e, new SpellPreviewFlag());
+            Set(e, new SpellToCastOnClickComponent(spellToPrepMessage.SpellId));
+        });
     }
 
     private void DestroyMovementPreviews()
