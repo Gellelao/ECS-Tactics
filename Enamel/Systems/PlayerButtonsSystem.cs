@@ -55,7 +55,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             Set(spellCard, new TextureIndexComponent((int) Sprite.YellowSquare));
             Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Constants.SPELL_CARD_TEXT_SIZE, Constants.SpellCardTextColour));
             Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
-            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId, gridOriginX, gridOriginY));
+            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
             screenX += 40;
         }
     }

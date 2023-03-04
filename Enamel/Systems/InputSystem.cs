@@ -111,7 +111,10 @@ public class InputSystem : MoonTools.ECS.System
                                 "The PrepSpell click event requires the button entity to also have a SpellToPrepOnClickComponent component");
                         var spellToPrepOnClick = Get<SpellToPrepOnClickComponent>(button);
 
-                        Send(new PrepSpellMessage(spellToPrepOnClick.SpellId, spellToPrepOnClick.OriginGridX, spellToPrepOnClick.OriginGridY));
+                        // There must only be one selected unit and it must the the unit casting this spell
+                        var (originGridX, originGridY) = Get<GridCoordComponent>(GetSingletonEntity<SelectedFlag>());
+
+                        Send(new PrepSpellMessage(spellToPrepOnClick.SpellId, originGridX, originGridY));
 
                         break;
                     default:
