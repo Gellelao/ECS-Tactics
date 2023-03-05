@@ -33,6 +33,7 @@ public class Enamel : Game
     private static PlayerButtonsSystem? _playerButtonsSystem;
     private static SpellCastingSystem? _spellCastingSystem;
     private static ProjectileSystem? _projectileSystem;
+    private static DamageSystem? _damageSystem;
 
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
@@ -49,8 +50,6 @@ public class Enamel : Game
     private const int TileHeight = 20;
     private const int UpscaleFactor = 2;
     private RenderTarget2D _renderTarget;
-    //private Entity[,] GroundGrid;
-    //private Entity[,] EntityGrid;
 
 
     [STAThread]
@@ -81,10 +80,6 @@ public class Enamel : Game
     protected override void LoadContent()
     {
         _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
-
-        // Not actually populated yet since entities are tracked by World anyway
-        //GroundGrid = new Entity[MapWidth, MapHeight];
-        //EntityGrid = new Entity[MapWidth, MapHeight];
 
         /*
         CONTENT
@@ -157,6 +152,7 @@ public class Enamel : Game
         _playerButtonsSystem = new PlayerButtonsSystem(World);
         _spellCastingSystem = new SpellCastingSystem(World);
         _projectileSystem = new ProjectileSystem(World);
+        _damageSystem = new DamageSystem(World);
 
         /*
         RENDERERS
@@ -237,6 +233,7 @@ public class Enamel : Game
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _projectileSystem?.Update(elapsedTime); // Should run before _moveSystem because the projectileSystem adds MovingToPositionComponents to entities
+        _damageSystem?.Update(elapsedTime); // Should run after projectileSystem because the projectileSystem sends DamageMessages
         _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
