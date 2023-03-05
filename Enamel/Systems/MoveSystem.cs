@@ -72,11 +72,6 @@ public class MoveSystem : MoonTools.ECS.System
             // This is so the selectionPreview system knows to display the preview again
             Send(new SelectMessage(entity));
         }
-        else
-        {
-            Set(entity, new DisabledFlag());
-            Remove<SelectedFlag>(entity);
-        }
     }
 
     private PositionComponent MoveTowards(PositionComponent current, MovingToPositionComponent target, TimeSpan deltaTime)

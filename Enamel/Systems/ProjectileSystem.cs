@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Enamel.Components;
+using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Enums;
 using MoonTools.ECS;
@@ -23,45 +24,52 @@ public class ProjectileSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
-        foreach (var movingInDirectionEntity in MovingInDirectionFilter.Entities)
+        foreach (var movingEntity in MovingInDirectionFilter.Entities)
         {
-            var direction = Get<MovingInDirectionComponent>(movingInDirectionEntity).Direction;
-            if (Has<GridCoordComponent>(movingInDirectionEntity))
-            {
-                var (gridX, gridY) = Get<GridCoordComponent>(movingInDirectionEntity);
-                switch (direction)
-                {
-                    case Direction.North:
-                        gridY -= 1;
-                        break;
-                    case Direction.East:
-                        gridX += 1;
-                        break;
-                    case Direction.South:
-                        gridY += 1;
-                        break;
-                    case Direction.West:
-                        gridX -= 1;
-                        break;
-                    case Direction.None:
-                    default:
-                        // Should not have Direction.None at this point, so throw
-                        throw new ArgumentOutOfRangeException();
-                }
+            var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
+            var damage = Get<ProjectileDamageComponent>(movingEntity).Damage;
+            if (!Has<GridCoordComponent>(movingEntity)) continue;
 
-                var matchingEntities = GetEntitiesAtCoords(gridX, gridY);
-                if (matchingEntities.Any())
+            var (gridX, gridY) = Get<GridCoordComponent>(movingEntity);
+            switch (direction)
+            {
+                case Direction.North:
+                    gridY -= 1;
+                    break;
+                case Direction.East:
+                    gridX += 1;
+                    break;
+                case Direction.South:
+                    gridY += 1;
+                    break;
+                case Direction.West:
+                    gridX -= 1;
+                    break;
+                case Direction.None:
+                default:
+                    // Should not have Direction.None at this point, so throw
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var entitiesAtDestination = GetEntitiesAtCoords(gridX, gridY);
+            if (entitiesAtDestination.Any())
+            {
+                var screenPos = Get<PositionComponent>(entitiesAtDestination.First());
+                _world.Set(movingEntity, new MovingToPositionComponent(screenPos.X, screenPos.Y, gridX, gridY));
+                Remove<GridCoordComponent>(movingEntity);
+
+                var impassableEntities = entitiesAtDestination.Where(e => Has<ImpassableFlag>(e)).ToList();
+                if (impassableEntities.Any())
                 {
-                    var screenPos = Get<PositionComponent>(matchingEntities.First());
-                    _world.Set(movingInDirectionEntity, new MovingToPositionComponent(screenPos.X, screenPos.Y, gridX, gridY));
-                    Remove<GridCoordComponent>(movingInDirectionEntity);
+                    Send(new DamageMessage(impassableEntities.First(), damage));
+                    Destroy(movingEntity);
                 }
-                else
-                {
-                    // Must be at edge of map?
-                    Console.WriteLine($"Destroying projectile because it reached {gridX},{gridY}");
-                    Destroy(movingInDirectionEntity);
-                }
+            }
+            else
+            {
+                // Must be at edge of map because there should at least be a GroundTile at every valid coord
+                Console.WriteLine($"Destroying projectile because it reached {gridX},{gridY}");
+                Destroy(movingEntity);
             }
         }
     }

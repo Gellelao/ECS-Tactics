@@ -64,6 +64,9 @@ public class SelectionPreviewSystem : SpellSystem
     {
         if (Has<MovesPerTurnComponent>(movingUnit))
         {
+            var remainingMoves = Get<RemainingMovesComponent>(movingUnit).RemainingMoves;
+            if (remainingMoves <= 0) return;
+
             var (x, y) = Get<GridCoordComponent>(movingUnit);
             var pos = new Vector2(x, y);
             CreatePreviewEntities(pos, 1, false, e => Set(e, new MovementPreviewFlag()));
