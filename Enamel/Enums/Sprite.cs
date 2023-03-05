@@ -10,5 +10,6 @@ public enum Sprite
     Selection,
     SelectPreview,
     GreenRectangle,
-    YellowSquare
+    YellowSquare,
+    Fireball
 }

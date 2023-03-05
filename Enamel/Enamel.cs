@@ -130,6 +130,7 @@ public class Enamel : Game
         _textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
         _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
+        _textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
 
         /*
         SYSTEMS
@@ -175,27 +176,27 @@ public class Enamel : Game
         var endTurnButton = World.CreateEntity();
         World.Set(endTurnButton, new PositionComponent(400, 300));
         World.Set(endTurnButton, new DimensionsComponent(40, 20));
-        World.Set(endTurnButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(endTurnButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
 
         var learnFireballButton = World.CreateEntity();
         World.Set(learnFireballButton, new PositionComponent(50, 200));
         World.Set(learnFireballButton, new DimensionsComponent(40, 20));
-        World.Set(learnFireballButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(learnFireballButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnFireballButton, new SpellToLearnOnClickComponent(SpellId.Fireball));
 
         var learnArcaneBlockButton = World.CreateEntity();
         World.Set(learnArcaneBlockButton, new PositionComponent(50, 230));
         World.Set(learnArcaneBlockButton, new DimensionsComponent(40, 20));
-        World.Set(learnArcaneBlockButton, new TextureIndexComponent((int)Sprite.GreenRectangle));
+        World.Set(learnArcaneBlockButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnArcaneBlockButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBlock));
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
                 var tile = World.CreateEntity();
-                World.Set(tile, new TextureIndexComponent((int)Sprite.Tile));
+                World.Set(tile, new TextureIndexComponent(Sprite.Tile));
                 World.Set(tile, new GridCoordComponent(x, y));
                 World.Set(tile, new DebugCoordComponent(x, y));
                 World.Set(tile, new DisabledFlag());
@@ -211,7 +212,11 @@ public class Enamel : Game
         // Spells
         var fireball = World.CreateEntity();
         World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
-        World.Set(fireball, new CastRangeComponent(3));
+        World.Set(fireball, new CastRangeComponent(1));
+        World.Set(fireball, new TextureIndexOfSpawnedEntityComponent(Sprite.Fireball));
+        World.Set(fireball, new SpawnsProjectileSpellFlag());
+        World.Set(fireball, new SpawnedProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
+        World.Set(fireball, new SpawnedProjectileDamageComponent(1));
 
         var arcaneBlock = World.CreateEntity();
         World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
@@ -270,7 +275,7 @@ public class Enamel : Game
     private void CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
     {
         var playerEntity = World.CreateEntity();
-        World.Set(playerEntity, new TextureIndexComponent((int)sprite));
+        World.Set(playerEntity, new TextureIndexComponent(sprite));
         World.Set(playerEntity, new SpriteOriginComponent(
             _textures[(int)sprite].Width/2 - TileWidth/2,
             (int)(_textures[(int)sprite].Height*0.45 - TileHeight/2))
@@ -279,5 +284,6 @@ public class Enamel : Game
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
+        World.Set(playerEntity, new HealthComponent(2));
     }
 }

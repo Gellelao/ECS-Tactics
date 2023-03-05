@@ -37,7 +37,7 @@ public class GroundRenderer : Renderer
             var positionComponent = Get<PositionComponent>(entity);
 
             SpriteBatch.Draw(
-                _textures[indexComponent.Index],
+                _textures[(int)indexComponent.Index],
                 new Vector2(positionComponent.X, positionComponent.Y),
                 null,
                 Color.White,

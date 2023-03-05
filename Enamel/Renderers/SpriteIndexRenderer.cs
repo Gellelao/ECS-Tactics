@@ -29,6 +29,7 @@ public class SpriteIndexRenderer : Renderer
         _textures = textures;
         TextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
+            .Include<PositionComponent>()
             .Exclude<GroundTileFlag>()
             .Build();
     }
@@ -92,7 +93,7 @@ public class SpriteIndexRenderer : Renderer
 
             // Draw the unit itself
             SpriteBatch.Draw(
-                _textures[indexComponent.Index],
+                _textures[(int)indexComponent.Index],
                 positionComponent.ToVector,
                 null,
                 tint,

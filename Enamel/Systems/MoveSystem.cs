@@ -48,20 +48,9 @@ public class MoveSystem : MoonTools.ECS.System
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToPositionComponent>(entity);
 
-                // reached destination, so decrease remaining moves this turn
-                var remainingMoves = Get<RemainingMovesComponent>(entity).RemainingMoves - 1;
-                Set(entity, new RemainingMovesComponent(remainingMoves));
-
-                if (remainingMoves > 0)
+                if (Has<RemainingMovesComponent>(entity))
                 {
-                    // Danger, issuing a select message outside of the InputSystem!!
-                    // This is so the selectionPreview system knows to display the preview again
-                    Send(new SelectMessage(entity));
-                }
-                else
-                {
-                    Set(entity, new DisabledFlag());
-                    Remove<SelectedFlag>(entity);
+                    UpdateRemainingMoves(entity);
                 }
             }
             // Otherwise, move the screenpos
@@ -69,6 +58,24 @@ public class MoveSystem : MoonTools.ECS.System
             {
                 Set(entity, newPosition);
             }
+        }
+    }
+
+    private void UpdateRemainingMoves(Entity entity)
+    {
+        var remainingMoves = Get<RemainingMovesComponent>(entity).RemainingMoves - 1;
+        Set(entity, new RemainingMovesComponent(remainingMoves));
+
+        if (remainingMoves > 0)
+        {
+            // Danger, issuing a select message outside of the InputSystem!!
+            // This is so the selectionPreview system knows to display the preview again
+            Send(new SelectMessage(entity));
+        }
+        else
+        {
+            Set(entity, new DisabledFlag());
+            Remove<SelectedFlag>(entity);
         }
     }
 
