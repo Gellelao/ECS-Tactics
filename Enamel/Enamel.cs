@@ -32,6 +32,7 @@ public class Enamel : Game
     private static SpellManagementSystem? _spellManagementSystem;
     private static PlayerButtonsSystem? _playerButtonsSystem;
     private static SpellCastingSystem? _spellCastingSystem;
+    private static ProjectileSystem? _projectileSystem;
 
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
@@ -155,6 +156,7 @@ public class Enamel : Game
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
         _spellCastingSystem = new SpellCastingSystem(World);
+        _projectileSystem = new ProjectileSystem(World);
 
         /*
         RENDERERS
@@ -234,6 +236,7 @@ public class Enamel : Game
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
+        _projectileSystem?.Update(elapsedTime); // Should run before _moveSystem because the projectileSystem adds MovingToPositionComponents to entities
         _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
