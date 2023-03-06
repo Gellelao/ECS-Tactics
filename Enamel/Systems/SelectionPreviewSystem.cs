@@ -48,7 +48,7 @@ public class SelectionPreviewSystem : SpellSystem
 
         foreach (var message in selectMessages)
         {
-            CreateMovementPreviews(message.Entity);
+            CreateMovementPreviews(message.);
         }
 
         if (SomeMessage<PrepSpellMessage>())

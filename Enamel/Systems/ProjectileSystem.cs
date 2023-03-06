@@ -61,7 +61,7 @@ public class ProjectileSystem : MoonTools.ECS.System
                 var impassableEntities = entitiesAtDestination.Where(e => Has<ImpassableFlag>(e)).ToList();
                 if (impassableEntities.Any())
                 {
-                    Send(new DamageMessage(impassableEntities.First(), damage));
+                    Send(impassableEntities.First(), new DamageMessage(damage));
                     Destroy(movingEntity);
                 }
             }

@@ -32,7 +32,7 @@ public class UnitSelectionSystem : MoonTools.ECS.System
             }
 
             Set(entity, new SelectedFlag());
-            Send(new PlayerUnitSelectedMessage(entity));
+            Send(entity, new PlayerUnitSelectedMessage());
         }
     }
 }
