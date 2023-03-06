@@ -54,6 +54,7 @@ public class SpellCastingSystem : SpellSystem
             _world.Set(projectile, new TextureIndexComponent(projectileTexture));
             _world.Set(projectile, new GridCoordComponent(originX, originY));
             _world.Set(projectile, new MovingInDirectionComponent(direction));
+            _world.Set(projectile, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
         }
     }
 
