@@ -11,5 +11,6 @@ public enum Sprite
     SelectPreview,
     GreenRectangle,
     YellowSquare,
-    Fireball
+    Fireball,
+    ArcaneCube
 }

@@ -40,21 +40,25 @@ public class SpellCastingSystem : SpellSystem
 
     private void ResolveSpell(Entity spell, int originX, int originY, int targetX, int targetY)
     {
-        if (Has<SpawnsProjectileSpellFlag>(spell))
+        if (Has<TextureIndexOfSpawnedEntityComponent>(spell))
         {
-            var projectileTexture = Get<TextureIndexOfSpawnedEntityComponent>(spell).Index;
-            var projectileDamage = Has<SpawnedProjectileDamageComponent>(spell) ? Get<SpawnedProjectileDamageComponent>(spell).Damage : 0;
-            var projectileMoveRate = Get<SpawnedProjectileMoveRateComponent>(spell).Rate;
+            var spawnedEntity = _world.CreateEntity();
+            var spawnedEntityTexture = Get<TextureIndexOfSpawnedEntityComponent>(spell).Index;
+            _world.Set(spawnedEntity, new TextureIndexComponent(spawnedEntityTexture));
+            _world.Set(spawnedEntity, new GridCoordComponent(targetX, targetY));
 
-            var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
+            if (Has<SpawnsProjectileSpellFlag>(spell))
+            {
+                var projectileDamage = Has<SpawnedProjectileDamageComponent>(spell) ? Get<SpawnedProjectileDamageComponent>(spell).Damage : 0;
+                var projectileMoveRate = Get<SpawnedProjectileMoveRateComponent>(spell).Rate;
+                var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
 
-            var projectile = _world.CreateEntity();
-            _world.Set(projectile, new ProjectileDamageComponent(projectileDamage));
-            _world.Set(projectile, new ProjectileMoveRateComponent(projectileMoveRate));
-            _world.Set(projectile, new TextureIndexComponent(projectileTexture));
-            _world.Set(projectile, new GridCoordComponent(originX, originY));
-            _world.Set(projectile, new MovingInDirectionComponent(direction));
-            _world.Set(projectile, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
+                _world.Set(spawnedEntity, new GridCoordComponent(originX, originY));
+                _world.Set(spawnedEntity, new ProjectileDamageComponent(projectileDamage));
+                _world.Set(spawnedEntity, new ProjectileMoveRateComponent(projectileMoveRate));
+                _world.Set(spawnedEntity, new MovingInDirectionComponent(direction));
+                _world.Set(spawnedEntity, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
+            }
         }
     }
 

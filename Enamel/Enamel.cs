@@ -94,7 +94,7 @@ public class Enamel : Game
         ));
 
         // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-        _textures = new Texture2D[10];
+        _textures = new Texture2D[100];
 
         var redPixel = new Texture2D(GraphicsDevice, 1, 1);
         redPixel.SetData(new[] { Color.Red });
@@ -127,6 +127,7 @@ public class Enamel : Game
         _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
         _textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
+        _textures[(int)Sprite.ArcaneCube] = Content.Load<Texture2D>("ArcaneCube");
 
         /*
         SYSTEMS
@@ -208,17 +209,7 @@ public class Enamel : Game
         World.Set(turnTracker, new PositionComponent(200, 10));
 
         // Spells
-        var fireball = World.CreateEntity();
-        World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
-        World.Set(fireball, new CastRangeComponent(1));
-        World.Set(fireball, new TextureIndexOfSpawnedEntityComponent(Sprite.Fireball));
-        World.Set(fireball, new SpawnsProjectileSpellFlag());
-        World.Set(fireball, new SpawnedProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
-        World.Set(fireball, new SpawnedProjectileDamageComponent(1));
-
-        var arcaneBlock = World.CreateEntity();
-        World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
-        World.Set(arcaneBlock, new CastRangeComponent(1));
+        CreateSpells();
 
         World.Send(new EndTurnMessage());
 
@@ -285,5 +276,22 @@ public class Enamel : Game
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
         World.Set(playerEntity, new HealthComponent(2));
+    }
+
+    private void CreateSpells()
+    {
+        var fireball = World.CreateEntity();
+        World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
+        World.Set(fireball, new CastRangeComponent(1));
+        World.Set(fireball, new TextureIndexOfSpawnedEntityComponent(Sprite.Fireball));
+        World.Set(fireball, new SpawnsProjectileSpellFlag());
+        World.Set(fireball, new SpawnedProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
+        World.Set(fireball, new SpawnedProjectileDamageComponent(1));
+
+        var arcaneBlock = World.CreateEntity();
+        World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
+        World.Set(arcaneBlock, new CastRangeComponent(1));
+        World.Set(arcaneBlock, new TextureIndexOfSpawnedEntityComponent(Sprite.ArcaneCube));
+        World.Set(arcaneBlock, new SpawnedEntityFlag<ImpassableFlag>(new ImpassableFlag()));
     }
 }
