@@ -73,7 +73,7 @@ public class MoveSystem : MoonTools.ECS.System
         {
             // Danger, issuing a select message outside of the InputSystem!!
             // This is so the selectionPreview system knows to display the preview again
-            Send(entity, new SelectMessage());
+            Send(entity, new PlayerUnitSelectedMessage());
         }
     }
 

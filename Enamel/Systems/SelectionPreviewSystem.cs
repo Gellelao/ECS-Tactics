@@ -13,6 +13,7 @@ public class SelectionPreviewSystem : SpellSystem
 {
     private Filter MovementPreviewFilter { get; }
     private Filter SpellPreviewFilter { get; }
+    private Filter SelectableFilter { get; }
     private Filter ImpassableGridCoordFilter { get; }
     private World _world;
 
@@ -20,6 +21,9 @@ public class SelectionPreviewSystem : SpellSystem
     {
         MovementPreviewFilter = FilterBuilder.Include<MovementPreviewFlag>().Build();
         SpellPreviewFilter = FilterBuilder.Include<SpellPreviewFlag>().Build();
+        SelectableFilter = FilterBuilder
+            .Include<ControlledByPlayerComponent>()
+            .Exclude<DisabledFlag>().Build(); // This filter should also be checked by the systems sending the select message but doing it here as well
         ImpassableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
             .Include<ImpassableFlag>().Build();
@@ -46,9 +50,12 @@ public class SelectionPreviewSystem : SpellSystem
             CreateMovementPreviews(GetSingletonEntity<SelectedFlag>());
         }
 
-        foreach (var message in selectMessages)
+        foreach (var selectable in SelectableFilter.Entities)
         {
-            CreateMovementPreviews(message.);
+            if (SomeMessageWithEntity<PlayerUnitSelectedMessage>(selectable))
+            {
+                CreateMovementPreviews(selectable);
+            }
         }
 
         if (SomeMessage<PrepSpellMessage>())
