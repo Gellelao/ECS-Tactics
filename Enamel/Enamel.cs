@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
+using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
@@ -280,18 +282,25 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
-        var fireball = World.CreateEntity();
-        World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
-        World.Set(fireball, new CastRangeComponent(1));
-        World.Set(fireball, new TextureIndexOfSpawnedEntityComponent(Sprite.Fireball));
-        World.Set(fireball, new SpawnsProjectileSpellFlag());
-        World.Set(fireball, new SpawnedProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
-        World.Set(fireball, new SpawnedProjectileDamageComponent(1));
+        var fireballEntityTemplate = World.CreateTemplate();
+        //World.Set(fireballEntityTemplate, new TextureIndexComponent(Sprite.Fireball));
+        World.Set(fireballEntityTemplate, new ProjectileDamageComponent(1));
+        World.Set(fireballEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
+        World.Set(fireballEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
 
-        var arcaneBlock = World.CreateEntity();
-        World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
-        World.Set(arcaneBlock, new CastRangeComponent(1));
-        World.Set(arcaneBlock, new TextureIndexOfSpawnedEntityComponent(Sprite.ArcaneCube));
-        World.Set(arcaneBlock, new SpawnedEntityFlag<ImpassableFlag>(new ImpassableFlag()));
+        var fireballSpell = World.CreateEntity();
+        World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
+        World.Set(fireballSpell, new CastRangeComponent(1));
+        World.Set(fireballSpell, new SpawnedEntityTemplateComponent(fireballEntityTemplate));
+
+        var arcaneBlockEntityTemplate = World.CreateTemplate();
+        //World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
+        //World.Set(arcaneBlockEntityTemplate, new SpriteOriginComponent(5, 5));
+        World.Set(arcaneBlockEntityTemplate, new ImpassableFlag());
+
+        var arcaneBlockSpell = World.CreateEntity();
+        World.Set(arcaneBlockSpell, new SpellIdComponent(SpellId.ArcaneBlock));
+        World.Set(arcaneBlockSpell, new CastRangeComponent(1));
+        World.Set(arcaneBlockSpell, new SpawnedEntityTemplateComponent(arcaneBlockEntityTemplate));
     }
 }
