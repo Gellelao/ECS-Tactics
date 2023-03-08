@@ -169,6 +169,12 @@ public class Enamel : Game
         /*
         ENTITIES
         */
+
+        // Spells
+        // For whatever reason, putting the spell template creation after the ground tiles caused an exception when drawing.
+        // So just putting spells first until I decide to figure out why that happens
+        CreateSpells();
+
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
@@ -209,9 +215,6 @@ public class Enamel : Game
         World.Set(turnTracker, new TurnIndexComponent(-1));
         World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
-
-        // Spells
-        CreateSpells();
 
         World.Send(new EndTurnMessage());
 
@@ -283,7 +286,7 @@ public class Enamel : Game
     private void CreateSpells()
     {
         var fireballEntityTemplate = World.CreateTemplate();
-        //World.Set(fireballEntityTemplate, new TextureIndexComponent(Sprite.Fireball));
+        World.Set(fireballEntityTemplate, new TextureIndexComponent(Sprite.Fireball));
         World.Set(fireballEntityTemplate, new ProjectileDamageComponent(1));
         World.Set(fireballEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
         World.Set(fireballEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
@@ -294,8 +297,8 @@ public class Enamel : Game
         World.Set(fireballSpell, new SpawnedEntityTemplateComponent(fireballEntityTemplate));
 
         var arcaneBlockEntityTemplate = World.CreateTemplate();
-        //World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
-        //World.Set(arcaneBlockEntityTemplate, new SpriteOriginComponent(5, 5));
+        World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
+        World.Set(arcaneBlockEntityTemplate, new SpriteOriginComponent(-6, 9));
         World.Set(arcaneBlockEntityTemplate, new ImpassableFlag());
 
         var arcaneBlockSpell = World.CreateEntity();
