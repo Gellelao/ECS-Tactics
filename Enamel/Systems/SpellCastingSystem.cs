@@ -40,24 +40,15 @@ public class SpellCastingSystem : SpellSystem
 
     private void ResolveSpell(Entity spell, int originX, int originY, int targetX, int targetY)
     {
-        if (Has<TextureIndexOfSpawnedEntityComponent>(spell))
+        if (Has<SpawnedEntityTemplateComponent>(spell))
         {
-            var spawnedEntity = _world.CreateEntity();
-            var spawnedEntityTexture = Get<TextureIndexOfSpawnedEntityComponent>(spell).Index;
-            _world.Set(spawnedEntity, new TextureIndexComponent(spawnedEntityTexture));
+            var spawnedEntity = _world.Instantiate(Get<SpawnedEntityTemplateComponent>(spell).Template);
             _world.Set(spawnedEntity, new GridCoordComponent(targetX, targetY));
 
-            if (Has<SpawnsProjectileSpellFlag>(spell))
+            if (Has<ProjectileMoveRateComponent>(spawnedEntity))
             {
-                var projectileDamage = Has<SpawnedProjectileDamageComponent>(spell) ? Get<SpawnedProjectileDamageComponent>(spell).Damage : 0;
-                var projectileMoveRate = Get<SpawnedProjectileMoveRateComponent>(spell).Rate;
                 var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
-
-                _world.Set(spawnedEntity, new GridCoordComponent(originX, originY));
-                _world.Set(spawnedEntity, new ProjectileDamageComponent(projectileDamage));
-                _world.Set(spawnedEntity, new ProjectileMoveRateComponent(projectileMoveRate));
-                _world.Set(spawnedEntity, new MovingInDirectionComponent(direction));
-                _world.Set(spawnedEntity, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
+                Set(spawnedEntity, new MovingInDirectionComponent(direction));
             }
         }
     }

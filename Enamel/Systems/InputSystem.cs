@@ -65,7 +65,7 @@ public class InputSystem : MoonTools.ECS.System
             var position = Get<PositionComponent>(button);
             if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
             {
-                Send(new HighlightMessage(button));
+                Send(button, new HighlightMessage());
             }
         }
 
@@ -76,7 +76,7 @@ public class InputSystem : MoonTools.ECS.System
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)gridCoords.X == x && (int)gridCoords.Y == y)
             {
-                Send(new HighlightMessage(entity));
+                Send(entity, new HighlightMessage());
             }
         }
     }
@@ -130,7 +130,7 @@ public class InputSystem : MoonTools.ECS.System
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)clickedCoords.X == x && (int)clickedCoords.Y == y)
             {
-                Send(new SelectMessage(entity));
+                Send(entity, new SelectMessage());
             }
         }
     }

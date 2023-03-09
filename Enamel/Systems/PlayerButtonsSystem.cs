@@ -43,7 +43,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
     {
         var screenX = 0;
         var spells = OutRelations<HasSpellRelation>(entity);
-        foreach (var (spell, _) in spells)
+        foreach (var spell in spells)
         {
             var spellIdComponent = Get<SpellIdComponent>(spell);
             Console.WriteLine($"Selected player knows spell {spellIdComponent}");

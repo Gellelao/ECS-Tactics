@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
+using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
@@ -167,6 +169,12 @@ public class Enamel : Game
         /*
         ENTITIES
         */
+
+        // Spells
+        // For whatever reason, putting the spell template creation after the ground tiles caused an exception when drawing.
+        // So just putting spells first until I decide to figure out why that happens
+        CreateSpells();
+
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
@@ -207,9 +215,6 @@ public class Enamel : Game
         World.Set(turnTracker, new TurnIndexComponent(-1));
         World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new PositionComponent(200, 10));
-
-        // Spells
-        CreateSpells();
 
         World.Send(new EndTurnMessage());
 
@@ -280,18 +285,25 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
-        var fireball = World.CreateEntity();
-        World.Set(fireball, new SpellIdComponent(SpellId.Fireball));
-        World.Set(fireball, new CastRangeComponent(1));
-        World.Set(fireball, new TextureIndexOfSpawnedEntityComponent(Sprite.Fireball));
-        World.Set(fireball, new SpawnsProjectileSpellFlag());
-        World.Set(fireball, new SpawnedProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
-        World.Set(fireball, new SpawnedProjectileDamageComponent(1));
+        var fireballEntityTemplate = World.CreateTemplate();
+        World.Set(fireballEntityTemplate, new TextureIndexComponent(Sprite.Fireball));
+        World.Set(fireballEntityTemplate, new ProjectileDamageComponent(1));
+        World.Set(fireballEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
+        World.Set(fireballEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
 
-        var arcaneBlock = World.CreateEntity();
-        World.Set(arcaneBlock, new SpellIdComponent(SpellId.ArcaneBlock));
-        World.Set(arcaneBlock, new CastRangeComponent(1));
-        World.Set(arcaneBlock, new TextureIndexOfSpawnedEntityComponent(Sprite.ArcaneCube));
-        World.Set(arcaneBlock, new SpawnedEntityFlag<ImpassableFlag>(new ImpassableFlag()));
+        var fireballSpell = World.CreateEntity();
+        World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
+        World.Set(fireballSpell, new CastRangeComponent(1));
+        World.Set(fireballSpell, new SpawnedEntityTemplateComponent(fireballEntityTemplate));
+
+        var arcaneBlockEntityTemplate = World.CreateTemplate();
+        World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
+        World.Set(arcaneBlockEntityTemplate, new SpriteOriginComponent(-6, 9));
+        World.Set(arcaneBlockEntityTemplate, new ImpassableFlag());
+
+        var arcaneBlockSpell = World.CreateEntity();
+        World.Set(arcaneBlockSpell, new SpellIdComponent(SpellId.ArcaneBlock));
+        World.Set(arcaneBlockSpell, new CastRangeComponent(1));
+        World.Set(arcaneBlockSpell, new SpawnedEntityTemplateComponent(arcaneBlockEntityTemplate));
     }
 }
