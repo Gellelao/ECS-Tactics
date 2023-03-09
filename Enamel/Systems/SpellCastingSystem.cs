@@ -35,6 +35,8 @@ public class SpellCastingSystem : SpellSystem
             var spell = GetSpell(spellToCastComponent.SpellId);
 
             ResolveSpell(spell, originX, originY, targetX, targetY);
+            // Danger, issuing a select message like I'm doing in the MoveSystem
+            Send(casterEntity, new PlayerUnitSelectedMessage());
         }
     }
 

@@ -44,7 +44,7 @@ public class MoveSystem : MoonTools.ECS.System
             // If at destination, reapply the gridComponent with the target grid coords
             var newPositionVector = newPosition.ToVector;
             // Fast moving entities need a more lenient threshold to tell if they are at destination
-            var threshold = speed < 80 ? 1 : 2;
+            var threshold = speed < 80 ? 1 : 3;
             if (Math.Abs(Math.Round(newPositionVector.X) - targetPosition.ScreenX) <= threshold &&
                 Math.Abs(Math.Round(newPositionVector.Y) - targetPosition.ScreenY) <= threshold)
             {
