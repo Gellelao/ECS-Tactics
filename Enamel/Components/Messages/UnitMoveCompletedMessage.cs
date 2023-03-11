@@ -2,4 +2,4 @@
 
 namespace Enamel.Components.Messages;
 
-public readonly record struct UnitMoveCompletedMessage(Entity UnitMoved, bool MovesRemaining);
+public readonly record struct UnitMoveCompletedMessage(Entity UnitMoved);

@@ -69,7 +69,7 @@ public class MoveSystem : MoonTools.ECS.System
         var remainingMoves = Get<RemainingMovesComponent>(entity).RemainingMoves - 1;
         Set(entity, new RemainingMovesComponent(remainingMoves));
 
-        Send(entity, new UnitMoveCompletedMessage(entity, remainingMoves > 0));
+        Send(entity, new UnitMoveCompletedMessage(entity));
     }
 
     private PositionComponent MoveTowards(PositionComponent current, MovingToPositionComponent target, int moveSpeed, TimeSpan deltaTime)

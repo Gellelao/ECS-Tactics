@@ -50,13 +50,9 @@ public class SelectionPreviewSystem : SpellSystem
 
         foreach (var selectable in PlayerControlledFilter.Entities)
         {
-            if (SomeMessageWithEntity<PlayerUnitSelectedMessage>(selectable))
-            {
-                CreateMovementPreviews(selectable);
-            }
-
-            if (SomeMessageWithEntity<UnitMoveCompletedMessage>(selectable) &&
-                ReadMessageWithEntity<UnitMoveCompletedMessage>(selectable).MovesRemaining)
+            if (SomeMessageWithEntity<SpellWasCastMessage>(selectable) ||
+                SomeMessageWithEntity<UnitMoveCompletedMessage>(selectable) ||
+                SomeMessageWithEntity<PlayerUnitSelectedMessage>(selectable))
             {
                 CreateMovementPreviews(selectable);
             }
