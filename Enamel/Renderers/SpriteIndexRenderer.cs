@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
@@ -41,6 +43,8 @@ public class SpriteIndexRenderer : Renderer
     */
     public void Draw()
     {
+        var renderOrderDict = GetRenderOrder(TextureIndexFilter.Entities);
+        var orderedList = renderOrderDict.OrderBy(kvp => kvp.Key).ToList();
         /*
         start the sprite batch. everything between SpriteBatch.Begin() and SpriteBatch.End() 
         is going to be in the same batch. everything that gets batched together has to use 
@@ -59,11 +63,39 @@ public class SpriteIndexRenderer : Renderer
             RasterizerState.CullCounterClockwise,
             null,
             Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
-        foreach (var entity in TextureIndexFilter.Entities)
+        foreach (var kvp in orderedList)
         {
+            foreach (var entity in kvp.Value)
+            {
+                DrawEntity(entity);
+            }
+        }
+        SpriteBatch.End();
+    }
+
+    private Dictionary<int, List<Entity>> GetRenderOrder(ReverseSpanEnumerator<Entity> entities)
+    {
+        var renderOrderDict = new Dictionary<int, List<Entity>>();
+        foreach (var entity in entities)
+        {
+            var yPos = Get<PositionComponent>(entity).Y;
+            if (renderOrderDict.TryGetValue(yPos, out var list))
+            {
+                list.Add(entity);
+            }
+            else
+            {
+                renderOrderDict.Add(yPos, new List<Entity>{ entity });
+            }
+        }
+        return renderOrderDict;
+    }
+
+    private void DrawEntity(Entity entity)
+    {
             var indexComponent = Get<TextureIndexComponent>(entity);
             var positionComponent = Get<PositionComponent>(entity);
-            
+
             var origin = Vector2.Zero;
             if(Has<SpriteOriginComponent>(entity)){
                 var originComponent = Get<SpriteOriginComponent>(entity);
@@ -118,7 +150,5 @@ public class SpriteIndexRenderer : Renderer
                 0
             );
 #endif
-        }
-        SpriteBatch.End();
     }
 }
