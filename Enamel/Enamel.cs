@@ -226,12 +226,12 @@ public class Enamel : Game
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
+        _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
         _projectileSystem?.Update(elapsedTime); // Should run before _moveSystem because the projectileSystem adds MovingToPositionComponents to entities
         _damageSystem?.Update(elapsedTime); // Should run after projectileSystem because the projectileSystem sends DamageMessages
         _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
-        _spellCastingSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // This has to run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // This needs to run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.
