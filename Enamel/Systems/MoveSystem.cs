@@ -69,12 +69,7 @@ public class MoveSystem : MoonTools.ECS.System
         var remainingMoves = Get<RemainingMovesComponent>(entity).RemainingMoves - 1;
         Set(entity, new RemainingMovesComponent(remainingMoves));
 
-        if (remainingMoves > 0)
-        {
-            // Danger, issuing a select message outside of the InputSystem!!
-            // This is so the selectionPreview system knows to display the preview again
-            Send(entity, new PlayerUnitSelectedMessage());
-        }
+        Send(entity, new UnitMoveCompletedMessage(entity, remainingMoves > 0));
     }
 
     private PositionComponent MoveTowards(PositionComponent current, MovingToPositionComponent target, int moveSpeed, TimeSpan deltaTime)
