@@ -48,8 +48,6 @@ public class Enamel : Game
 
     private const int ScreenWidth = 1024;
     private const int ScreenHeight = 768;
-    private const int TileWidth = 40;
-    private const int TileHeight = 20;
     private const int UpscaleFactor = 2;
     private RenderTarget2D _renderTarget;
 
@@ -141,11 +139,11 @@ public class Enamel : Game
         it doesn't matter what order you create the systems in, we'll specify in what order they run later.
         */
         // I think these only work if the map is square but it probably will be
-        var mapHeightInPixels = TileHeight * Constants.MAP_HEIGHT * UpscaleFactor;
-        var xOffset = ScreenWidth / 2 / UpscaleFactor - TileWidth/2;
+        var mapHeightInPixels = Constants.TILE_HEIGHT * Constants.MAP_HEIGHT * UpscaleFactor;
+        var xOffset = ScreenWidth / 2 / UpscaleFactor - Constants.TILE_WIDTH/2;
         var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
-        _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, TileWidth, TileHeight, xOffset, yOffset);
-        _inputSystem = new InputSystem(World, UpscaleFactor, TileWidth, TileHeight, xOffset, yOffset);
+        _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, xOffset, yOffset);
+        _inputSystem = new InputSystem(World, UpscaleFactor, xOffset, yOffset);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _highlightSystem = new HighlightSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
@@ -273,8 +271,8 @@ public class Enamel : Game
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
         World.Set(playerEntity, new SpriteOriginComponent(
-            _textures[(int)sprite].Width/2 - TileWidth/2,
-            (int)(_textures[(int)sprite].Height*0.45 - TileHeight/2))
+            _textures[(int)sprite].Width/2 - Constants.TILE_WIDTH/2,
+            (int)(_textures[(int)sprite].Height*0.45 - Constants.TILE_HEIGHT/2))
         );
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));

@@ -26,11 +26,14 @@ public class ProjectileSystem : MoonTools.ECS.System
     {
         foreach (var movingEntity in MovingInDirectionFilter.Entities)
         {
-            var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
-            var damage = Get<ProjectileDamageComponent>(movingEntity).Damage;
             if (!Has<GridCoordComponent>(movingEntity)) continue;
-
             var (gridX, gridY) = Get<GridCoordComponent>(movingEntity);
+
+            var entityDestroyed = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
+            if (entityDestroyed) continue;
+
+            var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
+
             switch (direction)
             {
                 case Direction.North:
@@ -51,27 +54,35 @@ public class ProjectileSystem : MoonTools.ECS.System
                     throw new ArgumentOutOfRangeException();
             }
 
-            var entitiesAtDestination = GetEntitiesAtCoords(gridX, gridY);
-            if (entitiesAtDestination.Any())
-            {
-                var screenPos = Get<PositionComponent>(entitiesAtDestination.First());
-                _world.Set(movingEntity, new MovingToPositionComponent(screenPos.X, screenPos.Y, gridX, gridY));
-                Remove<GridCoordComponent>(movingEntity);
+            var screenPos = Utils.GridToScreenCoords(gridX, gridY);
+            _world.Set(movingEntity, new MovingToPositionComponent((int)screenPos.X, (int)screenPos.Y, gridX, gridY));
+            Remove<GridCoordComponent>(movingEntity);
+        }
+    }
 
-                var impassableEntities = entitiesAtDestination.Where(e => Has<ImpassableFlag>(e)).ToList();
-                if (impassableEntities.Any())
-                {
-                    Send(impassableEntities.First(), new DamageMessage(damage));
-                    Destroy(movingEntity);
-                }
-            }
-            else
+    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int gridX, int gridY)
+    {
+        var damage = Get<ProjectileDamageComponent>(movingEntity).Damage;
+        var entitiesAtDestination = GetEntitiesAtCoords(gridX, gridY);
+        if (entitiesAtDestination.Any())
+        {
+            var impassableEntities = entitiesAtDestination.Where(e => Has<ImpassableFlag>(e)).ToList();
+            if (impassableEntities.Any())
             {
-                // Must be at edge of map because there should at least be a GroundTile at every valid coord
-                Console.WriteLine($"Destroying projectile because it reached {gridX},{gridY}");
+                Send(impassableEntities.First(), new DamageMessage(damage));
                 Destroy(movingEntity);
+                return true;
             }
         }
+        else
+        {
+            // Must be at edge of map because there should at least be a GroundTile at every valid coord
+            Console.WriteLine($"Destroying projectile because it reached {gridX},{gridY}");
+            Destroy(movingEntity);
+            return true;
+        }
+
+        return false;
     }
 
     private List<Entity> GetEntitiesAtCoords(int x, int y)

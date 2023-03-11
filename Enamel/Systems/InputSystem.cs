@@ -16,12 +16,10 @@ public class InputSystem : MoonTools.ECS.System
     private Filter ClickableUIFilter { get; }
     private MouseState _mousePrevious;
     private readonly int _upscaleFactor;
-    private readonly int _tileWidth;
-    private readonly int _tileHeight;
     private readonly int _xOffset;
     private readonly int _yOffset;
 
-    public InputSystem(World world, int upscaleFactor, int tileWidth, int tileHeight, int xOffset, int yOffset) : base(world)
+    public InputSystem(World world, int upscaleFactor, int xOffset, int yOffset) : base(world)
     {
         SelectableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
@@ -32,8 +30,6 @@ public class InputSystem : MoonTools.ECS.System
             .Exclude<DisabledFlag>()
             .Build();
         _upscaleFactor = upscaleFactor;
-        _tileWidth = tileWidth;
-        _tileHeight = tileHeight;
         _xOffset = xOffset;
         _yOffset = yOffset;
     }
@@ -137,10 +133,10 @@ public class InputSystem : MoonTools.ECS.System
 
     private Vector2 ScreenToGridCoords(int mouseX, int mouseY)
     {
-        float mouseFloatX = mouseX - (_tileWidth/2) - _xOffset;
+        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _xOffset;
         float mouseFloatY = mouseY - _yOffset;
-        float tileWidthFloat = _tileWidth;
-        float tileHeightFloat = _tileHeight;
+        float tileWidthFloat = Constants.TILE_WIDTH;
+        float tileHeightFloat = Constants.TILE_HEIGHT;
 
         var gridX = mouseFloatY / tileHeightFloat + mouseFloatX / tileWidthFloat;
         var gridY = mouseFloatY / tileHeightFloat - mouseFloatX / tileWidthFloat;
