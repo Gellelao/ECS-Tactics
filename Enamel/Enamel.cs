@@ -154,7 +154,7 @@ public class Enamel : Game
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
         _spellCastingSystem = new SpellCastingSystem(World);
-        _projectileSystem = new ProjectileSystem(World);
+        _projectileSystem = new ProjectileSystem(World, xOffset, yOffset);
         _damageSystem = new DamageSystem(World);
         _unitDisablingSystem = new UnitDisablingSystem(World);
 

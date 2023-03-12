@@ -12,12 +12,16 @@ namespace Enamel.Systems;
 public class ProjectileSystem : MoonTools.ECS.System
 {
     private readonly World _world;
+    private readonly int _xOffset;
+    private readonly int _yOffset;
     private Filter MovingInDirectionFilter { get; }
     private Filter GridCoordFilter { get; }
 
-    public ProjectileSystem(World world) : base(world)
+    public ProjectileSystem(World world, int xOffset, int yOffset) : base(world)
     {
         _world = world;
+        _xOffset = xOffset;
+        _yOffset = yOffset;
         MovingInDirectionFilter = FilterBuilder.Include<MovingInDirectionComponent>().Build();
         GridCoordFilter = FilterBuilder.Include<GridCoordComponent>().Build();
     }
@@ -80,7 +84,7 @@ public class ProjectileSystem : MoonTools.ECS.System
         }
 
         var screenPos = Utils.GridToScreenCoords(gridX, gridY);
-        _world.Set(movingEntity, new MovingToPositionComponent((int)screenPos.X, (int)screenPos.Y, gridX, gridY));
+        _world.Set(movingEntity, new MovingToPositionComponent((int)screenPos.X + _xOffset, (int)screenPos.Y + _yOffset, gridX, gridY));
         Remove<GridCoordComponent>(movingEntity);
     }
 
