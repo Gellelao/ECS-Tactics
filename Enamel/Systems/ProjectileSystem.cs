@@ -91,10 +91,12 @@ public class ProjectileSystem : MoonTools.ECS.System
     private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int gridX, int gridY)
     {
         var damage = Get<ProjectileDamageComponent>(movingEntity).Damage;
-        var entitiesAtDestination = GetEntitiesAtCoords(gridX, gridY);
-        if (entitiesAtDestination.Any())
+        var entitiesAtLocation = GetEntitiesAtCoords(gridX, gridY);
+        // It actually looks quite good with projectiles travelling past the edge of the screen, but need to destroy them eventually, so for now just destroy once out of bounds of the map
+        entitiesAtLocation.Remove(movingEntity);
+        if (entitiesAtLocation.Any())
         {
-            var impassableEntities = entitiesAtDestination.Where(e => Has<ImpassableFlag>(e)).ToList();
+            var impassableEntities = entitiesAtLocation.Where(e => Has<ImpassableFlag>(e)).ToList();
             if (impassableEntities.Any())
             {
                 Send(impassableEntities.First(), new DamageMessage(damage));
