@@ -46,6 +46,9 @@ public class SpellCastingSystem : SpellSystem
         {
             var spawnedEntity = _world.Instantiate(Get<SpawnedEntityTemplateComponent>(spell).Template);
             _world.Set(spawnedEntity, new GridCoordComponent(targetX, targetY));
+            // The GridToScreenCoordSystem should do this but that system runs much later so we'll do it ourselves here as well
+            var screenCoords = Utils.GridToScreenCoords(targetX, targetY);
+            _world.Set(spawnedEntity, new PositionComponent(screenCoords.X, screenCoords.Y));
 
             if (Has<ProjectileMoveRateComponent>(spawnedEntity))
             {

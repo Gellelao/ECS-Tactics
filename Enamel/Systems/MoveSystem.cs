@@ -41,10 +41,10 @@ public class MoveSystem : MoonTools.ECS.System
             var targetPosition = Get<MovingToPositionComponent>(entity);
             var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_MOVE_SPEED;
             var newPosition = MoveTowards(positionComponent, targetPosition, speed, delta);
-            // If at destination, reapply the gridComponent with the target grid coords
             var newPositionVector = newPosition.ToVector;
             // Fast moving entities need a more lenient threshold to tell if they are at destination
             var threshold = speed < 80 ? 1 : 3;
+            // If at destination, reapply the gridComponent with the target grid coords
             if (Math.Abs(Math.Round(newPositionVector.X) - targetPosition.ScreenX) <= threshold &&
                 Math.Abs(Math.Round(newPositionVector.Y) - targetPosition.ScreenY) <= threshold)
             {
