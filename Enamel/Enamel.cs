@@ -237,6 +237,7 @@ public class Enamel : Game
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
+        _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the MoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only things with access to the _offsets...
         _projectileSystem?.Update(elapsedTime); // Should run before _moveSystem because the projectileSystem adds MovingToPositionComponents to entities
         _damageSystem?.Update(elapsedTime); // Should run after projectileSystem because the projectileSystem sends DamageMessages
         _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
