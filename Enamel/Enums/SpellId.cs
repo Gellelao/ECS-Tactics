@@ -3,5 +3,6 @@
 public enum SpellId
 {
     Fireball,
-    ArcaneBlock
+    ArcaneBlock,
+    ArcaneBubble
 }

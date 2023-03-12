@@ -26,38 +26,62 @@ public class ProjectileSystem : MoonTools.ECS.System
     {
         foreach (var movingEntity in MovingInDirectionFilter.Entities)
         {
-            if (!Has<GridCoordComponent>(movingEntity)) continue;
-            var (gridX, gridY) = Get<GridCoordComponent>(movingEntity);
-
-            var entityDestroyed = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
-            if (entityDestroyed) continue;
-
-            var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
-
-            switch (direction)
+            if (Has<ProjectileMoveRateComponent>(movingEntity))
             {
-                case Direction.North:
-                    gridY -= 1;
-                    break;
-                case Direction.East:
-                    gridX += 1;
-                    break;
-                case Direction.South:
-                    gridY += 1;
-                    break;
-                case Direction.West:
-                    gridX -= 1;
-                    break;
-                case Direction.None:
-                default:
-                    // Should not have Direction.None at this point, so throw
-                    throw new ArgumentOutOfRangeException();
+                switch (Get<ProjectileMoveRateComponent>(movingEntity).Rate)
+                {
+                    case ProjectileMoveRate.Immediate:
+                        MoveOnce(movingEntity);
+                        break;
+                   case ProjectileMoveRate.PerStep:
+                       if (SomeMessage<SpellWasCastMessage>() || SomeMessage<UnitMoveCompletedMessage>())
+                       {
+                           MoveOnce(movingEntity);
+                       }
+                       break;
+                    case ProjectileMoveRate.PerEvenStep:
+                        throw new NotImplementedException(
+                            "Haven't added PerEvenStep projectile movement yet because not sure its a good idea");
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
-
-            var screenPos = Utils.GridToScreenCoords(gridX, gridY);
-            _world.Set(movingEntity, new MovingToPositionComponent((int)screenPos.X, (int)screenPos.Y, gridX, gridY));
-            Remove<GridCoordComponent>(movingEntity);
         }
+    }
+
+    private void MoveOnce(Entity movingEntity)
+    {
+        if (!Has<GridCoordComponent>(movingEntity)) return;
+        var (gridX, gridY) = Get<GridCoordComponent>(movingEntity);
+
+        var entityDestroyed = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
+        if (entityDestroyed) return;
+
+        var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
+
+        switch (direction)
+        {
+            case Direction.North:
+                gridY -= 1;
+                break;
+            case Direction.East:
+                gridX += 1;
+                break;
+            case Direction.South:
+                gridY += 1;
+                break;
+            case Direction.West:
+                gridX -= 1;
+                break;
+            case Direction.None:
+            default:
+                // Should not have Direction.None at this point, so throw
+                throw new ArgumentOutOfRangeException();
+        }
+
+        var screenPos = Utils.GridToScreenCoords(gridX, gridY);
+        _world.Set(movingEntity, new MovingToPositionComponent((int)screenPos.X, (int)screenPos.Y, gridX, gridY));
+        Remove<GridCoordComponent>(movingEntity);
     }
 
     private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int gridX, int gridY)

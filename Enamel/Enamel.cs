@@ -128,6 +128,7 @@ public class Enamel : Game
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
         _textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
         _textures[(int)Sprite.ArcaneCube] = Content.Load<Texture2D>("ArcaneCube");
+        _textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
 
         /*
         SYSTEMS
@@ -197,6 +198,13 @@ public class Enamel : Game
         World.Set(learnArcaneBlockButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnArcaneBlockButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBlock));
+
+        var learnArcaneBubbleButton = World.CreateEntity();
+        World.Set(learnArcaneBubbleButton, new PositionComponent(50, 260));
+        World.Set(learnArcaneBubbleButton, new DimensionsComponent(40, 20));
+        World.Set(learnArcaneBubbleButton, new TextureIndexComponent(Sprite.GreenRectangle));
+        World.Set(learnArcaneBubbleButton, new OnClickComponent(ClickEvent.LearnSpell));
+        World.Set(learnArcaneBubbleButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBubble));
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
@@ -303,5 +311,16 @@ public class Enamel : Game
         World.Set(arcaneBlockSpell, new SpellIdComponent(SpellId.ArcaneBlock));
         World.Set(arcaneBlockSpell, new CastRangeComponent(1));
         World.Set(arcaneBlockSpell, new SpawnedEntityTemplateComponent(arcaneBlockEntityTemplate));
+
+        var arcaneBubbleEntityTemplate = World.CreateTemplate();
+        World.Set(arcaneBubbleEntityTemplate, new TextureIndexComponent(Sprite.ArcaneBubble));
+        World.Set(arcaneBubbleEntityTemplate, new ProjectileDamageComponent(2));
+        World.Set(arcaneBubbleEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.PerStep));
+        World.Set(arcaneBubbleEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED/10));
+
+        var arcaneBubbleSpell = World.CreateEntity();
+        World.Set(arcaneBubbleSpell, new SpellIdComponent(SpellId.ArcaneBubble));
+        World.Set(arcaneBubbleSpell, new CastRangeComponent(1));
+        World.Set(arcaneBubbleSpell, new SpawnedEntityTemplateComponent(arcaneBubbleEntityTemplate));
     }
 }
