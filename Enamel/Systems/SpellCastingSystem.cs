@@ -29,18 +29,17 @@ public class SpellCastingSystem : SpellSystem
             var (targetX, targetY)= Get<GridCoordComponent>(spellPreview);
             
             var casterEntity = GetSingletonEntity<SelectedFlag>();
-            var (originX, originY) = Get<GridCoordComponent>(casterEntity);
 
             var spellToCastComponent = Get<SpellToCastOnClickComponent>(spellPreview);
             var spell = GetSpell(spellToCastComponent.SpellId);
 
-            ResolveSpell(spell, originX, originY, targetX, targetY);
+            ResolveSpell(spell, casterEntity, targetX, targetY);
 
             Send(casterEntity, new SpellWasCastMessage(casterEntity, spellToCastComponent.SpellId));
         }
     }
 
-    private void ResolveSpell(Entity spell, int originX, int originY, int targetX, int targetY)
+    private void ResolveSpell(Entity spell, Entity casterEntity, int targetX, int targetY)
     {
         if (Has<SpawnedEntityTemplateComponent>(spell))
         {
@@ -49,9 +48,14 @@ public class SpellCastingSystem : SpellSystem
 
             if (Has<ProjectileMoveRateComponent>(spawnedEntity))
             {
+                var (originX, originY) = Get<GridCoordComponent>(casterEntity);
                 var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
                 Set(spawnedEntity, new MovingInDirectionComponent(direction));
             }
+        }
+        if(Has<MovesCasterToTargetFlag>(spell))
+        {
+            Set(casterEntity, new MovingToPositionComponent(targetX, targetY));
         }
     }
 
