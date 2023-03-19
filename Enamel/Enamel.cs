@@ -337,7 +337,7 @@ public class Enamel : Game
         World.Set(rockChargeSpell, new SpellIdComponent(SpellId.RockCharge));
         World.Set(rockChargeSpell, new CastRangeComponent(4));
         World.Set(rockChargeSpell, new CardinalCastRestrictionFlag());
-        World.Set(rockChargeSpell, new MovesCasterToTargetFlag());
+        World.Set(rockChargeSpell, new MovesCasterToTargetComponent(150));
         World.Set(rockChargeSpell, new CanTargetImpassableFlag());
-}
+    }
 }

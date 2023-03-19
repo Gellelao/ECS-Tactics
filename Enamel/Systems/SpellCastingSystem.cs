@@ -53,9 +53,11 @@ public class SpellCastingSystem : SpellSystem
                 Set(spawnedEntity, new MovingInDirectionComponent(direction));
             }
         }
-        if(Has<MovesCasterToTargetFlag>(spell))
+        if(Has<MovesCasterToTargetComponent>(spell))
         {
+            var speed = Get<MovesCasterToTargetComponent>(spell).Speed;
             Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
+            Set(casterEntity, new SpeedComponent(speed));
             Remove<GridCoordComponent>(casterEntity);
         }
     }
