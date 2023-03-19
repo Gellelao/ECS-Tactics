@@ -69,6 +69,7 @@ public class SelectionPreviewSystem : SpellSystem
 
     private void CreateMovementPreviews(Entity movingUnit)
     {
+        if(!Has<GridCoordComponent>(movingUnit)) return; // For the case a playerControlled unit has cast a spell that moves the caster
         if (Has<MovesPerTurnComponent>(movingUnit))
         {
             var remainingMoves = Get<RemainingMovesComponent>(movingUnit).RemainingMoves;
@@ -122,7 +123,7 @@ public class SelectionPreviewSystem : SpellSystem
             for (var y = 0; y < Constants.MAP_HEIGHT; y++)
             {
                 if (!previewOnImpassableTiles && ImpassableUnitAtCoord(x, y)) continue;
-                if(cardinalOnly && NotCardinal(origin, x, y)) continue;
+                if (cardinalOnly && NotCardinal(origin, x, y)) continue;
                 var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
                 if (distance <= range)
                 {

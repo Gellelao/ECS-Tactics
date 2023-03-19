@@ -56,6 +56,7 @@ public class SpellCastingSystem : SpellSystem
         if(Has<MovesCasterToTargetFlag>(spell))
         {
             Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
+            Remove<GridCoordComponent>(casterEntity);
         }
     }
 
