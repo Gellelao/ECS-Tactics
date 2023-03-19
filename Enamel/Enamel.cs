@@ -149,12 +149,12 @@ public class Enamel : Game
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _highlightSystem = new HighlightSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
-        _moveSystem = new MoveSystem(World);
+        _moveSystem = new MoveSystem(World, xOffset, yOffset);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
         _spellCastingSystem = new SpellCastingSystem(World);
-        _projectileSystem = new ProjectileSystem(World, xOffset, yOffset);
+        _projectileSystem = new ProjectileSystem(World);
         _damageSystem = new DamageSystem(World);
         _unitDisablingSystem = new UnitDisablingSystem(World);
 

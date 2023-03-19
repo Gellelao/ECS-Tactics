@@ -1,6 +1,7 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Microsoft.Xna.Framework;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -9,15 +10,19 @@ public class MoveSystem : MoonTools.ECS.System
 {
     private Filter MovePreviewFilter { get; }
     private Filter MovingUnitsFilter { get; }
+    private readonly int _xOffset;
+    private readonly int _yOffset;
     
-    public MoveSystem(World world) : base(world)
+    public MoveSystem(World world, int xOffset, int yOffset) : base(world)
     {
         MovePreviewFilter = FilterBuilder
             .Include<MovementPreviewFlag>()
             .Build();
         MovingUnitsFilter = FilterBuilder
-            .Include<MovingToPositionComponent>()
+            .Include<MovingToCoordComponent>()
             .Build();
+        _xOffset = xOffset;
+        _yOffset = yOffset;
     }
 
     public override void Update(TimeSpan delta)
@@ -27,10 +32,9 @@ public class MoveSystem : MoonTools.ECS.System
         {
             if (!SomeMessageWithEntity<SelectMessage>(entity)) continue;
             
-            var targetScreenPosition = Get<PositionComponent>(entity);
             var targetGridPosition = Get<GridCoordComponent>(entity);
             var selectedEntity = GetSingletonEntity<SelectedFlag>();
-            Set(selectedEntity, new MovingToPositionComponent(targetScreenPosition.X, targetScreenPosition.Y, targetGridPosition.X, targetGridPosition.Y));
+            Set(selectedEntity, new MovingToCoordComponent(targetGridPosition.X, targetGridPosition.Y));
             Remove<GridCoordComponent>(selectedEntity);
         }
         
@@ -38,18 +42,23 @@ public class MoveSystem : MoonTools.ECS.System
         foreach (var entity in MovingUnitsFilter.Entities)
         {
             var positionComponent = Get<PositionComponent>(entity);
-            var targetPosition = Get<MovingToPositionComponent>(entity);
+            var targetPosition = Get<MovingToCoordComponent>(entity);
             var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_MOVE_SPEED;
-            var newPosition = MoveTowards(positionComponent, targetPosition, speed, delta);
+
+            var targetScreenPos = Utils.GridToScreenCoords(targetPosition.GridX, targetPosition.GridY);
+            targetScreenPos.X += _xOffset;
+            targetScreenPos.Y += _yOffset;
+
+            var newPosition = MoveTowards(positionComponent, targetScreenPos, speed, delta);
             var newPositionVector = newPosition.ToVector;
             // Fast moving entities need a more lenient threshold to tell if they are at destination
             var threshold = speed < 80 ? 1 : 3;
             // If at destination, reapply the gridComponent with the target grid coords
-            if (Math.Abs(Math.Round(newPositionVector.X) - targetPosition.ScreenX) <= threshold &&
-                Math.Abs(Math.Round(newPositionVector.Y) - targetPosition.ScreenY) <= threshold)
+            if (Math.Abs(Math.Round(newPositionVector.X) - targetScreenPos.X) <= threshold &&
+                Math.Abs(Math.Round(newPositionVector.Y) - targetScreenPos.Y) <= threshold)
             {
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
-                Remove<MovingToPositionComponent>(entity);
+                Remove<MovingToCoordComponent>(entity);
 
                 if (Has<RemainingMovesComponent>(entity))
                 {
@@ -72,15 +81,15 @@ public class MoveSystem : MoonTools.ECS.System
         Send(entity, new UnitMoveCompletedMessage(entity));
     }
 
-    private PositionComponent MoveTowards(PositionComponent current, MovingToPositionComponent target, int moveSpeed, TimeSpan deltaTime)
+    private PositionComponent MoveTowards(PositionComponent current, Vector2 target, int moveSpeed, TimeSpan deltaTime)
     {
         var currentVector = current.ToVector;
         var x = currentVector.X;
         var y = currentVector.Y;
-        if (x < target.ScreenX) x += (float)(2 * moveSpeed*deltaTime.TotalSeconds);
-        if (x > target.ScreenX) x -= (float)(2 * moveSpeed*deltaTime.TotalSeconds);
-        if (y < target.ScreenY) y += (float)(moveSpeed*deltaTime.TotalSeconds);
-        if (y > target.ScreenY) y -= (float)(moveSpeed*deltaTime.TotalSeconds);
+        if (x < target.X) x += (float)(2 * moveSpeed*deltaTime.TotalSeconds);
+        if (x > target.X) x -= (float)(2 * moveSpeed*deltaTime.TotalSeconds);
+        if (y < target.Y) y += (float)(moveSpeed*deltaTime.TotalSeconds);
+        if (y > target.Y) y -= (float)(moveSpeed*deltaTime.TotalSeconds);
         return new PositionComponent(x, y);
     }
 }
