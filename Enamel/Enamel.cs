@@ -331,7 +331,7 @@ public class Enamel : Game
         World.Set(arcaneBubbleSpell, new SpellIdComponent(SpellId.ArcaneBubble));
         World.Set(arcaneBubbleSpell, new CastRangeComponent(1));
         World.Set(arcaneBubbleSpell, new SpawnedEntityTemplateComponent(arcaneBubbleEntityTemplate));
-        World.Set(fireballSpell, new CanTargetImpassableFlag());
+        World.Set(arcaneBubbleSpell, new CanTargetImpassableFlag());
 
         var rockChargeSpell = World.CreateEntity();
         World.Set(rockChargeSpell, new SpellIdComponent(SpellId.RockCharge));
