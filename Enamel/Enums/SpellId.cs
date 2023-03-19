@@ -4,5 +4,6 @@ public enum SpellId
 {
     Fireball,
     ArcaneBlock,
-    ArcaneBubble
+    ArcaneBubble,
+    RockCharge
 }

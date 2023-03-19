@@ -176,7 +176,8 @@ public class Enamel : Game
         // So just putting spells first until I decide to figure out why that happens
         CreateSpells();
 
-        CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
+        var player1 = CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
+        World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
@@ -225,6 +226,8 @@ public class Enamel : Game
         World.Set(turnTracker, new PositionComponent(200, 10));
 
         World.Send(new EndTurnMessage());
+        // Set up player 1 for dev
+        World.Send(new LearnSpellMessage(SpellId.RockCharge));
 
         base.LoadContent();
     }
@@ -278,7 +281,7 @@ public class Enamel : Game
         base.Draw(gameTime);
     }
 
-    private void CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
+    private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
     {
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
@@ -291,6 +294,7 @@ public class Enamel : Game
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
         World.Set(playerEntity, new HealthComponent(2));
+        return playerEntity;
     }
 
     private void CreateSpells()
@@ -305,6 +309,7 @@ public class Enamel : Game
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
         World.Set(fireballSpell, new CastRangeComponent(1));
         World.Set(fireballSpell, new SpawnedEntityTemplateComponent(fireballEntityTemplate));
+        World.Set(fireballSpell, new CanTargetImpassableFlag());
 
         var arcaneBlockEntityTemplate = World.CreateTemplate();
         World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
@@ -326,5 +331,13 @@ public class Enamel : Game
         World.Set(arcaneBubbleSpell, new SpellIdComponent(SpellId.ArcaneBubble));
         World.Set(arcaneBubbleSpell, new CastRangeComponent(1));
         World.Set(arcaneBubbleSpell, new SpawnedEntityTemplateComponent(arcaneBubbleEntityTemplate));
-    }
+        World.Set(fireballSpell, new CanTargetImpassableFlag());
+
+        var rockChargeSpell = World.CreateEntity();
+        World.Set(rockChargeSpell, new SpellIdComponent(SpellId.RockCharge));
+        World.Set(rockChargeSpell, new CastRangeComponent(4));
+        World.Set(rockChargeSpell, new CardinalCastRestrictionFlag());
+        World.Set(rockChargeSpell, new MovesCasterToTargetFlag());
+        World.Set(rockChargeSpell, new CanTargetImpassableFlag());
+}
 }

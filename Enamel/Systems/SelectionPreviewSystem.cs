@@ -76,7 +76,7 @@ public class SelectionPreviewSystem : SpellSystem
 
             var (x, y) = Get<GridCoordComponent>(movingUnit);
             var pos = new Vector2(x, y);
-            CreatePreviewEntities(pos, 1, false, e => Set(e, new MovementPreviewFlag()));
+            CreatePreviewEntities(pos, 1, false, false, e => Set(e, new MovementPreviewFlag()));
         }
     }
 
@@ -89,7 +89,9 @@ public class SelectionPreviewSystem : SpellSystem
         var origin = new Vector2(spellToPrepMessage.OriginGridX, spellToPrepMessage.OriginGridY);
         var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
         var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
-        CreatePreviewEntities(origin, spellRange, true, e =>
+        var canTargetImpassable = Has<CanTargetImpassableFlag>(spellToPrep);
+        var cardinalOnly = Has<CardinalCastRestrictionFlag>(spellToPrep);
+        CreatePreviewEntities(origin, spellRange, canTargetImpassable, cardinalOnly, e =>
         {
             Set(e, new SpellPreviewFlag());
             Set(e, new SpellToCastOnClickComponent(spellToPrepMessage.SpellId));
@@ -113,13 +115,14 @@ public class SelectionPreviewSystem : SpellSystem
         }
     }
 
-    private void CreatePreviewEntities(Vector2 origin, int range, bool previewOnImpassableTiles, Action<Entity>? applyCustomComponents = null)
+    private void CreatePreviewEntities(Vector2 origin, int range, bool previewOnImpassableTiles, bool cardinalOnly, Action<Entity>? applyCustomComponents = null)
     {
         for (var x = 0; x < Constants.MAP_WIDTH; x++)
         {
             for (var y = 0; y < Constants.MAP_HEIGHT; y++)
             {
                 if (!previewOnImpassableTiles && ImpassableUnitAtCoord(x, y)) continue;
+                if(cardinalOnly && NotCardinal(origin, x, y)) continue;
                 var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
                 if (distance <= range)
                 {
@@ -142,6 +145,11 @@ public class SelectionPreviewSystem : SpellSystem
         }
 
         return false;
+    }
+
+    private bool NotCardinal(Vector2 origin, int x, int y)
+    {
+        return x != (int)origin.X && y != (int)origin.Y;
     }
 
     private Entity CreatePreview(int x, int y)
