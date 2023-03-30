@@ -335,7 +335,7 @@ public class Enamel : Game
 
         var rockChargeSpell = World.CreateEntity();
         World.Set(rockChargeSpell, new SpellIdComponent(SpellId.RockCharge));
-        World.Set(rockChargeSpell, new CastRangeComponent(4));
+        World.Set(rockChargeSpell, new CastRangeComponent(1));
         World.Set(rockChargeSpell, new CardinalCastRestrictionFlag());
         World.Set(rockChargeSpell, new MovesCasterToTargetComponent(150));
         World.Set(rockChargeSpell, new CanTargetImpassableFlag());

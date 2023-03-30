@@ -56,9 +56,12 @@ public class SpellCastingSystem : SpellSystem
         if(Has<MovesCasterToTargetComponent>(spell))
         {
             var speed = Get<MovesCasterToTargetComponent>(spell).Speed;
-            Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
+            var (originX, originY) = Get<GridCoordComponent>(casterEntity);
+            var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
+            Set(casterEntity, new MovingInDirectionComponent(direction));
+            Set(casterEntity, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
             Set(casterEntity, new SpeedComponent(speed));
-            Remove<GridCoordComponent>(casterEntity);
+            //Remove<GridCoordComponent>(casterEntity);
         }
     }
 
