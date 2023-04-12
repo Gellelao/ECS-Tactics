@@ -5,6 +5,7 @@ using Enamel.Components.Spells;
 using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Components.UI;
 using Enamel.Enums;
+using Enamel.Spawners;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -12,11 +13,13 @@ namespace Enamel.Systems;
 public class SpellCastingSystem : SpellSystem
 {
     private readonly World _world;
+    private readonly SpellCastSpawner _spawner;
     private Filter SpellPreviewFilter { get; }
 
-    public SpellCastingSystem(World world) : base(world)
+    public SpellCastingSystem(World world, SpellCastSpawner spawner) : base(world)
     {
         _world = world;
+        _spawner = spawner;
         SpellPreviewFilter = FilterBuilder.Include<SpellPreviewFlag>().Build();
     }
 
@@ -26,7 +29,7 @@ public class SpellCastingSystem : SpellSystem
         {
             if (!SomeMessageWithEntity<SelectMessage>(spellPreview)) continue;
 
-            var (targetX, targetY)= Get<GridCoordComponent>(spellPreview);
+            var (targetX, targetY) = Get<GridCoordComponent>(spellPreview);
             
             var casterEntity = GetSingletonEntity<SelectedFlag>();
 
@@ -41,6 +44,28 @@ public class SpellCastingSystem : SpellSystem
 
     private void ResolveSpell(Entity spell, Entity casterEntity, int targetX, int targetY)
     {
+        var spellId = Get<SpellIdComponent>(spell).SpellId;
+        var (originX, originY) = Get<GridCoordComponent>(casterEntity);
+        var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
+
+        switch (spellId)
+        {
+            case SpellId.Fireball:
+                _spawner.SpawnFireball(targetX, targetY, direction);
+                break;
+            case SpellId.ArcaneBlock:
+                break;
+            case SpellId.ArcaneBubble:
+                break;
+            case SpellId.RockCharge:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        // ==========
+        /*
+
         if (Has<SpawnedEntityTemplateComponent>(spell))
         {
             var spawnedEntity = _world.Instantiate(Get<SpawnedEntityTemplateComponent>(spell).Template);
@@ -63,6 +88,7 @@ public class SpellCastingSystem : SpellSystem
             Set(casterEntity, new SpeedComponent(speed));
             //Remove<GridCoordComponent>(casterEntity);
         }
+        */
     }
 
     private Direction GetDirectionOfCast(int originX, int originY, int targetX, int targetY)

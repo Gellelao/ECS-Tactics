@@ -13,6 +13,7 @@ using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
+using Enamel.Spawners;
 
 namespace Enamel;
 
@@ -153,7 +154,9 @@ public class Enamel : Game
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
-        _spellCastingSystem = new SpellCastingSystem(World);
+
+        var spellCastSpawner = new SpellCastSpawner(World);
+        _spellCastingSystem = new SpellCastingSystem(World, spellCastSpawner);
         _projectileSystem = new ProjectileSystem(World);
         _damageSystem = new DamageSystem(World);
         _unitDisablingSystem = new UnitDisablingSystem(World);
