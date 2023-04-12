@@ -12,6 +12,6 @@ public enum Sprite
     GreenRectangle,
     YellowSquare,
     Fireball,
-    ArcaneCube,
+    ArcaneBlock,
     ArcaneBubble
 }

@@ -129,7 +129,7 @@ public class Enamel : Game
         _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
         _textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
-        _textures[(int)Sprite.ArcaneCube] = Content.Load<Texture2D>("ArcaneCube");
+        _textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
         _textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
 
         /*
@@ -302,45 +302,23 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
-        var fireballEntityTemplate = World.CreateTemplate();
-        World.Set(fireballEntityTemplate, new TextureIndexComponent(Sprite.Fireball));
-        World.Set(fireballEntityTemplate, new ProjectileDamageComponent(1));
-        World.Set(fireballEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
-        World.Set(fireballEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED));
-
         var fireballSpell = World.CreateEntity();
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
         World.Set(fireballSpell, new CastRangeComponent(1));
-        World.Set(fireballSpell, new SpawnedEntityTemplateComponent(fireballEntityTemplate));
         World.Set(fireballSpell, new CanTargetImpassableFlag());
-
-        var arcaneBlockEntityTemplate = World.CreateTemplate();
-        World.Set(arcaneBlockEntityTemplate, new TextureIndexComponent(Sprite.ArcaneCube));
-        World.Set(arcaneBlockEntityTemplate, new SpriteOriginComponent(-6, 9));
-        World.Set(arcaneBlockEntityTemplate, new ImpassableFlag());
 
         var arcaneBlockSpell = World.CreateEntity();
         World.Set(arcaneBlockSpell, new SpellIdComponent(SpellId.ArcaneBlock));
         World.Set(arcaneBlockSpell, new CastRangeComponent(1));
-        World.Set(arcaneBlockSpell, new SpawnedEntityTemplateComponent(arcaneBlockEntityTemplate));
-
-        var arcaneBubbleEntityTemplate = World.CreateTemplate();
-        World.Set(arcaneBubbleEntityTemplate, new TextureIndexComponent(Sprite.ArcaneBubble));
-        World.Set(arcaneBubbleEntityTemplate, new ProjectileDamageComponent(2));
-        World.Set(arcaneBubbleEntityTemplate, new ProjectileMoveRateComponent(ProjectileMoveRate.PerStep));
-        World.Set(arcaneBubbleEntityTemplate, new SpeedComponent(Constants.DEFAULT_PROJECTILE_SPEED/10));
 
         var arcaneBubbleSpell = World.CreateEntity();
         World.Set(arcaneBubbleSpell, new SpellIdComponent(SpellId.ArcaneBubble));
         World.Set(arcaneBubbleSpell, new CastRangeComponent(1));
-        World.Set(arcaneBubbleSpell, new SpawnedEntityTemplateComponent(arcaneBubbleEntityTemplate));
         World.Set(arcaneBubbleSpell, new CanTargetImpassableFlag());
 
         var rockChargeSpell = World.CreateEntity();
         World.Set(rockChargeSpell, new SpellIdComponent(SpellId.RockCharge));
         World.Set(rockChargeSpell, new CastRangeComponent(1));
-        World.Set(rockChargeSpell, new CardinalCastRestrictionFlag());
-        World.Set(rockChargeSpell, new MovesCasterToTargetComponent(150));
         World.Set(rockChargeSpell, new CanTargetImpassableFlag());
     }
 }

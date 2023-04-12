@@ -3,6 +3,5 @@
 public enum ProjectileMoveRate
 {
     Immediate,
-    PerStep,
-    PerEvenStep
+    PerStep
 }

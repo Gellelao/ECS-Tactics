@@ -39,9 +39,6 @@ public class ProjectileSystem : MoonTools.ECS.System
                            MoveOnce(movingEntity);
                        }
                        break;
-                    case ProjectileMoveRate.PerEvenStep:
-                        throw new NotImplementedException(
-                            "Haven't added PerEvenStep projectile movement yet because not sure its a good idea");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
