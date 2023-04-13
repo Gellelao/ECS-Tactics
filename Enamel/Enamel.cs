@@ -182,7 +182,7 @@ public class Enamel : Game
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
-        CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 2, 4);
+        CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 1, 7);
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
         var endTurnButton = World.CreateEntity();

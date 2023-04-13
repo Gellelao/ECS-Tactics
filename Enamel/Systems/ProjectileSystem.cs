@@ -89,28 +89,40 @@ public class ProjectileSystem : MoonTools.ECS.System
         // Temporary speedComponents are added to units moved by spells, this is just tidying that up
         if(Has<SpeedComponent>(movingEntity))
         {
-            //TODO : move this to where the projectile actually stops
             //Remove<SpeedComponent>(entity);
         }
 
-        var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
         var entitiesAtLocation = GetEntitiesAtCoords(candidateX, candidateY);
-        // It actually looks quite good with projectiles travelling past the edge of the screen, but need to destroy them eventually, so for now just destroy once out of bounds of the map
-        entitiesAtLocation.Remove(movingEntity);
+
         if (entitiesAtLocation.Any())
         {
             var impassableEntities = entitiesAtLocation.Where(e => Has<ImpassableFlag>(e)).ToList();
             if (impassableEntities.Any())
             {
+                // A collision has occurred
+                var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
                 Send(impassableEntities.First(), new DamageMessage(damage));
-                Destroy(movingEntity);
+
+                var collisionBehaviour = Has<OnCollisionComponent>(movingEntity) ? Get<OnCollisionComponent>(movingEntity).Behaviour : CollisionBehaviour.Stop;
+                switch (collisionBehaviour)
+                {
+                    case CollisionBehaviour.Stop:
+                        break;
+                    case CollisionBehaviour.StopAndPush:
+                        // Send a push message
+                        break;
+                    case CollisionBehaviour.DestroySelf:
+                        Destroy(movingEntity);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
                 return false;
             }
         }
         else
         {
             // Must be at edge of map because there should at least be a GroundTile at every valid coord
-            Console.WriteLine($"Destroying projectile because it reached {candidateX},{candidateY}");
             Destroy(movingEntity);
             return false;
         }

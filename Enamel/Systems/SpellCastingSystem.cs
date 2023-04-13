@@ -63,7 +63,7 @@ public class SpellCastingSystem : SpellSystem
                 Set(casterEntity, new MovingInDirectionComponent(direction));
                 Set(casterEntity, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
                 Set(casterEntity, new SpeedComponent(150));
-                Set(casterEntity, new OnCollisionComponent(CollisionBehaviour.DestroySelf));
+                Set(casterEntity, new OnCollisionComponent(CollisionBehaviour.StopAndPush));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
