@@ -68,33 +68,6 @@ public class SpellCastingSystem : SpellSystem
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        // ==========
-        /*
-
-        if (Has<SpawnedEntityTemplateComponent>(spell))
-        {
-            var spawnedEntity = _world.Instantiate(Get<SpawnedEntityTemplateComponent>(spell).Template);
-            _world.Set(spawnedEntity, new GridCoordComponent(targetX, targetY));
-
-            if (Has<ProjectileMoveRateComponent>(spawnedEntity))
-            {
-                var (originX, originY) = Get<GridCoordComponent>(casterEntity);
-                var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
-                Set(spawnedEntity, new MovingInDirectionComponent(direction));
-            }
-        }
-        if(Has<MovesCasterToTargetComponent>(spell))
-        {
-            var speed = Get<MovesCasterToTargetComponent>(spell).Speed;
-            var (originX, originY) = Get<GridCoordComponent>(casterEntity);
-            var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
-            Set(casterEntity, new MovingInDirectionComponent(direction));
-            Set(casterEntity, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
-            Set(casterEntity, new SpeedComponent(speed));
-            //Remove<GridCoordComponent>(casterEntity);
-        }
-        */
     }
 
     private Direction GetDirectionOfCast(int originX, int originY, int targetX, int targetY)

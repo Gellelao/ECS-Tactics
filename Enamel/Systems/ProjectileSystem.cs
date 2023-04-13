@@ -73,25 +73,15 @@ public class ProjectileSystem : MoonTools.ECS.System
                 throw new ArgumentOutOfRangeException();
         }
 
-        var shouldMoveEntity = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
+        var shouldMoveEntity = HandleCollisionAndOutOfBounds(movingEntity, direction, gridX, gridY);
         if (!shouldMoveEntity) return;
 
         _world.Set(movingEntity, new MovingToCoordComponent(gridX, gridY));
         Remove<GridCoordComponent>(movingEntity);
     }
 
-    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int candidateX, int candidateY)
+    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, Direction direction, int candidateX, int candidateY)
     {
-        // check the oncollisioncomponent
-        // if destroy, do as already here
-        // if not, take off the projectile components and leave the entity where t is
-
-        // Temporary speedComponents are added to units moved by spells, this is just tidying that up
-        if(Has<SpeedComponent>(movingEntity))
-        {
-            //Remove<SpeedComponent>(entity);
-        }
-
         var entitiesAtLocation = GetEntitiesAtCoords(candidateX, candidateY);
 
         if (entitiesAtLocation.Any())
@@ -100,6 +90,7 @@ public class ProjectileSystem : MoonTools.ECS.System
             if (impassableEntities.Any())
             {
                 // A collision has occurred
+                var collidee = impassableEntities.First(); // Not sure if just getting first here will work forever...
                 var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
                 Send(impassableEntities.First(), new DamageMessage(damage));
 
@@ -107,9 +98,11 @@ public class ProjectileSystem : MoonTools.ECS.System
                 switch (collisionBehaviour)
                 {
                     case CollisionBehaviour.Stop:
+                        RemoveTempProjectileComponents(movingEntity);
                         break;
                     case CollisionBehaviour.StopAndPush:
-                        // Send a push message
+                        RemoveTempProjectileComponents(movingEntity);
+                        Send(collidee, new PushMessage(direction));
                         break;
                     case CollisionBehaviour.DestroySelf:
                         Destroy(movingEntity);
@@ -128,6 +121,15 @@ public class ProjectileSystem : MoonTools.ECS.System
         }
 
         return true;
+    }
+
+    private void RemoveTempProjectileComponents(Entity entity)
+    {
+        Remove<SpeedComponent>(entity);
+        Remove<ProjectileDamageComponent>(entity);
+        Remove<ProjectileMoveRateComponent>(entity);
+        Remove<MovingInDirectionComponent>(entity);
+        Remove<OnCollisionComponent>(entity);
     }
 
     private List<Entity> GetEntitiesAtCoords(int x, int y)
