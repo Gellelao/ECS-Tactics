@@ -51,18 +51,19 @@ public class SpellCastingSystem : SpellSystem
         switch (spellId)
         {
             case SpellId.Fireball:
-                _spawner.SpawnFireball(targetX, targetY, direction);
+                _spawner.SpawnFireball(originX, originY, direction);
                 break;
             case SpellId.ArcaneBlock:
                 _spawner.SpawnArcaneBlock(targetX, targetY);
                 break;
             case SpellId.ArcaneBubble:
-                _spawner.SpawnArcaneBubble(targetX, targetY, direction);
+                _spawner.SpawnArcaneBubble(originX, originY, direction);
                 break;
             case SpellId.RockCharge:
                 Set(casterEntity, new MovingInDirectionComponent(direction));
                 Set(casterEntity, new ProjectileMoveRateComponent(ProjectileMoveRate.Immediate));
                 Set(casterEntity, new SpeedComponent(150));
+                Set(casterEntity, new OnCollisionComponent(CollisionBehaviour.DestroySelf));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

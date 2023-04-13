@@ -45,5 +45,6 @@ public class SpellCastSpawner : Spawner
         _world.Set(entity, new ProjectileMoveRateComponent(moveRate));
         _world.Set(entity, new MovingInDirectionComponent(direction));
         _world.Set(entity, new SpeedComponent(speed));
+        _world.Set(entity, new OnCollisionComponent(CollisionBehaviour.DestroySelf));
     }
 }

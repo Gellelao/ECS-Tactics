@@ -59,12 +59,6 @@ public class MoveSystem : MoonTools.ECS.System
             {
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToCoordComponent>(entity);
-                // Temporary speedComponents are added to units moved by spells, this is just tidying that up
-                if(Has<SpeedComponent>(entity))
-                {
-                    //TODO : move this to where the projectile actually stops
-                    //Remove<SpeedComponent>(entity);
-                }
 
                 if (Has<RemainingMovesComponent>(entity))
                 {

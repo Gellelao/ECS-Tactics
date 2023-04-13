@@ -51,9 +51,6 @@ public class ProjectileSystem : MoonTools.ECS.System
         if (!Has<GridCoordComponent>(movingEntity)) return;
         var (gridX, gridY) = Get<GridCoordComponent>(movingEntity);
 
-        var entityDestroyed = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
-        if (entityDestroyed) return;
-
         var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
 
         switch (direction)
@@ -76,14 +73,28 @@ public class ProjectileSystem : MoonTools.ECS.System
                 throw new ArgumentOutOfRangeException();
         }
 
+        var shouldMoveEntity = HandleCollisionAndOutOfBounds(movingEntity, gridX, gridY);
+        if (!shouldMoveEntity) return;
+
         _world.Set(movingEntity, new MovingToCoordComponent(gridX, gridY));
         Remove<GridCoordComponent>(movingEntity);
     }
 
-    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int gridX, int gridY)
+    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, int candidateX, int candidateY)
     {
+        // check the oncollisioncomponent
+        // if destroy, do as already here
+        // if not, take off the projectile components and leave the entity where t is
+
+        // Temporary speedComponents are added to units moved by spells, this is just tidying that up
+        if(Has<SpeedComponent>(movingEntity))
+        {
+            //TODO : move this to where the projectile actually stops
+            //Remove<SpeedComponent>(entity);
+        }
+
         var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
-        var entitiesAtLocation = GetEntitiesAtCoords(gridX, gridY);
+        var entitiesAtLocation = GetEntitiesAtCoords(candidateX, candidateY);
         // It actually looks quite good with projectiles travelling past the edge of the screen, but need to destroy them eventually, so for now just destroy once out of bounds of the map
         entitiesAtLocation.Remove(movingEntity);
         if (entitiesAtLocation.Any())
@@ -93,18 +104,18 @@ public class ProjectileSystem : MoonTools.ECS.System
             {
                 Send(impassableEntities.First(), new DamageMessage(damage));
                 Destroy(movingEntity);
-                return true;
+                return false;
             }
         }
         else
         {
             // Must be at edge of map because there should at least be a GroundTile at every valid coord
-            Console.WriteLine($"Destroying projectile because it reached {gridX},{gridY}");
+            Console.WriteLine($"Destroying projectile because it reached {candidateX},{candidateY}");
             Destroy(movingEntity);
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     private List<Entity> GetEntitiesAtCoords(int x, int y)
