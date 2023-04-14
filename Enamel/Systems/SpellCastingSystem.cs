@@ -1,7 +1,6 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.Messages;
-using Enamel.Components.Spells;
 using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Components.UI;
 using Enamel.Enums;
@@ -12,13 +11,11 @@ namespace Enamel.Systems;
 
 public class SpellCastingSystem : SpellSystem
 {
-    private readonly World _world;
     private readonly SpellCastSpawner _spawner;
     private Filter SpellPreviewFilter { get; }
 
     public SpellCastingSystem(World world, SpellCastSpawner spawner) : base(world)
     {
-        _world = world;
         _spawner = spawner;
         SpellPreviewFilter = FilterBuilder.Include<SpellPreviewFlag>().Build();
     }
