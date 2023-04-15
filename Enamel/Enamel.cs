@@ -184,7 +184,7 @@ public class Enamel : Game
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
-        CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 1, 7);
+        CreatePlayer(PlayerNumber.Two, Sprite.RedCube, 1, 6);
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
         var endTurnButton = World.CreateEntity();
@@ -302,6 +302,8 @@ public class Enamel : Game
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
         World.Set(playerEntity, new HealthComponent(2));
+        // Just for testing, I think players would normally only get this flag if they've had some effect applied to them by another player
+        World.Set(playerEntity, new PushableFlag());
         return playerEntity;
     }
 
