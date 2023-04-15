@@ -1,6 +1,7 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.Spells.SpawnedEntities;
 using Microsoft.Xna.Framework;
 using MoonTools.ECS;
 
@@ -60,9 +61,11 @@ public class MoveSystem : MoonTools.ECS.System
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToCoordComponent>(entity);
 
-                if (Has<RemainingMovesComponent>(entity))
+                // Little bit of jank here to exclude player characters currently travelling as projectiles...
+                if (Has<RemainingMovesComponent>(entity) && !Has<MovingInDirectionComponent>(entity))
                 {
                     UpdateRemainingMoves(entity);
+                    Send(entity, new UnitMoveCompletedMessage(entity));
                 }
             }
             // Otherwise, move the screenpos
@@ -77,8 +80,6 @@ public class MoveSystem : MoonTools.ECS.System
     {
         var remainingMoves = Get<RemainingMovesComponent>(entity).RemainingMoves - 1;
         Set(entity, new RemainingMovesComponent(remainingMoves));
-
-        Send(entity, new UnitMoveCompletedMessage(entity));
     }
 
     private PositionComponent MoveTowards(PositionComponent current, Vector2 target, int moveSpeed, TimeSpan deltaTime)

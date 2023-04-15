@@ -38,6 +38,7 @@ public class Enamel : Game
     private static ProjectileSystem? _projectileSystem;
     private static DamageSystem? _damageSystem;
     private static UnitDisablingSystem? _unitDisablingSystem;
+    private static PushSystem? _pushSystem;
 
     private static GroundRenderer? _groundRenderer;
     private static SpriteIndexRenderer? _mapRenderer;
@@ -160,6 +161,7 @@ public class Enamel : Game
         _projectileSystem = new ProjectileSystem(World);
         _damageSystem = new DamageSystem(World);
         _unitDisablingSystem = new UnitDisablingSystem(World);
+        _pushSystem = new PushSystem(World);
 
         /*
         RENDERERS
@@ -247,6 +249,9 @@ public class Enamel : Game
         _damageSystem?.Update(elapsedTime); // Should run after projectileSystem because the projectileSystem sends DamageMessages
         _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
         _projectileSystem?.Update(elapsedTime); // Must run after the moveSystem because it listens for UnitMoveCompletedMessages to know when to move the PerStep projectiles
+        // Here???
+        _pushSystem?.Update(elapsedTime);
+        //
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
         _unitDisablingSystem?.Update(elapsedTime);
