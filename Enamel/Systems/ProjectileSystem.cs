@@ -46,6 +46,7 @@ public class ProjectileSystem : MoonTools.ECS.System
 
         var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
 
+        Console.WriteLine($"Sending a push message for entity {movingEntity.ID}");
         Send(movingEntity, new PushMessage(direction, false));
     }
 }
