@@ -23,16 +23,22 @@ public class PushSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         var seenEntityIds = new List<int>();
+        Console.WriteLine("PushSystem updating");
         foreach (var entity in GridCoordFilter.Entities)
         {
-            // This is to work around some weirdness in the ECS...
             if (seenEntityIds.Contains(entity.ID)) continue;
             seenEntityIds.Add(entity.ID);
-
+            if (entity.ID == 4)
+            {
+                Console.WriteLine($"Getting push messages for entity {entity.ID}");
+            }
             var pushMessages = ReadMessagesWithEntity<PushMessage>(entity);
 
+            var count = 0;
             foreach (var pushMessage in pushMessages)
             {
+                count++;
+                Console.WriteLine($"Found a push message for entity {entity.ID} (#{count})");
                 Push(entity, pushMessage.Direction, pushMessage.EntityMustBePushable);
             }
         }
@@ -40,6 +46,7 @@ public class PushSystem : MoonTools.ECS.System
 
     private void Push(Entity entity, Direction direction, bool entityMustBePushable)
     {
+        Console.WriteLine($"Entity {entity.ID} being pushed");
         // Early return if this push requires the entity to have the pushable flag, and it does not
         if (entityMustBePushable && !Has<PushableFlag>(entity)) return;
 
@@ -66,8 +73,13 @@ public class PushSystem : MoonTools.ECS.System
         }
 
         var shouldMoveEntity = HandleCollisionAndOutOfBounds(entity, direction, gridX, gridY);
-        if (!shouldMoveEntity) return;
+        if (!shouldMoveEntity)
+        {
+            Console.WriteLine($"Should not move entity {entity.ID}, returning");
+            return;
+        }
 
+        Console.WriteLine($"Moving entity to {gridX},{gridY}");
         _world.Set(entity, new MovingToCoordComponent(gridX, gridY));
         Remove<GridCoordComponent>(entity);
     }
@@ -81,6 +93,7 @@ public class PushSystem : MoonTools.ECS.System
             var impassableEntities = entitiesAtLocation.Where(e => Has<ImpassableFlag>(e)).ToList();
             if (impassableEntities.Any())
             {
+                Console.WriteLine($"Collision at candidate pos {candidateX},{candidateY}");
                 // A collision has occurred
                 var collidee = impassableEntities.First(); // Not sure if just getting first here will work forever...
                 var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
@@ -96,6 +109,7 @@ public class PushSystem : MoonTools.ECS.System
                         RemoveTempProjectileComponents(movingEntity);
                         // Recursion Alert!
                         // Recursion Alert!
+                        Console.WriteLine($"Recursively calling push on entity {collidee.ID}");
                         Push(collidee, direction, true);
                         break;
                     case CollisionBehaviour.DestroySelf:
