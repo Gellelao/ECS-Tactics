@@ -46,7 +46,6 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
         foreach (var spell in spells)
         {
             var spellIdComponent = Get<SpellIdComponent>(spell);
-            Console.WriteLine($"Selected player knows spell {spellIdComponent}");
 
             var spellCard = _world.CreateEntity();
             Set(spellCard, new PositionComponent(screenX, 320));
