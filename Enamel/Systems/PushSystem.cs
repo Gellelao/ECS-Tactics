@@ -22,23 +22,33 @@ public class PushSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
-        var seenEntityIds = new List<int>();
-        Console.WriteLine("PushSystem updating");
-        foreach (var entity in GridCoordFilter.Entities)
+        // What happens here is the pusher may start with its id at the beginning of the GridCoordFilter entities.
+        // Then in the process of pushing, its id may be moved to the end of the GridCoordFilter entities.
+        // This causes it to be iterated over twice, once at the start then again when the enumerator reaches the end
+
+        // So we either keep a list of seen entities and only check those that haven't been seen,
+        // take a copy of the entities when this method is entered, and only loop over those,
+        // or delete the message once it has been read once, so that on the second enumeration nothing happens
+
+        //var seenEntityIds = new List<int>();
+        var count = 0;
+        Console.WriteLine("===================");
+        Console.WriteLine($"PushSystem updating,  count = {count}");
+        var entitiesCopy = GridCoordFilter.Entities;
+        foreach (var entity in entitiesCopy)
         {
-            if (seenEntityIds.Contains(entity.ID)) continue;
-            seenEntityIds.Add(entity.ID);
-            if (entity.ID == 4)
+            count++;
+            //if (seenEntityIds.Contains(entity.ID)) continue;
+            //seenEntityIds.Add(entity.ID);
+            if (entity.ID is 4 or 6)
             {
-                Console.WriteLine($"Getting push messages for entity {entity.ID}");
+                Console.WriteLine($"Getting push messages for entity {entity.ID} (#{count})");
             }
             var pushMessages = ReadMessagesWithEntity<PushMessage>(entity);
 
-            var count = 0;
             foreach (var pushMessage in pushMessages)
             {
-                count++;
-                Console.WriteLine($"Found a push message for entity {entity.ID} (#{count})");
+                Console.WriteLine($"Found a push message for entity {entity.ID}");
                 Push(entity, pushMessage.Direction, pushMessage.EntityMustBePushable);
             }
         }

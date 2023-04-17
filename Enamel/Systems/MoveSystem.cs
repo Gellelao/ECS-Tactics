@@ -58,6 +58,7 @@ public class MoveSystem : MoonTools.ECS.System
             if (Math.Abs(Math.Round(newPositionVector.X) - targetScreenPos.X) <= threshold &&
                 Math.Abs(Math.Round(newPositionVector.Y) - targetScreenPos.Y) <= threshold)
             {
+                Console.WriteLine($"Adding gridcoord component to entity {entity.ID} at {targetPosition.GridX},{targetPosition.GridY}");
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
                 Remove<MovingToCoordComponent>(entity);
 
