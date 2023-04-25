@@ -47,7 +47,6 @@ public class PushSystem : MoonTools.ECS.System
 
     private void Push(Entity entity, Direction direction, bool entityMustBePushable)
     {
-        Console.WriteLine($"Entity {entity.ID} being pushed");
         // Early return if this push requires the entity to have the pushable flag, and it does not
         if (entityMustBePushable && !Has<PushableFlag>(entity)) return;
 
@@ -74,13 +73,8 @@ public class PushSystem : MoonTools.ECS.System
         }
 
         var shouldMoveEntity = HandleCollisionAndOutOfBounds(entity, direction, gridX, gridY);
-        if (!shouldMoveEntity)
-        {
-            Console.WriteLine($"Should not move entity {entity.ID}, returning");
-            return;
-        }
+        if (!shouldMoveEntity) return;
 
-        Console.WriteLine($"Moving entity to {gridX},{gridY}");
         _world.Set(entity, new MovingToCoordComponent(gridX, gridY));
         Remove<GridCoordComponent>(entity);
     }
@@ -94,23 +88,23 @@ public class PushSystem : MoonTools.ECS.System
             var impassableEntities = entitiesAtLocation.Where(e => Has<ImpassableFlag>(e)).ToList();
             if (impassableEntities.Any())
             {
-                Console.WriteLine($"Collision at candidate pos {candidateX},{candidateY}");
                 // A collision has occurred
                 var collidee = impassableEntities.First(); // Not sure if just getting first here will work forever...
                 var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
-                Send(impassableEntities.First(), new DamageMessage(damage));
+                Send(collidee, new DamageMessage(damage));
 
                 var collisionBehaviour = Has<OnCollisionComponent>(movingEntity) ? Get<OnCollisionComponent>(movingEntity).Behaviour : CollisionBehaviour.Stop;
                 switch (collisionBehaviour)
                 {
                     case CollisionBehaviour.Stop:
                         RemoveTempProjectileComponents(movingEntity);
+                        Send(movingEntity, new UnitMoveCompletedMessage());
                         break;
                     case CollisionBehaviour.StopAndPush:
                         RemoveTempProjectileComponents(movingEntity);
+                        Send(movingEntity, new UnitMoveCompletedMessage());
                         // Recursion Alert!
                         // Recursion Alert!
-                        Console.WriteLine($"Recursively calling push on entity {collidee.ID}");
                         Push(collidee, direction, true);
                         break;
                     case CollisionBehaviour.DestroySelf:
