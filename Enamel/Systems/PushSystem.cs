@@ -23,35 +23,26 @@ public class PushSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         // What happens here is the pusher may start with its id at the beginning of the GridCoordFilter entities.
-        // Then in the process of pushing, its id may be moved to the end of the GridCoordFilter entities.
-        // This causes it to be iterated over twice, once at the start then again when the enumerator reaches the end
+        // Then in the process of pushing, its id may be duplicated in the GridCoordFilter entities.
+        //   The specific cause seems to be the IndexableSet doing weird stuff when Remove is called, when the GridCoordComponent is removed from the pushee at the end of Push
+        // This causes the pusher to be iterated over twice
 
         // So we either keep a list of seen entities and only check those that haven't been seen,
         // take a copy of the entities when this method is entered, and only loop over those,
         // or delete the message once it has been read once, so that on the second enumeration nothing happens
-
-        //var seenEntityIds = new List<int>();
-        var count = 0;
-        Console.WriteLine("===================");
-        Console.WriteLine($"PushSystem updating,  count = {count}");
-        var entitiesCopy = GridCoordFilter.Entities;
-        foreach (var entity in entitiesCopy)
+        // or avoid the issue altogether by not removing a GridCoordComponent during iteration of the GridCoordFilter
+        var entitiesToPush = new List<(Entity Entity, PushMessage Message)>();
+        foreach (var entity in GridCoordFilter.Entities)
         {
-            count++;
-            //if (seenEntityIds.Contains(entity.ID)) continue;
-            //seenEntityIds.Add(entity.ID);
-            if (entity.ID is 4 or 6)
-            {
-                Console.WriteLine($"Getting push messages for entity {entity.ID} (#{count})");
-            }
             var pushMessages = ReadMessagesWithEntity<PushMessage>(entity);
 
             foreach (var pushMessage in pushMessages)
             {
-                Console.WriteLine($"Found a push message for entity {entity.ID}");
-                Push(entity, pushMessage.Direction, pushMessage.EntityMustBePushable);
+                entitiesToPush.Add((entity, pushMessage));
             }
         }
+
+        entitiesToPush.ForEach(tuple => Push(tuple.Entity, tuple.Message.Direction, tuple.Message.EntityMustBePushable));
     }
 
     private void Push(Entity entity, Direction direction, bool entityMustBePushable)
