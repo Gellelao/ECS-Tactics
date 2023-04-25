@@ -1,7 +1,5 @@
-﻿using System.Dynamic;
-using Enamel.Enums;
+﻿using Enamel.Enums;
 using Microsoft.Xna.Framework;
-using StbImageSharp;
 
 namespace Enamel;
 
@@ -10,8 +8,8 @@ public static class Constants
     public static readonly Color HighlightColour = new(200, 200, 255);
     public const int MAP_WIDTH = 8;
     public const int MAP_HEIGHT = 8;
-    public const int TILE_WIDTH = 40;
-    public const int TILE_HEIGHT = 20;
+    public const int TILE_WIDTH = 28;
+    public const int TILE_HEIGHT = 14;
     public const int DEFAULT_MOVE_SPEED = 20;
     public const int DEFAULT_PROJECTILE_SPEED = 100;
     public const int DEFAULT_MOVES_PER_TURN = 3;

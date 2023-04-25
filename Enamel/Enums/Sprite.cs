@@ -5,7 +5,7 @@ public enum Sprite
     RedPixel,
     Tile,
     GreenCube,
-    RedCube,
+    BlueWizard,
     YellowCube,
     Selection,
     SelectPreview,
