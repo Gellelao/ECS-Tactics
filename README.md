@@ -1,5 +1,14 @@
 Built on this template: https://github.com/prophetgoddess/FNAECSTemplate
 
+Status so far:
+* Players take turns controlling one or more "units"
+* Units are able to learn spells (in the example the green buttons on the left "teach" spells to the selected unit)
+* Units can cast spells and move 3 spaces per turn
+* Some spells create objects or projectiles
+* Units have "health" and disappear when the health is reduced to zero
+
+[Example.webm](https://github.com/Gellelao/Enamel/assets/18452032/f535dc55-25a8-4b48-8fea-0413c370bd51)
+
 ## license
 
 ANTI-CAPITALIST SOFTWARE LICENSE (v 1.4)
