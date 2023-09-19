@@ -7,7 +7,7 @@ Status so far:
 * Some spells create objects or projectiles
 * Units have "health" and disappear when the health is reduced to zero
 
-[Example.webm](https://github.com/Gellelao/Enamel/assets/18452032/f535dc55-25a8-4b48-8fea-0413c370bd51)
+[Example.webm](https://github.com/Gellelao/ECS-Tactics/assets/18452032/cad0aebc-cc00-4e6a-a659-bafdc4f75647)
 
 ## license
 
