@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,9 +99,17 @@ public class SpriteIndexRenderer : Renderer
             var positionComponent = Get<PositionComponent>(entity);
 
             var origin = Vector2.Zero;
-            if(Has<SpriteOriginComponent>(entity)){
+            if(Has<SpriteOriginComponent>(entity))
+            {
                 var originComponent = Get<SpriteOriginComponent>(entity);
                 origin = new Vector2(originComponent.X, originComponent.Y);
+            }
+
+            Rectangle? sourceRect = null;
+            if (Has<SpriteRectComponent>(entity))
+            {
+                var rect = Get<SpriteRectComponent>(entity);
+                sourceRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
             }
 
             var tint = Color.White;
@@ -127,7 +137,7 @@ public class SpriteIndexRenderer : Renderer
             SpriteBatch.Draw(
                 _textures[(int)indexComponent.Index],
                 positionComponent.ToVector,
-                null,
+                sourceRect,
                 tint,
                 0, // rotation,
                 origin, // origin

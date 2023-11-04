@@ -121,9 +121,9 @@ public class Enamel : Game
         _textures[(int)Sprite.RedPixel] = redPixel;
         _textures[(int)Sprite.GreenRectangle] = greenRectangle;
         _textures[(int)Sprite.YellowSquare] = yellowSquare;
-        _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("777tile2");
-        _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("blueWiz");
-        _textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWizBack");
+        _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("GroundTile");
+        _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
+        _textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWiz");
         _textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
         _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
         _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
@@ -179,10 +179,12 @@ public class Enamel : Game
         // So just putting spells first until I decide to figure out why that happens
         CreateSpells();
 
-        var player1 = CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 1, 1);
+        var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
+        World.Set(player1, new SpriteRectComponent(32, 32, 32, 32));
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
-        CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
+        var blueWIz = CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
+        World.Set(blueWIz, new SpriteRectComponent(32, 32, 32, 32));
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
         var endTurnButton = World.CreateEntity();
@@ -289,10 +291,7 @@ public class Enamel : Game
     {
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
-        World.Set(playerEntity, new SpriteOriginComponent(
-            _textures[(int)sprite].Width/2 - Constants.TILE_WIDTH/2,
-            (int)(_textures[(int)sprite].Height*0.85 - Constants.TILE_HEIGHT/2))
-        );
+        World.Set(playerEntity, new SpriteOriginComponent(0, 16));
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));
         World.Set(playerEntity, new ImpassableFlag());
