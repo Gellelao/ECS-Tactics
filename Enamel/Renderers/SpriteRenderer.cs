@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,20 +20,20 @@ a HUD renderer and a world renderer. or you can go monolith-style.
 there are advantages to both ([lcd soundsystem voice] advantages! advantages!),
 but the monolith-style renderer can be more useful in a 3D context.
 */
-public class SpriteIndexRenderer : Renderer
+public class SpriteRenderer : Renderer
 {
     private Filter TextureIndexFilter { get; }
     private SpriteBatch SpriteBatch { get; }
     private readonly Texture2D[] _textures;
 
-    public SpriteIndexRenderer(World world, SpriteBatch spriteBatch, Texture2D[] textures) : base(world)
+    public SpriteRenderer(World world, SpriteBatch spriteBatch, Texture2D[] textures) : base(world)
     {
         SpriteBatch = spriteBatch;
         _textures = textures;
         TextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
             .Include<PositionComponent>()
-            .Exclude<GroundTileFlag>()
+            .Include<DrawLayerComponent>()
             .Build();
     }
 
@@ -45,8 +44,7 @@ public class SpriteIndexRenderer : Renderer
     */
     public void Draw()
     {
-        var renderOrderDict = GetRenderOrder(TextureIndexFilter.Entities);
-        var orderedList = renderOrderDict.OrderBy(kvp => kvp.Key).ToList();
+        var renderOrder = GetRenderOrder(TextureIndexFilter.Entities);
         /*
         start the sprite batch. everything between SpriteBatch.Begin() and SpriteBatch.End() 
         is going to be in the same batch. everything that gets batched together has to use 
@@ -65,9 +63,10 @@ public class SpriteIndexRenderer : Renderer
             RasterizerState.CullCounterClockwise,
             null,
             Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
-        foreach (var kvp in orderedList)
+
+        foreach (var entityList in renderOrder)
         {
-            foreach (var entity in kvp.Value)
+            foreach (var entity in entityList)
             {
                 DrawEntity(entity);
             }
@@ -75,22 +74,33 @@ public class SpriteIndexRenderer : Renderer
         SpriteBatch.End();
     }
 
-    private Dictionary<int, List<Entity>> GetRenderOrder(ReverseSpanEnumerator<Entity> entities)
+    private IEnumerable<List<Entity>> GetRenderOrder(ReverseSpanEnumerator<Entity> entities)
     {
-        var renderOrderDict = new Dictionary<int, List<Entity>>();
-        foreach (var entity in entities)
+        var layerList = new List<List<List<Entity>>>();
+        foreach (int currentLayer in Enum.GetValues(typeof(DrawLayer)))
         {
-            var yPos = Get<PositionComponent>(entity).Y;
-            if (renderOrderDict.TryGetValue(yPos, out var list))
+            var currentLayerEnum = (DrawLayer) currentLayer;
+            var renderOrderDict = new Dictionary<int, List<Entity>>();
+            foreach (var entity in entities)
             {
-                list.Add(entity);
+                var drawLayer = Get<DrawLayerComponent>(entity).Layer;
+                if (drawLayer != currentLayerEnum) continue;
+                
+                var yPos = Get<PositionComponent>(entity).Y;
+                if (renderOrderDict.TryGetValue(yPos, out var list))
+                {
+                    list.Add(entity);
+                }
+                else
+                {
+                    renderOrderDict.Add(yPos, new List<Entity>{ entity });
+                }
             }
-            else
-            {
-                renderOrderDict.Add(yPos, new List<Entity>{ entity });
-            }
+
+            var orderWithinLayer = renderOrderDict.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
+            layerList.Add(orderWithinLayer);
         }
-        return renderOrderDict;
+        return layerList.SelectMany(list => list);
     }
 
     private void DrawEntity(Entity entity)

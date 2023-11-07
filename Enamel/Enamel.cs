@@ -38,8 +38,7 @@ public class Enamel : Game
     private static UnitDisablingSystem? _unitDisablingSystem;
     private static PushSystem? _pushSystem;
 
-    private static GroundRenderer? _groundRenderer;
-    private static SpriteIndexRenderer? _mapRenderer;
+    private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
 
     private SpriteBatch _spriteBatch;
@@ -165,9 +164,8 @@ public class Enamel : Game
         RENDERERS
         */
 
-        //same as above, but for the renderer
-        _groundRenderer = new GroundRenderer(World, _spriteBatch, _textures);
-        _mapRenderer = new SpriteIndexRenderer(World, _spriteBatch, _textures);
+        //same as above, but for the renderers
+        _mapRenderer = new SpriteRenderer(World, _spriteBatch, _textures);
         _textRenderer = new TextRenderer(World, _spriteBatch, _fontSystem);
 
         /*
@@ -221,7 +219,7 @@ public class Enamel : Game
                 World.Set(tile, new GridCoordComponent(x, y));
                 World.Set(tile, new DebugCoordComponent(x, y));
                 World.Set(tile, new DisabledFlag());
-                World.Set(tile, new GroundTileFlag());
+                World.Set(tile, new DrawLayerComponent(DrawLayer.Tiles));
             }
         }
 
@@ -268,7 +266,6 @@ public class Enamel : Game
         renderers don't get passed the game time. 
         render to the smaller renderTarget, then upscale after
         */
-        _groundRenderer?.Draw();
         _mapRenderer?.Draw();
         _textRenderer?.Draw();
 
@@ -292,6 +289,7 @@ public class Enamel : Game
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
         World.Set(playerEntity, new SpriteOriginComponent(0, 16));
+        World.Set(playerEntity, new DrawLayerComponent(DrawLayer.Units));
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));
         World.Set(playerEntity, new ImpassableFlag());
