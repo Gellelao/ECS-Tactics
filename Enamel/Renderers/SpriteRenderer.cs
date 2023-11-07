@@ -9,17 +9,6 @@ using Enamel.Enums;
 
 namespace Enamel.Renderers;
 
-/*
-this is a renderer. a renderer is just like a system, 
-but it lacks the capability to call Set() and update components.
-*never* update components from within a renderer.
-
-how you structure your renderers is up to you. 
-you may get value from splitting your renderers up into say,
-a HUD renderer and a world renderer. or you can go monolith-style.
-there are advantages to both ([lcd soundsystem voice] advantages! advantages!),
-but the monolith-style renderer can be more useful in a 3D context.
-*/
 public class SpriteRenderer : Renderer
 {
     private Filter TextureIndexFilter { get; }
@@ -30,6 +19,8 @@ public class SpriteRenderer : Renderer
     {
         SpriteBatch = spriteBatch;
         _textures = textures;
+        // An alternative here would be to give each draw layer its own component type, then create a separate filter
+        // for each. It would save some of the GetRenderOrder complexity but we need to order by Y value anyway
         TextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
             .Include<PositionComponent>()
@@ -37,25 +28,10 @@ public class SpriteRenderer : Renderer
             .Build();
     }
 
-    /*
-    note that unlike Update() in systems, Draw() is not an override. 
-    this gives us the freedom to have multiple Draw() functions 
-    and call them in whatever order we want.
-    */
     public void Draw()
     {
         var renderOrder = GetRenderOrder(TextureIndexFilter.Entities);
-        /*
-        start the sprite batch. everything between SpriteBatch.Begin() and SpriteBatch.End() 
-        is going to be in the same batch. everything that gets batched together has to use 
-        the same shader, so if you have a special shader you want to put on certain objects only,
-        they have to be in their own batch.
 
-        it's also good practice to create a sprite atlas using a texture packer, 
-        and draw all your sprites from the same Texture2D, specifying which sprite you want using
-        the rectangle parameter. there are many tools out there that will spit out a packed texture
-        and JSON metadata to get your rectangles from. i recommend cram: https://gitea.moonside.games/MoonsideGames/Cram
-        */
         SpriteBatch.Begin(SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
             SamplerState.PointClamp,
@@ -73,18 +49,28 @@ public class SpriteRenderer : Renderer
         }
         SpriteBatch.End();
     }
-
+    
+    /// <summary>
+    /// Given a list of entities with PostitionCompnents and DrawLayerComponents, return them ordered such that:
+    /// * All entities in lower layers are drawn before entities in higher layers
+    /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?)Y values 
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
     private IEnumerable<List<Entity>> GetRenderOrder(ReverseSpanEnumerator<Entity> entities)
     {
+        // Create a list with one entry for each draw layer
         var layerList = new List<List<List<Entity>>>();
         foreach (int currentLayer in Enum.GetValues(typeof(DrawLayer)))
         {
             var currentLayerEnum = (DrawLayer) currentLayer;
+            
+            // Create a dictionary with lists of entities at each Y level
             var renderOrderDict = new Dictionary<int, List<Entity>>();
             foreach (var entity in entities)
             {
                 var drawLayer = Get<DrawLayerComponent>(entity).Layer;
-                if (drawLayer != currentLayerEnum) continue;
+                if (drawLayer != currentLayerEnum) continue; // Ignore entities that are not in the current draw layer
                 
                 var yPos = Get<PositionComponent>(entity).Y;
                 if (renderOrderDict.TryGetValue(yPos, out var list))
@@ -97,9 +83,18 @@ public class SpriteRenderer : Renderer
                 }
             }
 
-            var orderWithinLayer = renderOrderDict.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList();
+            // Order by Y value and select out just the list of ordered entities
+            var orderWithinLayer = renderOrderDict
+                .OrderBy(kvp => kvp.Key)
+                .Select(kvp => kvp.Value)
+                .ToList();
+            
             layerList.Add(orderWithinLayer);
         }
+        
+        // Combine the draw layer lists into one big list. This results in the first item being all the entities to
+        // draw first, the second item being all the entities to draw second, etc. Taking into account both draw layer
+        // and Y value.
         return layerList.SelectMany(list => list);
     }
 
