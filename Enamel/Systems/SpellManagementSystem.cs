@@ -12,6 +12,7 @@ public class SpellManagementSystem : SpellSystem
 
     public override void Update(TimeSpan delta)
     {
+        // Would be nice if the entity learning the spell could be specified, rather than just relying on the Selected entity
         if (!SomeMessage<LearnSpellMessage>()) return;
 
         var spellId = ReadMessage<LearnSpellMessage>().SpellId;

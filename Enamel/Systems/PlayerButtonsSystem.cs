@@ -12,13 +12,13 @@ namespace Enamel.Systems;
 public class PlayerButtonsSystem : MoonTools.ECS.System
 {
     private readonly World _world;
-    private Filter ControlleByPlayerFilter { get; }
+    private Filter ControlledByPlayerFilter { get; }
     private Filter SpellCardFilter { get; }
 
     public PlayerButtonsSystem(World world) : base(world)
     {
         _world = world;
-        ControlleByPlayerFilter = FilterBuilder
+        ControlledByPlayerFilter = FilterBuilder
             .Include<ControlledByPlayerComponent>()
             .Build();
         SpellCardFilter = FilterBuilder.Include<SpellToPrepOnClickComponent>().Build();
@@ -26,7 +26,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
-        foreach (var entity in ControlleByPlayerFilter.Entities)
+        foreach (var entity in ControlledByPlayerFilter.Entities)
         {
             if (!SomeMessageWithEntity<PlayerUnitSelectedMessage>(entity)) continue;
 

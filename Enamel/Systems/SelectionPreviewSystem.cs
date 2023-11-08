@@ -158,6 +158,7 @@ public class SelectionPreviewSystem : SpellSystem
         var preview = _world.CreateEntity();
         Set(preview, new GridCoordComponent(x, y));
         Set(preview, new TextureIndexComponent(Sprite.SelectPreview));
+        Set(preview, new DrawLayerComponent(DrawLayer.Signage));
 
         return preview;
     }

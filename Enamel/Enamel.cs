@@ -133,12 +133,6 @@ public class Enamel : Game
         /*
         SYSTEMS
         */
-
-        /*
-        here we set up all our systems. 
-        you can pass in information that these systems might need to their constructors.
-        it doesn't matter what order you create the systems in, we'll specify in what order they run later.
-        */
         // I think these only work if the map is square but it probably will be
         var mapHeightInPixels = Constants.TILE_HEIGHT * Constants.MAP_HEIGHT * UpscaleFactor;
         var xOffset = ScreenWidth / 2 / UpscaleFactor - Constants.TILE_WIDTH/2;
@@ -163,15 +157,12 @@ public class Enamel : Game
         /*
         RENDERERS
         */
-
-        //same as above, but for the renderers
         _mapRenderer = new SpriteRenderer(World, _spriteBatch, _textures);
         _textRenderer = new TextRenderer(World, _spriteBatch, _fontSystem);
 
         /*
         ENTITIES
         */
-
         // Spells
         // For whatever reason, putting the spell template creation after the ground tiles caused an exception when drawing.
         // So just putting spells first until I decide to figure out why that happens
@@ -243,8 +234,8 @@ public class Enamel : Game
         _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
-        _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the MoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only things with access to the _offsets...
-        _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs
+        _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the MoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only thing with access to the _offsets...
+        _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs  (is this true?)
         _projectileSystem?.Update(elapsedTime); // Must run after the moveSystem because it listens for UnitMoveCompletedMessages to know when to move the PerStep projectiles
         _pushSystem?.Update(elapsedTime); // Listens for PushMessages from the Projectile system
         _damageSystem?.Update(elapsedTime); // Should run after pushSystem because the pushSystem sends DamageMessages

@@ -31,7 +31,7 @@ public class TurnSystem : MoonTools.ECS.System
             var controllingPlayer = Get<ControlledByPlayerComponent>(entity);
             if (controllingPlayer.PlayerNumber == nextPlayer)
             {
-                // The next player becomes selectable and has their moves per turn reset
+                // Each unit controlled by the next player becomes selectable and has their moves per turn reset
                 var movesThisTurn = Get<MovesPerTurnComponent>(entity).Amount;
                 Set(entity, new RemainingMovesComponent(movesThisTurn));
                 Remove<DisabledFlag>(entity);
