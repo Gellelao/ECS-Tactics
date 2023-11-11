@@ -37,14 +37,13 @@ public class Enamel : Game
     private static DamageSystem? _damageSystem;
     private static UnitDisablingSystem? _unitDisablingSystem;
     private static PushSystem? _pushSystem;
+    private static AnimationSystem _animationSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
 
     private SpriteBatch _spriteBatch;
     private FontSystem _fontSystem;
-
-    private Texture2D[] _textures;
 
     private const int ScreenWidth = 1920;
     private const int ScreenHeight = 1080;
@@ -94,7 +93,7 @@ public class Enamel : Game
         ));
 
         // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-        _textures = new Texture2D[100];
+        var textures = new Texture2D[100];
 
         var redPixel = new Texture2D(GraphicsDevice, 1, 1);
         redPixel.SetData(new[] { Color.Red });
@@ -117,18 +116,24 @@ public class Enamel : Game
         _spriteBatch.End();
         GraphicsDevice.SetRenderTarget(null);
 
-        _textures[(int)Sprite.RedPixel] = redPixel;
-        _textures[(int)Sprite.GreenRectangle] = greenRectangle;
-        _textures[(int)Sprite.YellowSquare] = yellowSquare;
-        _textures[(int)Sprite.Tile] = Content.Load<Texture2D>("GroundTile");
-        _textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
-        _textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWiz");
-        _textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
-        _textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
-        _textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
-        _textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
-        _textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
-        _textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
+        textures[(int)Sprite.RedPixel] = redPixel;
+        textures[(int)Sprite.GreenRectangle] = greenRectangle;
+        textures[(int)Sprite.YellowSquare] = yellowSquare;
+        textures[(int)Sprite.Tile] = Content.Load<Texture2D>("GroundTile");
+        textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
+        textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWiz");
+        textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
+        textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
+        textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
+        textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
+        textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
+        textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
+        
+        // Animations
+        var animations = new (int X, int Y)[100][];
+        // X and Y here are the coords of the segment of the sprite sheet we want to draw, if each sprite was a cell in an array
+        // we'll multiply X and Y by the size of the sprite to get the pixel coords when rendering
+        animations[(int)Animation.BlueWiz_Walk] = new []{(0, 0), (1, 0), (2, 0), (3, 0)};
 
         /*
         SYSTEMS
@@ -153,11 +158,12 @@ public class Enamel : Game
         _damageSystem = new DamageSystem(World);
         _unitDisablingSystem = new UnitDisablingSystem(World);
         _pushSystem = new PushSystem(World);
+        _animationSystem = new AnimationSystem(World, animations);
 
         /*
         RENDERERS
         */
-        _mapRenderer = new SpriteRenderer(World, _spriteBatch, _textures);
+        _mapRenderer = new SpriteRenderer(World, _spriteBatch, textures);
         _textRenderer = new TextRenderer(World, _spriteBatch, _fontSystem);
 
         /*
@@ -171,6 +177,7 @@ public class Enamel : Game
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         World.Set(player1, new SpriteRectComponent(32, 32, 32, 32));
+        World.Set(player1, new AnimationComponent(Animation.BlueWiz_Walk, 0, 500, 0));
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         var blueWIz = CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
         World.Set(blueWIz, new SpriteRectComponent(32, 32, 32, 32));
@@ -242,6 +249,7 @@ public class Enamel : Game
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
         _unitDisablingSystem?.Update(elapsedTime);
+        _animationSystem.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // Must run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // Must run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.

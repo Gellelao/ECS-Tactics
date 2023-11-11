@@ -53,7 +53,7 @@ public class SpriteRenderer : Renderer
     /// <summary>
     /// Given a list of entities with PostitionCompnents and DrawLayerComponents, return them ordered such that:
     /// * All entities in lower layers are drawn before entities in higher layers
-    /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?)Y values 
+    /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?) Y values 
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
