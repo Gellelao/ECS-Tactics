@@ -111,10 +111,10 @@ public class SpriteRenderer : Renderer
             }
 
             Rectangle? sourceRect = null;
-            if (Has<SpriteRectComponent>(entity))
+            if (Has<SpriteRegionComponent>(entity))
             {
-                var rect = Get<SpriteRectComponent>(entity);
-                sourceRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+                var rect = Get<SpriteRegionComponent>(entity);
+                sourceRect = rect.ToRectangle();
             }
 
             var tint = Color.White;

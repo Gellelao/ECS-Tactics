@@ -6,11 +6,11 @@ namespace Enamel.Systems;
 
 public class AnimationSystem : MoonTools.ECS.System
 {
-    private readonly (int X, int Y)[][] _animations;
+    private readonly AnimationData[] _animations;
     
     private Filter AnimationFilter { get; }
 
-    public AnimationSystem(World world, (int X, int Y)[][] animations) : base(world)
+    public AnimationSystem(World world, AnimationData[] animations) : base(world)
     {
         _animations = animations;
         AnimationFilter = FilterBuilder.Include<AnimationComponent>().Build();
@@ -26,21 +26,25 @@ public class AnimationSystem : MoonTools.ECS.System
 
             if (timeSinceLastFrame > animationComponent.MillisBetweenFrames)
             {
-                var animation = _animations[(int)animationComponent.AnimationId];
+                var animationData = _animations[(int)animationComponent.AnimationId];
                 var currentFrame = animationComponent.CurrentFrame;
                 currentFrame++;
-                if (currentFrame >= animation.Length)
+                if (currentFrame >= animationData.Frames.Length)
                 {
                     currentFrame = 0;
                 }
 
-                var nextSprite = animation[currentFrame];
+                var nextSprite = animationData.Frames[currentFrame];
                 
                 // TODO - need to put the width and height in the animation data to make this flexible
-                Set(entity, new SpriteRectComponent(nextSprite.X*Constants.PLAYER_FRAME_WIDTH, nextSprite.Y*Constants.PLAYER_FRAME_WIDTH, Constants.PLAYER_FRAME_WIDTH, Constants.PLAYER_FRAME_WIDTH));
+                Set(entity, new SpriteRegionComponent(
+                    nextSprite.X,
+                    nextSprite.Y,
+                    animationData.SpriteWidth,
+                    animationData.SpriteHeight)
+                );
 
-                Set(entity,
-                    animationComponent with {CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
+                Set(entity, animationComponent with {CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
             }
             else
             {

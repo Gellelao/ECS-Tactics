@@ -130,10 +130,19 @@ public class Enamel : Game
         textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
         
         // Animations
-        var animations = new (int X, int Y)[100][];
+        var animations = new AnimationData[100];
         // X and Y here are the coords of the segment of the sprite sheet we want to draw, if each sprite was a cell in an array
         // we'll multiply X and Y by the size of the sprite to get the pixel coords when rendering
-        animations[(int)Animation.BlueWiz_Walk] = new []{(0, 0), (1, 0), (2, 0), (3, 0)};
+        animations[(int) Animation.BlueWiz_Walk_Back] = new AnimationData(
+            Constants.PLAYER_FRAME_WIDTH,
+            Constants.PLAYER_FRAME_HEIGHT, 
+            new []{(0, 0), (0, 1), (0, 2), (0, 1)}
+            );
+        animations[(int) Animation.BlueWiz_Walk_Front] = new AnimationData(
+            Constants.PLAYER_FRAME_WIDTH,
+            Constants.PLAYER_FRAME_HEIGHT, 
+            new []{(1, 0), (1, 1), (1, 2), (1, 1)}
+        );
 
         /*
         SYSTEMS
@@ -176,11 +185,10 @@ public class Enamel : Game
 
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
-        World.Set(player1, new SpriteRectComponent(32, 32, 32, 32));
-        World.Set(player1, new AnimationComponent(Animation.BlueWiz_Walk, 0, 500, 0));
+        World.Set(player1, new AnimationComponent(Animation.BlueWiz_Walk_Front, 250));
         CreatePlayer(PlayerNumber.One, Sprite.GreenCube, 2, 1);
         var blueWIz = CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
-        World.Set(blueWIz, new SpriteRectComponent(32, 32, 32, 32));
+        World.Set(blueWIz, new SpriteRegionComponent(1, 1, Constants.PLAYER_FRAME_WIDTH, Constants.PLAYER_FRAME_HEIGHT));
         CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
 
         var endTurnButton = World.CreateEntity();
@@ -287,7 +295,7 @@ public class Enamel : Game
     {
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
-        World.Set(playerEntity, new SpriteOriginComponent(0, 16));
+        World.Set(playerEntity, new SpriteOriginComponent(-4, 18));
         World.Set(playerEntity, new DrawLayerComponent(DrawLayer.Units));
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));

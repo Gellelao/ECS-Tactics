@@ -2,4 +2,9 @@
 
 namespace Enamel.Components;
 
-public readonly record struct AnimationComponent(Animation AnimationId, int CurrentFrame, double MillisBetweenFrames, double MillisSinceLastFrame);
+public readonly record struct AnimationComponent(
+    Animation AnimationId,
+    double MillisBetweenFrames,
+    double MillisSinceLastFrame = 0,
+    int CurrentFrame = 0
+);

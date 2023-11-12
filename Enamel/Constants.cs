@@ -15,7 +15,8 @@ public static class Constants
     public const int DEFAULT_MOVES_PER_TURN = 3;
     public const int CURRENT_TURN_TEXT_SIZE = 20;
     public const int SPELL_CARD_TEXT_SIZE = 10;
-    public const int PLAYER_FRAME_WIDTH = 32;
+    public const int PLAYER_FRAME_WIDTH = 22;
+    public const int PLAYER_FRAME_HEIGHT = 32;
     public static readonly Color CurrentTurnTextColour = Color.White;
     public static readonly Color SpellCardTextColour = Color.Black;
     public static readonly PlayerNumber[] TwoPlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One};
