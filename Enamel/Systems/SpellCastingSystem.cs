@@ -6,6 +6,7 @@ using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Spawners;
 using MoonTools.ECS;
+using static Enamel.Utils;
 
 namespace Enamel.Systems;
 
@@ -43,7 +44,7 @@ public class SpellCastingSystem : SpellSystem
     {
         var spellId = Get<SpellIdComponent>(spell).SpellId;
         var (originX, originY) = Get<GridCoordComponent>(casterEntity);
-        var direction = GetDirectionOfCast(originX, originY, targetX, targetY);
+        var direction = GetDirection(originX, originY, targetX, targetY);
 
         switch (spellId)
         {
@@ -65,22 +66,5 @@ public class SpellCastingSystem : SpellSystem
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
-
-    private Direction GetDirectionOfCast(int originX, int originY, int targetX, int targetY)
-    {
-        var yDiff = originY - targetY;
-        var xDiff = originX - targetX;
-        if (xDiff != 0 && yDiff != 0)
-        {
-            throw new NotImplementedException("Diagonal projectiles not implemented");
-        }
-
-        if (xDiff < 0) return Direction.East;
-        if (xDiff > 0) return Direction.West;
-        if (yDiff < 0) return Direction.South;
-        if (yDiff > 0) return Direction.North;
-
-        return Direction.None;
     }
 }
