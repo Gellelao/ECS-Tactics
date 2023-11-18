@@ -35,7 +35,14 @@ public class MoveSystem : MoonTools.ECS.System
             
             var targetGridPosition = Get<GridCoordComponent>(entity);
             var selectedEntity = GetSingletonEntity<SelectedFlag>();
+            var origin = Get<PositionComponent>(entity);
             Set(selectedEntity, new MovingToCoordComponent(targetGridPosition.X, targetGridPosition.Y));
+            Send(selectedEntity, new FacingDirectionComponent(Utils.GetDirection(
+                origin.X, 
+                origin.Y, 
+                targetGridPosition.X, 
+                targetGridPosition.Y)
+            ));
             Remove<GridCoordComponent>(selectedEntity);
         }
         

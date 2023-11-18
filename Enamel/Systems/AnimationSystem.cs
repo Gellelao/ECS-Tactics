@@ -1,5 +1,6 @@
 ﻿using System;
 using Enamel.Components;
+using Enamel.Enums;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -18,15 +19,20 @@ public class AnimationSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
+        // Update frames of existing animations
         foreach (var entity in AnimationFilter.Entities)
         {
             var animationComponent = Get<AnimationComponent>(entity);
+            var direction = Has<FacingDirectionComponent>(entity)
+                ? Get<FacingDirectionComponent>(entity).Direction
+                : Direction.North;
+            
             var timeSinceLastFrame = animationComponent.MillisSinceLastFrame;
             timeSinceLastFrame += delta.TotalMilliseconds;
 
             if (timeSinceLastFrame > animationComponent.MillisBetweenFrames)
             {
-                var animationData = _animations[(int)animationComponent.AnimationId];
+                var animationData = _animations[(int)animationComponent.AnimationSetId];
                 var currentFrame = animationComponent.CurrentFrame;
                 currentFrame++;
                 if (currentFrame >= animationData.Frames.Length)
