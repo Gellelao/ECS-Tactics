@@ -14,7 +14,9 @@ public class AnimationSystem : MoonTools.ECS.System
     public AnimationSystem(World world, AnimationData[] animations) : base(world)
     {
         _animations = animations;
-        AnimationFilter = FilterBuilder.Include<AnimationComponent>().Build();
+        AnimationFilter = FilterBuilder
+            .Include<AnimationSetComponent>()
+            .Include<AnimationSpeedComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -22,39 +24,49 @@ public class AnimationSystem : MoonTools.ECS.System
         // Update frames of existing animations
         foreach (var entity in AnimationFilter.Entities)
         {
-            var animationComponent = Get<AnimationComponent>(entity);
+            var animationSetId = Get<AnimationSetComponent>(entity).AnimationSetId;
+            var animationSpeedComponent = Get<AnimationSpeedComponent>(entity);
             var direction = Has<FacingDirectionComponent>(entity)
                 ? Get<FacingDirectionComponent>(entity).Direction
                 : Direction.North;
+            var animationType = Has<AnimationTypeComponent>(entity)
+                ? Get<AnimationTypeComponent>(entity).AnimationType
+                : AnimationType.Idle;
             
-            var timeSinceLastFrame = animationComponent.MillisSinceLastFrame;
+            var timeSinceLastFrame = animationSpeedComponent.MillisSinceLastFrame;
             timeSinceLastFrame += delta.TotalMilliseconds;
 
-            if (timeSinceLastFrame > animationComponent.MillisBetweenFrames)
+            // check if we need to update to the next frame
+            if (timeSinceLastFrame > animationSpeedComponent.MillisBetweenFrames)
             {
-                var animationData = _animations[(int)animationComponent.AnimationSetId];
-                var currentFrame = animationComponent.CurrentFrame;
+                // get the information about all the animations for this entity
+                var animationData = _animations[(int)animationSetId];
+                // get the information about the specific type (e.g idle, walk, etc) that we want to play here
+                var animationFrames = animationData.Frames[(int)animationType];
+                
+                // get the next frame to display
+                var currentFrame = animationSpeedComponent.CurrentFrame;
                 currentFrame++;
-                if (currentFrame >= animationData.Frames.Length)
+                if (currentFrame >= animationFrames.Length)
                 {
                     currentFrame = 0;
                 }
-
-                var nextSprite = animationData.Frames[currentFrame];
+                var nextSpriteY = animationFrames[currentFrame];
                 
-                // TODO - need to put the width and height in the animation data to make this flexible
+                // the direction enum identifies the x column in the spritesheet
+                // the y value is determined by the animation frame
                 Set(entity, new SpriteRegionComponent(
-                    nextSprite.X,
-                    nextSprite.Y,
+                    (int)direction,
+                    nextSpriteY,
                     animationData.SpriteWidth,
                     animationData.SpriteHeight)
                 );
 
-                Set(entity, animationComponent with {CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
+                Set(entity, animationSpeedComponent with {CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
             }
             else
             {
-                Set(entity, animationComponent with {MillisSinceLastFrame = timeSinceLastFrame});
+                Set(entity, animationSpeedComponent with {MillisSinceLastFrame = timeSinceLastFrame});
             }
         }
     }

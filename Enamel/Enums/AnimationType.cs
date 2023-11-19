@@ -4,6 +4,7 @@ public enum AnimationType
 {
     Idle,
     Walk,
+    Hurt,
     Raise,
     Throw
 }
