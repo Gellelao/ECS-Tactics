@@ -29,21 +29,26 @@ public class MoveSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         // Start moving selected entity if a MovePreview was selected
-        foreach (var entity in MovePreviewFilter.Entities)
+        if (SomeMessage<GridCoordSelectedMessage>())
         {
-            if (!SomeMessageWithEntity<SelectMessage>(entity)) continue;
-            
-            var targetGridPosition = Get<GridCoordComponent>(entity);
-            var selectedEntity = GetSingletonEntity<SelectedFlag>();
-            var origin = Get<PositionComponent>(entity);
-            Set(selectedEntity, new MovingToCoordComponent(targetGridPosition.X, targetGridPosition.Y));
-            Send(selectedEntity, new FacingDirectionComponent(Utils.GetDirection(
-                origin.X, 
-                origin.Y, 
-                targetGridPosition.X, 
-                targetGridPosition.Y)
-            ));
-            Remove<GridCoordComponent>(selectedEntity);
+            var (clickedX, clickedY) = ReadMessage<GridCoordSelectedMessage>();
+            foreach (var entity in MovePreviewFilter.Entities)
+            {
+                var targetGridPosition = Get<GridCoordComponent>(entity);
+
+                if (targetGridPosition.X != clickedX || targetGridPosition.Y != clickedY) continue;
+                
+                var selectedEntity = GetSingletonEntity<SelectedFlag>();
+                var origin = Get<PositionComponent>(entity);
+                Set(selectedEntity, new MovingToCoordComponent(targetGridPosition.X, targetGridPosition.Y));
+                Set(selectedEntity, new FacingDirectionComponent(Utils.GetDirection(
+                    origin.X, 
+                    origin.Y, 
+                    targetGridPosition.X, 
+                    targetGridPosition.Y)
+                ));
+                Remove<GridCoordComponent>(selectedEntity);
+            }
         }
         
         // Shift entities that are already moving
@@ -73,7 +78,6 @@ public class MoveSystem : MoonTools.ECS.System
                 if (Has<RemainingMovesComponent>(entity) && !Has<MovingInDirectionComponent>(entity) && Has<SelectedFlag>(entity))
                 {
                     UpdateRemainingMoves(entity);
-                    Send(entity, new UnitMoveCompletedMessage(entity));
                 }
             }
             // Otherwise, move the screenpos

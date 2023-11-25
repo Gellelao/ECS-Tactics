@@ -13,7 +13,8 @@ namespace Enamel.Systems;
 public class InputSystem : MoonTools.ECS.System
 {
     private Filter SelectableGridCoordFilter { get; }
-    private Filter ClickableUIFilter { get; }
+    private Filter ClickableUiFilter { get; }
+    public Filter HighlightedFilter { get; }
     private MouseState _mousePrevious;
     private readonly int _upscaleFactor;
     private readonly int _xOffset;
@@ -25,14 +26,16 @@ public class InputSystem : MoonTools.ECS.System
             .Include<GridCoordComponent>()
             .Exclude<DisabledFlag>()
             .Build();
-        ClickableUIFilter = FilterBuilder
+        ClickableUiFilter = FilterBuilder
             .Include<OnClickComponent>()
             .Exclude<DisabledFlag>()
             .Build();
+        HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
         _upscaleFactor = upscaleFactor;
         _xOffset = xOffset;
         _yOffset = yOffset;
     }
+
 
     public override void Update(TimeSpan delta)
     {
@@ -54,14 +57,19 @@ public class InputSystem : MoonTools.ECS.System
 
     private void OnUpdate(int mouseX, int mouseY)
     {
+        // Clear existing hovers
+        foreach (var selectedEntity in HighlightedFilter.Entities){
+            Remove<HighlightedFlag>(selectedEntity);
+        }
+        
         // Button hovers
-        foreach (var button in ClickableUIFilter.Entities)
+        foreach (var button in ClickableUiFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
             var position = Get<PositionComponent>(button);
             if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
             {
-                Send(button, new HighlightMessage());
+                Set(button, new HighlightedFlag());
             }
         }
 
@@ -72,14 +80,14 @@ public class InputSystem : MoonTools.ECS.System
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)gridCoords.X == x && (int)gridCoords.Y == y)
             {
-                Send(entity, new HighlightMessage());
+                Set(entity, new HighlightedFlag());
             }
         }
     }
 
     private void OnLeftButtonRelease(int mouseX, int mouseY){
         // Button clicks
-        foreach (var button in ClickableUIFilter.Entities)
+        foreach (var button in ClickableUiFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
             var position = Get<PositionComponent>(button);
@@ -126,7 +134,7 @@ public class InputSystem : MoonTools.ECS.System
             var (x, y) = Get<GridCoordComponent>(entity);
             if((int)clickedCoords.X == x && (int)clickedCoords.Y == y)
             {
-                Send(entity, new SelectMessage());
+                Send(new GridCoordSelectedMessage(x, y));
             }
         }
     }

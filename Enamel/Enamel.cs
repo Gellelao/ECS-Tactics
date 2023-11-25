@@ -26,7 +26,6 @@ public class Enamel : Game
     private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
     private static InputSystem? _inputSystem;
     private static UnitSelectionSystem? _unitSelectionSystem;
-    private static HighlightSystem? _highlightSystem;
     private static SelectionPreviewSystem? _selectionPreviewSystem;
     private static MoveSystem? _moveSystem;
     private static TurnSystem? _turnSystem;
@@ -155,7 +154,6 @@ public class Enamel : Game
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, xOffset, yOffset);
         _inputSystem = new InputSystem(World, UpscaleFactor, xOffset, yOffset);
         _unitSelectionSystem = new UnitSelectionSystem(World);
-        _highlightSystem = new HighlightSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _moveSystem = new MoveSystem(World, xOffset, yOffset);
         _turnSystem = new TurnSystem(World);
@@ -250,7 +248,6 @@ public class Enamel : Game
         var elapsedTime = gameTime.ElapsedGameTime;
         _inputSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
-        _highlightSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
         _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the MoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only thing with access to the _offsets...

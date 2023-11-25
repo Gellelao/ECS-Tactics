@@ -3,4 +3,4 @@ using MoonTools.ECS;
 
 namespace Enamel.Components.Messages;
 
-public readonly record struct SpellWasCastMessage(Entity Caster, SpellId SpellId);
+public readonly record struct SpellWasCastMessage(SpellId SpellId);

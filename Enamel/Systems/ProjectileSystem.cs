@@ -2,6 +2,7 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
+using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using MoonTools.ECS;
 
@@ -28,7 +29,7 @@ public class ProjectileSystem : MoonTools.ECS.System
                         MoveOnce(movingEntity);
                         break;
                    case ProjectileMoveRate.PerStep:
-                       if (SomeMessage<SpellWasCastMessage>() || SomeMessage<UnitMoveCompletedMessage>())
+                       if (SomeMessage<SpellWasCastMessage>())
                        {
                            MoveOnce(movingEntity);
                        }
@@ -46,6 +47,6 @@ public class ProjectileSystem : MoonTools.ECS.System
 
         var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
 
-        Send(movingEntity, new PushMessage(direction, false));
+        Set(movingEntity, new BeingPushedComponent(direction, false));
     }
 }

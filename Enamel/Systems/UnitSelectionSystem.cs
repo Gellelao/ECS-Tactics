@@ -1,7 +1,10 @@
 using System;
+using System.Net;
 using MoonTools.ECS;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.TempComponents;
+using Enamel.Components.UI;
 
 namespace Enamel.Systems;
 
@@ -14,8 +17,7 @@ public class UnitSelectionSystem : MoonTools.ECS.System
     {
         SelectableCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
-            .Exclude<MovementPreviewFlag>()
-            .Exclude<SpellPreviewFlag>()
+            .Exclude<SpellToCastOnClickComponent>()
             .Exclude<DisabledFlag>()
             .Build();
         SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();
@@ -23,16 +25,19 @@ public class UnitSelectionSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
+        if (!SomeMessage<GridCoordSelectedMessage>()) return;
+        var (selectingX, selectingY) = ReadMessage<GridCoordSelectedMessage>();
         foreach (var entity in SelectableCoordFilter.Entities)
         {
-            if (!SomeMessageWithEntity<SelectMessage>(entity)) continue;
-
+            var (entityX, entityY) = Get<GridCoordComponent>(entity);
+            if (entityX != selectingX || entityY != selectingY) continue;
+            
             foreach (var selectedEntity in SelectedFilter.Entities){
                 Remove<SelectedFlag>(selectedEntity);
             }
 
             Set(entity, new SelectedFlag());
-            Send(entity, new PlayerUnitSelectedMessage());
+            Set(entity, new DisplaySpellCardsComponent());
         }
     }
 }

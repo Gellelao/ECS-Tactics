@@ -4,6 +4,7 @@ using System.Linq;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
+using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using MoonTools.ECS;
 
@@ -12,16 +13,24 @@ namespace Enamel.Systems;
 public class PushSystem : MoonTools.ECS.System
 {
     private readonly World _world;
-    private Filter GridCoordFilter { get; }
+    private Filter PushableFilter { get; }
 
     public PushSystem(World world) : base(world)
     {
         _world = world;
-        GridCoordFilter = FilterBuilder.Include<GridCoordComponent>().Build();
+        PushableFilter = FilterBuilder
+            .Include<GridCoordComponent>()
+            .Include<BeingPushedComponent>()
+            .Build();
     }
 
     public override void Update(TimeSpan delta)
     {
+        foreach (var entity in PushableFilter.Entities)
+        {
+            var (direction, mustBePushable) = Get<BeingPushedComponent>(entity);
+            Push(entity, direction, mustBePushable);
+        }
         // What happens here is the pusher may start with its id at the beginning of the GridCoordFilter entities.
         // Then in the process of pushing, its id may be duplicated in the GridCoordFilter entities.
         //   The specific cause seems to be the IndexableSet doing weird stuff when Remove is called, when the GridCoordComponent is removed from the pushee at the end of Push
@@ -31,18 +40,18 @@ public class PushSystem : MoonTools.ECS.System
         // take a copy of the entities when this method is entered, and only loop over those,
         // or delete the message once it has been read once, so that on the second enumeration nothing happens
         // or avoid the issue altogether by not removing a GridCoordComponent during iteration of the GridCoordFilter
-        var entitiesToPush = new List<(Entity Entity, PushMessage Message)>();
-        foreach (var entity in GridCoordFilter.Entities)
-        {
-            var pushMessages = ReadMessagesWithEntity<PushMessage>(entity);
-
-            foreach (var pushMessage in pushMessages)
-            {
-                entitiesToPush.Add((entity, pushMessage));
-            }
-        }
-
-        entitiesToPush.ForEach(tuple => Push(tuple.Entity, tuple.Message.Direction, tuple.Message.EntityMustBePushable));
+        // var entitiesToPush = new List<(Entity Entity, BeingPushedComponent Message)>();
+        // foreach (var entity in PushableFilter.Entities)
+        // {
+        //     var pushMessages = ReadMessagesWithEntity<BeingPushedComponent>(entity);
+        //
+        //     foreach (var pushMessage in pushMessages)
+        //     {
+        //         entitiesToPush.Add((entity, pushMessage));
+        //     }
+        // }
+        //
+        // entitiesToPush.ForEach(tuple => Push(tuple.Entity, tuple.Message.Direction, tuple.Message.EntityMustBePushable));
     }
 
     private void Push(Entity entity, Direction direction, bool entityMustBePushable)
@@ -91,18 +100,16 @@ public class PushSystem : MoonTools.ECS.System
                 // A collision has occurred
                 var collidee = impassableEntities.First(); // Not sure if just getting first here will work forever...
                 var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
-                Send(collidee, new DamageMessage(damage));
+                Set(collidee, new TakingDamageComponent(damage));
 
                 var collisionBehaviour = Has<OnCollisionComponent>(movingEntity) ? Get<OnCollisionComponent>(movingEntity).Behaviour : CollisionBehaviour.Stop;
                 switch (collisionBehaviour)
                 {
                     case CollisionBehaviour.Stop:
                         RemoveTempProjectileComponents(movingEntity);
-                        Send(movingEntity, new UnitMoveCompletedMessage());
                         break;
                     case CollisionBehaviour.StopAndPush:
                         RemoveTempProjectileComponents(movingEntity);
-                        Send(movingEntity, new UnitMoveCompletedMessage());
                         // Recursion Alert!
                         // Recursion Alert!
                         Push(collidee, direction, true);
@@ -138,7 +145,7 @@ public class PushSystem : MoonTools.ECS.System
     private List<Entity> GetEntitiesAtCoords(int x, int y)
     {
         var entities = new List<Entity>();
-        foreach (var entity in GridCoordFilter.Entities)
+        foreach (var entity in PushableFilter.Entities)
         {
             var (gridCoordEntityX, gridCoordEntityY) = Get<GridCoordComponent>(entity);
             if (gridCoordEntityX == x && gridCoordEntityY == y)

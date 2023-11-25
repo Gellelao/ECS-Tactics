@@ -5,7 +5,7 @@ using MoonTools.ECS;
 
 namespace Enamel.Spawners;
 
-public class SpellCastSpawner : Spawner
+public class SpellCastSpawner : Manipulator
 {
     private readonly World _world;
 

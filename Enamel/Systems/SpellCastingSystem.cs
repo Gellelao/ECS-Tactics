@@ -18,16 +18,17 @@ public class SpellCastingSystem : SpellSystem
     public SpellCastingSystem(World world, SpellCastSpawner spawner) : base(world)
     {
         _spawner = spawner;
-        SpellPreviewFilter = FilterBuilder.Include<SpellPreviewFlag>().Build();
+        SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnClickComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
+        if (!SomeMessage<GridCoordSelectedMessage>()) return;
+        var (clickX, clickY) = ReadMessage<GridCoordSelectedMessage>();
         foreach (var spellPreview in SpellPreviewFilter.Entities)
         {
-            if (!SomeMessageWithEntity<SelectMessage>(spellPreview)) continue;
-
             var (targetX, targetY) = Get<GridCoordComponent>(spellPreview);
+            if (clickX != targetX || clickY != targetY) continue;
             
             var casterEntity = GetSingletonEntity<SelectedFlag>();
 
@@ -36,7 +37,7 @@ public class SpellCastingSystem : SpellSystem
 
             ResolveSpell(spell, casterEntity, targetX, targetY);
 
-            Send(casterEntity, new SpellWasCastMessage(casterEntity, spellToCastComponent.SpellId));
+            Send(new SpellWasCastMessage(spellToCastComponent.SpellId));
         }
     }
 

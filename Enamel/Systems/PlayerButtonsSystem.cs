@@ -3,6 +3,7 @@ using MoonTools.ECS;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Extensions;
@@ -12,30 +13,29 @@ namespace Enamel.Systems;
 public class PlayerButtonsSystem : MoonTools.ECS.System
 {
     private readonly World _world;
-    private Filter ControlledByPlayerFilter { get; }
+    private Filter DisplaySpellCardsFilter { get; }
     private Filter SpellCardFilter { get; }
 
     public PlayerButtonsSystem(World world) : base(world)
     {
         _world = world;
-        ControlledByPlayerFilter = FilterBuilder
-            .Include<ControlledByPlayerComponent>()
+        DisplaySpellCardsFilter = FilterBuilder
+            .Include<DisplaySpellCardsComponent>()
             .Build();
         SpellCardFilter = FilterBuilder.Include<SpellToPrepOnClickComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
-        foreach (var entity in ControlledByPlayerFilter.Entities)
+        foreach (var entity in DisplaySpellCardsFilter.Entities)
         {
-            if (!SomeMessageWithEntity<PlayerUnitSelectedMessage>(entity)) continue;
-
             foreach (var spellCard in SpellCardFilter.Entities)
             {
                 Destroy(spellCard);
             }
 
             CreateSpellCardsForEntity(entity);
+            Remove<DisplaySpellCardsComponent>(entity);
         }
     }
 
