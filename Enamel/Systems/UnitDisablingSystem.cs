@@ -35,8 +35,8 @@ public class UnitDisablingSystem : MoonTools.ECS.System
         }
         if (SomeMessage<SpellWasCastMessage>() || SomeMessage<CancelMessage>())
         {
-            var message = ReadMessage<SpellWasCastMessage>();
-            var casterPlayerId = Get<ControlledByPlayerComponent>(message.Caster).PlayerNumber;
+            var casterEntity = GetSingletonEntity<SelectedFlag>();
+            var casterPlayerId = Get<ControlledByPlayerComponent>(casterEntity).PlayerNumber;
             foreach (var entity in DisabledControlledByPlayerFilter.Entities)
             {
                 // Remove disabled from all units on the caster's team, now that the spell has been cast
