@@ -56,7 +56,6 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
             Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
             screenX += 40;
-            Console.WriteLine($"Created spell card for {spellIdComponent} with id {spellCard.ID}");
         }
     }
 }
