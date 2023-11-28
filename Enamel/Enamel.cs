@@ -122,8 +122,8 @@ public class Enamel : Game
         textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
         textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWiz");
         textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
-        textures[(int)Sprite.Selection] = Content.Load<Texture2D>("Selection");
-        textures[(int)Sprite.SelectPreview] = Content.Load<Texture2D>("SelectPreview");
+        textures[(int)Sprite.SelectedTile] = Content.Load<Texture2D>("Selected");
+        textures[(int)Sprite.TileSelectPreview] = Content.Load<Texture2D>("TilePreview");
         textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
         textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
         textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
@@ -238,7 +238,7 @@ public class Enamel : Game
 
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev
-        World.Send(new LearnSpellMessage(SpellId.RockCharge));
+        World.Send(new LearnSpellMessage(SpellId.StepOnce));
 
         base.LoadContent();
     }
@@ -310,6 +310,10 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
+        var stepOnceSpell = World.CreateEntity();
+        World.Set(stepOnceSpell, new SpellIdComponent(SpellId.StepOnce));
+        World.Set(stepOnceSpell, new CastRangeComponent(1));
+        
         var fireballSpell = World.CreateEntity();
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
         World.Set(fireballSpell, new CastRangeComponent(1));

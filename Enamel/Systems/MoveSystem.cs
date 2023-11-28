@@ -28,29 +28,6 @@ public class MoveSystem : MoonTools.ECS.System
 
     public override void Update(TimeSpan delta)
     {
-        // Start moving selected entity if a MovePreview was selected
-        if (SomeMessage<GridCoordSelectedMessage>())
-        {
-            var (clickedX, clickedY) = ReadMessage<GridCoordSelectedMessage>();
-            foreach (var entity in MovePreviewFilter.Entities)
-            {
-                var targetGridPosition = Get<GridCoordComponent>(entity);
-
-                if (targetGridPosition.X != clickedX || targetGridPosition.Y != clickedY) continue;
-                
-                var selectedEntity = GetSingletonEntity<SelectedFlag>();
-                var origin = Get<PositionComponent>(entity);
-                Set(selectedEntity, new MovingToCoordComponent(targetGridPosition.X, targetGridPosition.Y));
-                Set(selectedEntity, new FacingDirectionComponent(Utils.GetDirection(
-                    origin.X, 
-                    origin.Y, 
-                    targetGridPosition.X, 
-                    targetGridPosition.Y)
-                ));
-                Remove<GridCoordComponent>(selectedEntity);
-            }
-        }
-        
         // Shift entities that are already moving
         foreach (var entity in MovingUnitsFilter.Entities)
         {

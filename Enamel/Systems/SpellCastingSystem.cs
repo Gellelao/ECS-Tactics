@@ -49,6 +49,11 @@ public class SpellCastingSystem : SpellSystem
 
         switch (spellId)
         {
+            case SpellId.StepOnce:
+                Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
+                Set(casterEntity, direction);
+                Remove<GridCoordComponent>(casterEntity);
+                break;
             case SpellId.Fireball:
                 _spawner.SpawnFireball(originX, originY, direction);
                 break;

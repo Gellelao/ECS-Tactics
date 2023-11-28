@@ -95,7 +95,7 @@ public class SelectionPreviewSystem : SpellSystem
     {
         var preview = _world.CreateEntity();
         Set(preview, new GridCoordComponent(x, y));
-        Set(preview, new TextureIndexComponent(Sprite.SelectPreview));
+        Set(preview, new TextureIndexComponent(Sprite.TileSelectPreview));
         Set(preview, new DrawLayerComponent(DrawLayer.Signage));
         Set(preview, new SpellToCastOnClickComponent(spellId));
     }

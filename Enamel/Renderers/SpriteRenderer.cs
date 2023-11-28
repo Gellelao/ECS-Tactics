@@ -126,7 +126,7 @@ public class SpriteRenderer : Renderer
             // Draw the selection square under the unit if selected
             if(Has<SelectedFlag>(entity)){
                 SpriteBatch.Draw(
-                    _textures[(int)Sprite.Selection],
+                    _textures[(int)Sprite.SelectedTile],
                     positionComponent.ToVector,
                     null,
                     Color.White,
