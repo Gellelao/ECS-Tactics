@@ -51,7 +51,7 @@ public class SpellCastingSystem : SpellSystem
         {
             case SpellId.StepOnce:
                 Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
-                Set(casterEntity, direction);
+                Set(casterEntity, new FacingDirectionComponent(direction));
                 Remove<GridCoordComponent>(casterEntity);
                 break;
             case SpellId.Fireball:

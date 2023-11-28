@@ -4,8 +4,8 @@ public enum DrawLayer
 {
     Tiles,
     Undergrowth,
+    Signage,
     Units,
     Overgrowth,
-    Signage,
     UserInterface
 }

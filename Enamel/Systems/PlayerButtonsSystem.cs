@@ -48,13 +48,15 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             var spellIdComponent = Get<SpellIdComponent>(spell);
 
             var spellCard = _world.CreateEntity();
-            Set(spellCard, new PositionComponent(screenX, 320));
+            Set(spellCard, new PositionComponent(screenX, 0));
             Set(spellCard, new DimensionsComponent(30, 30));
             Set(spellCard, new TextureIndexComponent(Sprite.YellowSquare));
+            Set(spellCard, new DrawLayerComponent(DrawLayer.UserInterface));
             Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Constants.SPELL_CARD_TEXT_SIZE, Constants.SpellCardTextColour));
             Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
             Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
             screenX += 40;
+            Console.WriteLine($"Created spell card for {spellIdComponent} with id {spellCard.ID}");
         }
     }
 }
