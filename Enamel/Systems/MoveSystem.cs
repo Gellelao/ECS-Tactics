@@ -33,7 +33,7 @@ public class MoveSystem : MoonTools.ECS.System
         {
             var positionComponent = Get<PositionComponent>(entity);
             var targetPosition = Get<MovingToCoordComponent>(entity);
-            var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_MOVE_SPEED;
+            var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_WALK_SPEED;
 
             var targetScreenPos = Utils.GridToScreenCoords(targetPosition.GridX, targetPosition.GridY);
             targetScreenPos.X += _xOffset;

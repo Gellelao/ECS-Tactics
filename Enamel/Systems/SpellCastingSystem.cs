@@ -46,15 +46,22 @@ public class SpellCastingSystem : SpellSystem
         var spellId = Get<SpellIdComponent>(spell).SpellId;
         var (originX, originY) = Get<GridCoordComponent>(casterEntity);
         var direction = GetDirection(originX, originY, targetX, targetY);
+        
         Set(casterEntity, new FacingDirectionComponent(direction));
+        // Force the animation to update now that we've (possibly) changed direction
+        var animationStatus = Get<AnimationStatusComponent>(casterEntity);
+        Set(casterEntity, animationStatus with {MillisSinceLastFrame = animationStatus.MillisBetweenFrames});
 
         switch (spellId)
         {
             case SpellId.StepOnce:
                 Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
-                var animationStatus = Get<AnimationStatusComponent>(casterEntity);
-                // Force the animation to update now that we've (possibly) changed direction
-                Set(casterEntity, animationStatus with {MillisSinceLastFrame = animationStatus.MillisBetweenFrames});
+                Set(casterEntity, animationStatus with {
+                    CurrentAnimation = AnimationType.Walk,
+                    AnimationOnceFinished = AnimationType.Idle,
+                    MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
+                    CurrentFrame = -1
+                });
                 Remove<GridCoordComponent>(casterEntity);
                 break;
             case SpellId.Fireball:

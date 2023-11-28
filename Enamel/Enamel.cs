@@ -185,7 +185,7 @@ public class Enamel : Game
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         World.Set(player1, new AnimationSetComponent(AnimationSet.BlueWiz));
-        World.Set(player1, new AnimationStatusComponent(AnimationType.Walk, 250));
+        World.Set(player1, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
         World.Set(player1, new FacingDirectionComponent(Direction.South));
         
         var blueWIz = CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
@@ -237,8 +237,8 @@ public class Enamel : Game
 
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev
-        //World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.Fireball));
+        World.Send(new LearnSpellMessage(SpellId.StepOnce));
+        World.Send(new LearnSpellMessage(SpellId.ArcaneBubble));
 
         base.LoadContent();
     }
