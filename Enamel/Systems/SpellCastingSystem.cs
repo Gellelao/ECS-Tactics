@@ -52,6 +52,9 @@ public class SpellCastingSystem : SpellSystem
             case SpellId.StepOnce:
                 Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
                 Set(casterEntity, new FacingDirectionComponent(direction));
+                var animationSpeedComponent = Get<AnimationSpeedComponent>(casterEntity);
+                // Force the animation to update now that we've (possibly) changed direction
+                Set(casterEntity, animationSpeedComponent with {MillisSinceLastFrame = animationSpeedComponent.MillisBetweenFrames});
                 Remove<GridCoordComponent>(casterEntity);
                 break;
             case SpellId.Fireball:
