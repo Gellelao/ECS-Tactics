@@ -37,8 +37,12 @@ public class DamageSystem : MoonTools.ECS.System
             else
             {
                 Set(entity, new HealthComponent(newHealth));
-                Set(entity, new AnimationTypeComponent(AnimationType.Hurt));
-                // Some component to stop the hurt  animation after a short while
+                Set(entity, Get<AnimationStatusComponent>(entity) with
+                {
+                    CurrentAnimation = AnimationType.Hurt,
+                    AnimationOnceFinished = AnimationType.Idle,
+                    MillisSinceLastFrame = 0
+                });
                 Remove<TakingDamageComponent>(entity);
             }
         }

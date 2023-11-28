@@ -19,6 +19,7 @@ public class SpellCastSpawner : Manipulator
         var fireball = _world.CreateEntity();
         _world.Set(fireball, new GridCoordComponent(x, y));
         _world.Set(fireball, new TextureIndexComponent(Sprite.Fireball));
+        _world.Set(fireball, new DrawLayerComponent(DrawLayer.Units));
         SetProjectileComponents(fireball, 1, ProjectileMoveRate.Immediate, direction, Constants.DEFAULT_PROJECTILE_SPEED);
     }
 
