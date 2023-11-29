@@ -42,45 +42,45 @@ public class AnimationSystem : MoonTools.ECS.System
             var timeSinceLastFrame = animationStatusComponent.MillisSinceLastFrame;
             timeSinceLastFrame += delta.TotalMilliseconds;
 
-            // check if we need to update to the next frame
+            var currentAnimation = animationStatusComponent.CurrentAnimation;
+                
+            // get the information about all the animations for this entity
+            var animationData = _animations[(int)animationSetId];
+            // get the information about the specific type (e.g idle, walk, etc) that we want to play here
+            var animationFrames = animationData.Frames[(int)currentAnimation];
+                
+            // get the frame to display
+            var currentFrame = animationStatusComponent.CurrentFrame;
+            if (currentFrame >= animationFrames.Length)
+            {
+                currentFrame = 0;
+                // If we've reached the end of the current animation switch to the next one (it may well be the same as the existing one though!)
+                var nextAnimation = animationStatusComponent.AnimationOnceFinished;
+                animationFrames = animationData.Frames[(int)nextAnimation];
+                currentAnimation = nextAnimation;
+            }
+                
+            var nextSpriteY = animationFrames[currentFrame];
+            
+            // check if we need to update to the next frame and/or animation
             if (timeSinceLastFrame > animationStatusComponent.MillisBetweenFrames)
             {
-                var currentAnimation = animationStatusComponent.CurrentAnimation;
-                
-                // get the information about all the animations for this entity
-                var animationData = _animations[(int)animationSetId];
-                // get the information about the specific type (e.g idle, walk, etc) that we want to play here
-                var animationFrames = animationData.Frames[(int)currentAnimation];
-                
-                // get the next frame to display
-                var currentFrame = animationStatusComponent.CurrentFrame;
                 currentFrame++;
-                if (currentFrame >= animationFrames.Length)
-                {
-                    currentFrame = 0;
-                    // If we've reached the end of the current animation switch to the next one
-                    var nextAnimation = animationStatusComponent.AnimationOnceFinished;
-                    animationFrames = animationData.Frames[(int)nextAnimation];
-                    currentAnimation = nextAnimation;
-                }
-                
-                var nextSpriteY = animationFrames[currentFrame];
-                
-                // the direction enum identifies the x column in the spritesheet
-                // the y value is determined by the animation frame
-                Set(entity, new SpriteRegionComponent(
-                    (int)direction,
-                    nextSpriteY,
-                    animationData.SpriteWidth,
-                    animationData.SpriteHeight)
-                );
-
                 Set(entity, animationStatusComponent with {CurrentAnimation = currentAnimation, CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
             }
             else
             {
                 Set(entity, animationStatusComponent with {MillisSinceLastFrame = timeSinceLastFrame});
             }
+                            
+            // the direction enum identifies the x column in the spritesheet
+            // the y value is determined by the animation frame
+            Set(entity, new SpriteRegionComponent(
+                (int)direction,
+                nextSpriteY,
+                animationData.SpriteWidth,
+                animationData.SpriteHeight)
+            );
         }
     }
 
@@ -124,8 +124,8 @@ public class AnimationSystem : MoonTools.ECS.System
             {
                 CurrentAnimation = tempAnimation.NewAnimation,
                 AnimationOnceFinished = tempAnimation.AnimationOnceFinished,
-                MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
-                CurrentFrame = -1 // This way the animationSystem increments it to zero and we get the expected frame...
+                MillisSinceLastFrame = 0,
+                CurrentFrame = 0
             });
             Remove<TempAnimationComponent>(entity);
         }

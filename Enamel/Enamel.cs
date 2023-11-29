@@ -170,7 +170,7 @@ public class Enamel : Game
         _spellCastingSystem = new SpellCastingSystem(World, spellCastSpawner);
         _projectileSystem = new ProjectileSystem(World);
 
-        var particleSpawner = new ParticleSpawner(World);
+        var particleSpawner = new ParticleSpawner(World, animations);
         _damageSystem = new DamageSystem(World, particleSpawner);
         _unitDisablingSystem = new UnitDisablingSystem(World);
         _pushSystem = new PushSystem(World);

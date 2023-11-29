@@ -6,22 +6,29 @@ using MoonTools.ECS;
 
 namespace Enamel.Spawners;
 
-public class ParticleSpawner(World world) : Manipulator(world)
+public class ParticleSpawner(World world, AnimationData[] animations) : Manipulator(world)
 {
     public void SpawnSmokePuff(float screenX, float screenY, ScreenDirection moveDirection, int moveSpeed, int lifeTimeMillis)
     {
+        const AnimationSet animationId = AnimationSet.Smoke;
+        const int millisBetweenFrames = Constants.DEFAULT_MILLIS_BETWEEN_FRAMES;
         var smoke = world.CreateEntity();
         world.Set(smoke, new ScreenPositionComponent(screenX, screenY));
         world.Set(smoke, new TextureIndexComponent(Sprite.Smoke));
         world.Set(smoke, new DrawLayerComponent(DrawLayer.Units));
-        World.Set(smoke, new AnimationSetComponent(AnimationSet.Smoke));
-        world.Set(smoke, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        world.Set(smoke, new DestroyAfterMillisComponent(lifeTimeMillis));
+        World.Set(smoke, new AnimationSetComponent(animationId));
+        world.Set(smoke, new AnimationStatusComponent(AnimationType.Idle, millisBetweenFrames));
+        world.Set(smoke, new DestroyAfterMillisComponent(GetTotalMillisOfAnimation(animations[(int)animationId], millisBetweenFrames)));
         if (moveDirection != ScreenDirection.None)
         {
             var targetPosition = GetPositionForDirection(screenX, screenY, moveDirection);
             world.Set(smoke, new MovingToScreenPositionComponent(targetPosition.X, targetPosition.Y, moveSpeed));
         }
+    }
+
+    private static int GetTotalMillisOfAnimation(AnimationData animation, int millisBetweenFrames)
+    {
+        return animation.Frames[0].Length * millisBetweenFrames;
     }
 
     private Vector2 GetPositionForDirection(float x, float y, ScreenDirection screenDirection)
