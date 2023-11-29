@@ -2,6 +2,7 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
+using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Spawners;
@@ -56,12 +57,7 @@ public class SpellCastingSystem : SpellSystem
         {
             case SpellId.StepOnce:
                 Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
-                Set(casterEntity, animationStatus with {
-                    CurrentAnimation = AnimationType.Walk,
-                    AnimationOnceFinished = AnimationType.Idle,
-                    MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
-                    CurrentFrame = -1
-                });
+                Set(casterEntity, new TempAnimationComponent(AnimationType.Walk, AnimationType.Idle));
                 Remove<GridCoordComponent>(casterEntity);
                 break;
             case SpellId.Fireball:

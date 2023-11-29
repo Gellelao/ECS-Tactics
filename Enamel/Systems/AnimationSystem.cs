@@ -1,6 +1,7 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using MoonTools.ECS;
 
@@ -12,18 +13,23 @@ public class AnimationSystem : MoonTools.ECS.System
     
     private Filter AnimationFilter { get; }
 
+    public Filter TempAnimationFilter { get; }
+
     public AnimationSystem(World world, AnimationData[] animations) : base(world)
     {
         _animations = animations;
         AnimationFilter = FilterBuilder
             .Include<AnimationSetComponent>()
             .Include<AnimationStatusComponent>().Build();
+        TempAnimationFilter = FilterBuilder.Include<TempAnimationComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
         // See if there were any messages that might cause an animation update
         HandleMessages();
+        // Just a helper to simplify repeated code
+        HandleTempAnimations();
         // Update frames of existing animations
         foreach (var entity in AnimationFilter.Entities)
         {
@@ -99,19 +105,29 @@ public class AnimationSystem : MoonTools.ECS.System
             var spell = ReadMessage<PrepSpellMessage>().SpellId;
             if (spell != SpellId.StepOnce)
             {
-                var animationStatus = Get<AnimationStatusComponent>(selectedEntity);
-                Set(selectedEntity, animationStatus with
-                {
-                    CurrentAnimation = AnimationType.Throw,
-                    AnimationOnceFinished = AnimationType.Idle,
-                    MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
-                    CurrentFrame = -1 // This way the animationSystem increments it to zero and we get the expected frame...
-                });
+                Set(selectedEntity, new TempAnimationComponent(AnimationType.Throw, AnimationType.Idle));
             }
         }
         if (SomeMessage<CancelMessage>())
         {
             Set(selectedEntity, Get<AnimationStatusComponent>(selectedEntity) with {AnimationOnceFinished = AnimationType.Idle});
+        }
+    }
+
+    private void HandleTempAnimations()
+    {
+        foreach (var entity in TempAnimationFilter.Entities)
+        {
+            var tempAnimation = Get<TempAnimationComponent>(entity);
+            var animationStatus = Get<AnimationStatusComponent>(entity);
+            Set(entity, animationStatus with
+            {
+                CurrentAnimation = tempAnimation.NewAnimation,
+                AnimationOnceFinished = tempAnimation.AnimationOnceFinished,
+                MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
+                CurrentFrame = -1 // This way the animationSystem increments it to zero and we get the expected frame...
+            });
+            Remove<TempAnimationComponent>(entity);
         }
     }
 }
