@@ -14,7 +14,7 @@ public static class Utils
         return new Vector2(screenX, screenY);
     }
 
-    public static Direction GetDirection(int originX, int originY, int targetX, int targetY)
+    public static GridDirection GetDirection(int originX, int originY, int targetX, int targetY)
     {
         var yDiff = originY - targetY;
         var xDiff = originX - targetX;
@@ -23,11 +23,11 @@ public static class Utils
             throw new NotImplementedException("Diagonal projectiles not implemented");
         }
 
-        if (xDiff < 0) return Direction.East;
-        if (xDiff > 0) return Direction.West;
-        if (yDiff < 0) return Direction.South;
-        if (yDiff > 0) return Direction.North;
+        if (xDiff < 0) return GridDirection.East;
+        if (xDiff > 0) return GridDirection.West;
+        if (yDiff < 0) return GridDirection.South;
+        if (yDiff > 0) return GridDirection.North;
 
-        return Direction.None;
+        return GridDirection.None;
     }
 }

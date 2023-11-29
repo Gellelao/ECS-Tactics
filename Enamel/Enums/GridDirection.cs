@@ -1,6 +1,6 @@
 ﻿namespace Enamel.Enums;
 
-public enum Direction
+public enum GridDirection
 {
     North, // Y decreasing
     South, // Y increasing

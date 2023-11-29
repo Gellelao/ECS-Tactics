@@ -58,41 +58,41 @@ public class PushSystem : MoonTools.ECS.System
         // entitiesToPush.ForEach(tuple => Push(tuple.Entity, tuple.Message.Direction, tuple.Message.EntityMustBePushable));
     }
 
-    private void Push(Entity entity, Direction direction, bool entityMustBePushable)
+    private void Push(Entity entity, GridDirection gridDirection, bool entityMustBePushable)
     {
         // Early return if this push requires the entity to have the pushable flag, and it does not
         if (entityMustBePushable && !Has<PushableFlag>(entity)) return;
 
         var (gridX, gridY) = Get<GridCoordComponent>(entity);
 
-        switch (direction)
+        switch (gridDirection)
         {
-            case Direction.North:
+            case GridDirection.North:
                 gridY -= 1;
                 break;
-            case Direction.East:
+            case GridDirection.East:
                 gridX += 1;
                 break;
-            case Direction.South:
+            case GridDirection.South:
                 gridY += 1;
                 break;
-            case Direction.West:
+            case GridDirection.West:
                 gridX -= 1;
                 break;
-            case Direction.None:
+            case GridDirection.None:
             default:
                 // Should not have Direction.None at this point, so throw
                 throw new ArgumentOutOfRangeException();
         }
 
-        var shouldMoveEntity = HandleCollisionAndOutOfBounds(entity, direction, gridX, gridY);
+        var shouldMoveEntity = HandleCollisionAndOutOfBounds(entity, gridDirection, gridX, gridY);
         if (!shouldMoveEntity) return;
 
-        _world.Set(entity, new MovingToCoordComponent(gridX, gridY));
+        _world.Set(entity, new MovingToGridCoordComponent(gridX, gridY));
         Remove<GridCoordComponent>(entity);
     }
 
-    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, Direction direction, int candidateX, int candidateY)
+    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, GridDirection gridDirection, int candidateX, int candidateY)
     {
         var entitiesAtLocation = GetEntitiesAtCoords(candidateX, candidateY);
 
@@ -116,7 +116,7 @@ public class PushSystem : MoonTools.ECS.System
                         RemoveTempProjectileComponents(movingEntity);
                         // Recursion Alert!
                         // Recursion Alert!
-                        Push(collidee, direction, true);
+                        Push(collidee, gridDirection, true);
                         break;
                     case CollisionBehaviour.DestroySelf:
                         Destroy(movingEntity);

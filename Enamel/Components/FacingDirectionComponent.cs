@@ -2,4 +2,4 @@
 
 namespace Enamel.Components;
 
-public readonly record struct FacingDirectionComponent(Direction Direction);
+public readonly record struct FacingDirectionComponent(GridDirection GridDirection);

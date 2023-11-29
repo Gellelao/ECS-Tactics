@@ -48,7 +48,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             var spellIdComponent = Get<SpellIdComponent>(spell);
 
             var spellCard = _world.CreateEntity();
-            Set(spellCard, new PositionComponent(screenX, 0));
+            Set(spellCard, new ScreenPositionComponent(screenX, 0));
             Set(spellCard, new DimensionsComponent(30, 30));
             Set(spellCard, new TextureIndexComponent(Sprite.YellowSquare));
             Set(spellCard, new DrawLayerComponent(DrawLayer.UserInterface));

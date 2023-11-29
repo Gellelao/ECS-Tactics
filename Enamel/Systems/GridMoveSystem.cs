@@ -1,26 +1,21 @@
 ﻿using System;
 using Enamel.Components;
-using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
 using Microsoft.Xna.Framework;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class MoveSystem : MoonTools.ECS.System
+public class GridMoveSystem : MoonTools.ECS.System
 {
-    private Filter MovePreviewFilter { get; }
     private Filter MovingUnitsFilter { get; }
     private readonly int _xOffset;
     private readonly int _yOffset;
     
-    public MoveSystem(World world, int xOffset, int yOffset) : base(world)
+    public GridMoveSystem(World world, int xOffset, int yOffset) : base(world)
     {
-        MovePreviewFilter = FilterBuilder
-            .Include<MovementPreviewFlag>()
-            .Build();
         MovingUnitsFilter = FilterBuilder
-            .Include<MovingToCoordComponent>()
+            .Include<MovingToGridCoordComponent>()
             .Build();
         _xOffset = xOffset;
         _yOffset = yOffset;
@@ -31,8 +26,8 @@ public class MoveSystem : MoonTools.ECS.System
         // Shift entities that are already moving
         foreach (var entity in MovingUnitsFilter.Entities)
         {
-            var positionComponent = Get<PositionComponent>(entity);
-            var targetPosition = Get<MovingToCoordComponent>(entity);
+            var positionComponent = Get<ScreenPositionComponent>(entity);
+            var targetPosition = Get<MovingToGridCoordComponent>(entity);
             var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_WALK_SPEED;
 
             var targetScreenPos = Utils.GridToScreenCoords(targetPosition.GridX, targetPosition.GridY);
@@ -48,7 +43,7 @@ public class MoveSystem : MoonTools.ECS.System
                 Math.Abs(Math.Round(newPositionVector.Y) - targetScreenPos.Y) <= threshold)
             {
                 Set(entity, new GridCoordComponent(targetPosition.GridX, targetPosition.GridY));
-                Remove<MovingToCoordComponent>(entity);
+                Remove<MovingToGridCoordComponent>(entity);
 
                 // Little bit of jank here to exclude player characters currently travelling as projectiles...
                 // and playerControlled units who are pushed...
@@ -71,7 +66,8 @@ public class MoveSystem : MoonTools.ECS.System
         Set(entity, new RemainingMovesComponent(remainingMoves));
     }
 
-    private PositionComponent MoveTowards(PositionComponent current, Vector2 target, int moveSpeed, TimeSpan deltaTime)
+    // Replace this with a util that uses the code from the ScreenMoveSystem?????
+    private ScreenPositionComponent MoveTowards(ScreenPositionComponent current, Vector2 target, int moveSpeed, TimeSpan deltaTime)
     {
         var currentVector = current.ToVector;
         var x = currentVector.X;
@@ -80,6 +76,6 @@ public class MoveSystem : MoonTools.ECS.System
         if (x > target.X) x -= (float)(2 * moveSpeed*deltaTime.TotalSeconds);
         if (y < target.Y) y += (float)(moveSpeed*deltaTime.TotalSeconds);
         if (y > target.Y) y -= (float)(moveSpeed*deltaTime.TotalSeconds);
-        return new PositionComponent(x, y);
+        return new ScreenPositionComponent(x, y);
     }
 }

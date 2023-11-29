@@ -27,7 +27,7 @@ public class SpellManagementSystem : SpellSystem
         }
         catch (IndexOutOfRangeException)
         {
-            Console.WriteLine("No selected player to learn spell!!!");
+            throw new IndexOutOfRangeException("No selected player to learn spell!!!");
         }
     }
 }

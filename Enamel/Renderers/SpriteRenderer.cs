@@ -23,7 +23,7 @@ public class SpriteRenderer : Renderer
         // for each. It would save some of the GetRenderOrder complexity but we need to order by Y value anyway
         TextureIndexFilter = FilterBuilder
             .Include<TextureIndexComponent>()
-            .Include<PositionComponent>()
+            .Include<ScreenPositionComponent>()
             .Include<DrawLayerComponent>()
             .Build();
     }
@@ -72,7 +72,7 @@ public class SpriteRenderer : Renderer
                 var drawLayer = Get<DrawLayerComponent>(entity).Layer;
                 if (drawLayer != currentLayerEnum) continue; // Ignore entities that are not in the current draw layer
                 
-                var yPos = Get<PositionComponent>(entity).Y;
+                var yPos = Get<ScreenPositionComponent>(entity).Y;
                 if (renderOrderDict.TryGetValue(yPos, out var list))
                 {
                     list.Add(entity);
@@ -101,7 +101,7 @@ public class SpriteRenderer : Renderer
     private void DrawEntity(Entity entity)
     {
             var indexComponent = Get<TextureIndexComponent>(entity);
-            var positionComponent = Get<PositionComponent>(entity);
+            var positionComponent = Get<ScreenPositionComponent>(entity);
 
             var origin = Vector2.Zero;
             if(Has<SpriteOriginComponent>(entity))

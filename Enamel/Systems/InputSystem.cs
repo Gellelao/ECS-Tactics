@@ -66,7 +66,7 @@ public class InputSystem : MoonTools.ECS.System
         foreach (var button in ClickableUiFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
-            var position = Get<PositionComponent>(button);
+            var position = Get<ScreenPositionComponent>(button);
             if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
             {
                 Set(button, new HighlightedFlag());
@@ -90,7 +90,7 @@ public class InputSystem : MoonTools.ECS.System
         foreach (var button in ClickableUiFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
-            var position = Get<PositionComponent>(button);
+            var position = Get<ScreenPositionComponent>(button);
             if (MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
             {
                 // May be better to have "buttonClickMessage" and a dedicated ButtonSystem, but for now this works

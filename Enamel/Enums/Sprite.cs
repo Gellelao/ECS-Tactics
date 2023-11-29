@@ -13,5 +13,6 @@ public enum Sprite
     YellowSquare,
     Fireball,
     ArcaneBlock,
-    ArcaneBubble
+    ArcaneBubble,
+    Smoke
 }

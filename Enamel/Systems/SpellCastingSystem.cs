@@ -56,7 +56,7 @@ public class SpellCastingSystem : SpellSystem
         switch (spellId)
         {
             case SpellId.StepOnce:
-                Set(casterEntity, new MovingToCoordComponent(targetX, targetY));
+                Set(casterEntity, new MovingToGridCoordComponent(targetX, targetY));
                 Set(casterEntity, new TempAnimationComponent(AnimationType.Walk, AnimationType.Idle));
                 Remove<GridCoordComponent>(casterEntity);
                 break;

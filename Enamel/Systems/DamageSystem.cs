@@ -3,16 +3,19 @@ using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.TempComponents;
 using Enamel.Enums;
+using Enamel.Spawners;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
 public class DamageSystem : MoonTools.ECS.System
 {
+    private readonly ParticleSpawner _particleSpawner;
     private Filter DamageableFilter { get; }
 
-    public DamageSystem(World world) : base(world)
+    public DamageSystem(World world, ParticleSpawner particleSpawner) : base(world)
     {
+        _particleSpawner = particleSpawner;
         DamageableFilter = FilterBuilder
             .Include<HealthComponent>()
             .Include<TakingDamageComponent>().Build();
@@ -31,7 +34,11 @@ public class DamageSystem : MoonTools.ECS.System
 
             if (newHealth <= 0)
             {
-                // Send some DeathMessage or something idk
+                if (Has<ScreenPositionComponent>(entity))
+                {
+                    var screenPos = Get<ScreenPositionComponent>(entity).ToVector;
+                    _particleSpawner.SpawnSmokePuff(screenPos.X, screenPos.Y, ScreenDirection.Up, 20, 1000);
+                }
                 Destroy(entity);
             }
             else

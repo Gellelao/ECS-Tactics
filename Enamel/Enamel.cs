@@ -27,7 +27,7 @@ public class Enamel : Game
     private static InputSystem? _inputSystem;
     private static UnitSelectionSystem? _unitSelectionSystem;
     private static SelectionPreviewSystem? _selectionPreviewSystem;
-    private static MoveSystem? _moveSystem;
+    private static GridMoveSystem? _gridMoveSystem;
     private static TurnSystem? _turnSystem;
     private static SpellManagementSystem? _spellManagementSystem;
     private static PlayerButtonsSystem? _playerButtonsSystem;
@@ -37,6 +37,8 @@ public class Enamel : Game
     private static UnitDisablingSystem? _unitDisablingSystem;
     private static PushSystem? _pushSystem;
     private static AnimationSystem _animationSystem;
+    private static DestroyAfterDurationSystem _destroyAfterDurationSystem;
+    private static ScreenMoveSystem _screenMoveSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -127,6 +129,7 @@ public class Enamel : Game
         textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
         textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
         textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
+        textures[(int)Sprite.Smoke] = Content.Load<Texture2D>("SmokePuff");
         
         // Animations
         var animations = new AnimationData[100];
@@ -144,6 +147,8 @@ public class Enamel : Game
             Constants.PLAYER_FRAME_HEIGHT, 
             blueWizAnimations
         );
+        
+        animations[(int) AnimationSet.Smoke] = new AnimationData(15, 18, [[0, 1, 2, 3]]);
 
         /*
         SYSTEMS
@@ -156,7 +161,7 @@ public class Enamel : Game
         _inputSystem = new InputSystem(World, UpscaleFactor, xOffset, yOffset);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
-        _moveSystem = new MoveSystem(World, xOffset, yOffset);
+        _gridMoveSystem = new GridMoveSystem(World, xOffset, yOffset);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
@@ -164,10 +169,14 @@ public class Enamel : Game
         var spellCastSpawner = new SpellCastSpawner(World);
         _spellCastingSystem = new SpellCastingSystem(World, spellCastSpawner);
         _projectileSystem = new ProjectileSystem(World);
-        _damageSystem = new DamageSystem(World);
+
+        var particleSpawner = new ParticleSpawner(World);
+        _damageSystem = new DamageSystem(World, particleSpawner);
         _unitDisablingSystem = new UnitDisablingSystem(World);
         _pushSystem = new PushSystem(World);
         _animationSystem = new AnimationSystem(World, animations);
+        _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
+        _screenMoveSystem = new ScreenMoveSystem(World);
 
         /*
         RENDERERS
@@ -189,27 +198,27 @@ public class Enamel : Game
         CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
 
         var endTurnButton = World.CreateEntity();
-        World.Set(endTurnButton, new PositionComponent(400, 300));
+        World.Set(endTurnButton, new ScreenPositionComponent(400, 300));
         World.Set(endTurnButton, new DimensionsComponent(40, 20));
         World.Set(endTurnButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
 
         var learnFireballButton = World.CreateEntity();
-        World.Set(learnFireballButton, new PositionComponent(50, 200));
+        World.Set(learnFireballButton, new ScreenPositionComponent(50, 200));
         World.Set(learnFireballButton, new DimensionsComponent(40, 20));
         World.Set(learnFireballButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnFireballButton, new SpellToLearnOnClickComponent(SpellId.Fireball));
 
         var learnArcaneBlockButton = World.CreateEntity();
-        World.Set(learnArcaneBlockButton, new PositionComponent(50, 230));
+        World.Set(learnArcaneBlockButton, new ScreenPositionComponent(50, 230));
         World.Set(learnArcaneBlockButton, new DimensionsComponent(40, 20));
         World.Set(learnArcaneBlockButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell));
         World.Set(learnArcaneBlockButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBlock));
 
         var learnArcaneBubbleButton = World.CreateEntity();
-        World.Set(learnArcaneBubbleButton, new PositionComponent(50, 260));
+        World.Set(learnArcaneBubbleButton, new ScreenPositionComponent(50, 260));
         World.Set(learnArcaneBubbleButton, new DimensionsComponent(40, 20));
         World.Set(learnArcaneBubbleButton, new TextureIndexComponent(Sprite.GreenRectangle));
         World.Set(learnArcaneBubbleButton, new OnClickComponent(ClickEvent.LearnSpell));
@@ -229,7 +238,7 @@ public class Enamel : Game
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
         World.Set(turnTracker, new PlayerCountComponent(3));
-        World.Set(turnTracker, new PositionComponent(200, 10));
+        World.Set(turnTracker, new ScreenPositionComponent(200, 10));
 
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev
@@ -242,13 +251,15 @@ public class Enamel : Game
     protected override void Update(GameTime gameTime)
     {
         var elapsedTime = gameTime.ElapsedGameTime;
+        _destroyAfterDurationSystem.Update(elapsedTime);
+        _screenMoveSystem.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
-        _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the MoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only thing with access to the _offsets...
-        _moveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the MoveSystem runs  (is this true?)
-        _projectileSystem?.Update(elapsedTime); // Must run after the moveSystem because it listens for UnitMoveCompletedMessages to know when to move the PerStep projectiles
+        _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the _gridMoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only thing with access to the _offsets...
+        _gridMoveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the _gridMoveSystem runs  (is this true?)
+        _projectileSystem?.Update(elapsedTime); // Must run after the _gridMoveSystem because it listens for UnitMoveCompletedMessages to know when to move the PerStep projectiles
         _pushSystem?.Update(elapsedTime); // Listens for PushMessages from the Projectile system
         _damageSystem?.Update(elapsedTime); // Should run after pushSystem because the pushSystem sends DamageMessages
         _spellManagementSystem?.Update(elapsedTime);
@@ -295,14 +306,14 @@ public class Enamel : Game
         // Obviously make the animation set configurable once I have more than 1 to choose from
         World.Set(playerEntity, new AnimationSetComponent(AnimationSet.BlueWiz));
         World.Set(playerEntity, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        World.Set(playerEntity, new FacingDirectionComponent(Direction.South));
+        World.Set(playerEntity, new FacingDirectionComponent(GridDirection.South));
         World.Set(playerEntity, new SpriteOriginComponent(-4, 18));
         World.Set(playerEntity, new DrawLayerComponent(DrawLayer.Units));
         World.Set(playerEntity, new GridCoordComponent(x, y));
         World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN)); // Can probably delete this along with the component and the TurnSystem logic for it
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
-        World.Set(playerEntity, new HealthComponent(2));
+        World.Set(playerEntity, new HealthComponent(1));
         // Just for testing, I think players would normally only get this flag if they've had some effect applied to them by another player
         World.Set(playerEntity, new PushableFlag());
         return playerEntity;

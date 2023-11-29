@@ -27,7 +27,7 @@ public class GridToScreenCoordSystem : MoonTools.ECS.System
         {
             var (x, y) = Get<GridCoordComponent>(entity);
             var screenCoords = Utils.GridToScreenCoords(x, y);
-            Set(entity, new PositionComponent(screenCoords.X + _xOffset, screenCoords.Y + _yOffset));
+            Set(entity, new ScreenPositionComponent(screenCoords.X + _xOffset, screenCoords.Y + _yOffset));
         }
     }
 }

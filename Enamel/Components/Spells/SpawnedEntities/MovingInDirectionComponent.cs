@@ -2,4 +2,4 @@
 
 namespace Enamel.Components.Spells.SpawnedEntities;
 
-public readonly record struct MovingInDirectionComponent(Direction Direction);
+public readonly record struct MovingInDirectionComponent(GridDirection GridDirection);

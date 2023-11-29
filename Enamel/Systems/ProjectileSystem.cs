@@ -45,7 +45,7 @@ public class ProjectileSystem : MoonTools.ECS.System
     {
         if (!Has<GridCoordComponent>(movingEntity)) return;
 
-        var direction = Get<MovingInDirectionComponent>(movingEntity).Direction;
+        var direction = Get<MovingInDirectionComponent>(movingEntity).GridDirection;
 
         Set(movingEntity, new BeingPushedComponent(direction, false));
     }

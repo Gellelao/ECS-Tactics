@@ -22,7 +22,7 @@ public class TextRenderer : Renderer
         DebugCoordFilter = FilterBuilder
             .Include<DebugCoordComponent>()
             .Build();
-        TextFilter = FilterBuilder.Include<TextComponent>().Include<PositionComponent>().Build();
+        TextFilter = FilterBuilder.Include<TextComponent>().Include<ScreenPositionComponent>().Build();
     }
 
     public void Draw()
@@ -40,7 +40,7 @@ public class TextRenderer : Renderer
         {
             var (textIndex, size, colour) = Get<TextComponent>(entity);
             var text = TextStorage.GetString(textIndex);
-            var positionComponent = Get<PositionComponent>(entity);
+            var positionComponent = Get<ScreenPositionComponent>(entity);
 
             SpriteBatch.DrawString(
                 _fontSystem.GetFont(size),
