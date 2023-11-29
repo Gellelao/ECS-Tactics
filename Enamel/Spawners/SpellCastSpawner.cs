@@ -10,7 +10,6 @@ public class SpellCastSpawner(World world) : Manipulator(world)
 {
     public void SpawnFireball(int x, int y, Direction direction)
     {
-        Console.WriteLine("Spawning fireball");
         var fireball = world.CreateEntity();
         world.Set(fireball, new GridCoordComponent(x, y));
         world.Set(fireball, new TextureIndexComponent(Sprite.Fireball));

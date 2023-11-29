@@ -37,11 +37,13 @@ public class DamageSystem : MoonTools.ECS.System
             else
             {
                 Set(entity, new HealthComponent(newHealth));
-                Set(entity, Get<AnimationStatusComponent>(entity) with
+                var animationStatus = Get<AnimationStatusComponent>(entity);
+                Set(entity, animationStatus with
                 {
                     CurrentAnimation = AnimationType.Hurt,
                     AnimationOnceFinished = AnimationType.Idle,
-                    MillisSinceLastFrame = 0
+                    MillisSinceLastFrame = animationStatus.MillisBetweenFrames,
+                    CurrentFrame = -1
                 });
                 Remove<TakingDamageComponent>(entity);
             }

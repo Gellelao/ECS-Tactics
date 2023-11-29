@@ -184,13 +184,8 @@ public class Enamel : Game
 
         var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
         World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
-        World.Set(player1, new AnimationSetComponent(AnimationSet.BlueWiz));
-        World.Set(player1, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        World.Set(player1, new FacingDirectionComponent(Direction.South));
         
-        var blueWIz = CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
-        World.Set(blueWIz, new SpriteRegionComponent(1, 1, Constants.PLAYER_FRAME_WIDTH, Constants.PLAYER_FRAME_HEIGHT));
-        CreatePlayer(PlayerNumber.Three, Sprite.YellowCube, 5, 7);
+        CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
 
         var endTurnButton = World.CreateEntity();
         World.Set(endTurnButton, new PositionComponent(400, 300));
@@ -238,7 +233,7 @@ public class Enamel : Game
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev
         World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.ArcaneBubble));
+        World.Send(new LearnSpellMessage(SpellId.Fireball));
 
         base.LoadContent();
     }
@@ -296,10 +291,14 @@ public class Enamel : Game
     {
         var playerEntity = World.CreateEntity();
         World.Set(playerEntity, new TextureIndexComponent(sprite));
+        // Obviously make the animation set configurable once I have more than 1 to choose from
+        World.Set(playerEntity, new AnimationSetComponent(AnimationSet.BlueWiz));
+        World.Set(playerEntity, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
+        World.Set(playerEntity, new FacingDirectionComponent(Direction.South));
         World.Set(playerEntity, new SpriteOriginComponent(-4, 18));
         World.Set(playerEntity, new DrawLayerComponent(DrawLayer.Units));
         World.Set(playerEntity, new GridCoordComponent(x, y));
-        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN));
+        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN)); // Can probably delete this along with the component and the TurnSystem logic for it
         World.Set(playerEntity, new ImpassableFlag());
         World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
         World.Set(playerEntity, new HealthComponent(2));

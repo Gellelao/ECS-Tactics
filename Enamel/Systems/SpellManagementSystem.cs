@@ -12,17 +12,18 @@ public class SpellManagementSystem : SpellSystem
 
     public override void Update(TimeSpan delta)
     {
-        // Would be nice if the entity learning the spell could be specified, rather than just relying on the Selected entity
         if (!SomeMessage<LearnSpellMessage>()) return;
 
-        var spellId = ReadMessage<LearnSpellMessage>().SpellId;
-        var spellEntity = GetSpell(spellId);
+        var spells = ReadMessages<LearnSpellMessage>();
 
         try
         {
             var currentlySelectedPlayer = GetSingletonEntity<SelectedFlag>();
-
-            Relate(currentlySelectedPlayer, spellEntity, new HasSpellRelation());
+            foreach (var spell in spells)
+            {
+                var spellEntity = GetSpell(spell.SpellId);
+                Relate(currentlySelectedPlayer, spellEntity, new HasSpellRelation());
+            }
         }
         catch (IndexOutOfRangeException)
         {

@@ -13,23 +13,27 @@ namespace Enamel.Systems;
 public class PushSystem : MoonTools.ECS.System
 {
     private readonly World _world;
-    private Filter PushableFilter { get; }
+    private Filter GridCoordFilter { get; }
+    public Filter BeingPushedFilter { get; }
 
     public PushSystem(World world) : base(world)
     {
         _world = world;
-        PushableFilter = FilterBuilder
-            .Include<GridCoordComponent>()
+        BeingPushedFilter = FilterBuilder
             .Include<BeingPushedComponent>()
+            .Build();
+        GridCoordFilter = FilterBuilder
+            .Include<GridCoordComponent>()
             .Build();
     }
 
     public override void Update(TimeSpan delta)
     {
-        foreach (var entity in PushableFilter.Entities)
+        foreach (var entity in BeingPushedFilter.Entities)
         {
             var (direction, mustBePushable) = Get<BeingPushedComponent>(entity);
             Push(entity, direction, mustBePushable);
+            Remove<BeingPushedComponent>(entity);
         }
         // What happens here is the pusher may start with its id at the beginning of the GridCoordFilter entities.
         // Then in the process of pushing, its id may be duplicated in the GridCoordFilter entities.
@@ -145,7 +149,7 @@ public class PushSystem : MoonTools.ECS.System
     private List<Entity> GetEntitiesAtCoords(int x, int y)
     {
         var entities = new List<Entity>();
-        foreach (var entity in PushableFilter.Entities)
+        foreach (var entity in GridCoordFilter.Entities)
         {
             var (gridCoordEntityX, gridCoordEntityY) = Get<GridCoordComponent>(entity);
             if (gridCoordEntityX == x && gridCoordEntityY == y)
