@@ -244,6 +244,7 @@ public class Enamel : Game
         // Set up player 1 for dev
         World.Send(new LearnSpellMessage(SpellId.StepOnce));
         World.Send(new LearnSpellMessage(SpellId.Fireball));
+        World.Send(new LearnSpellMessage(SpellId.RockCharge));
 
         base.LoadContent();
     }

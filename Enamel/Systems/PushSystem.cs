@@ -35,27 +35,6 @@ public class PushSystem : MoonTools.ECS.System
             Push(entity, direction, mustBePushable);
             Remove<BeingPushedComponent>(entity);
         }
-        // What happens here is the pusher may start with its id at the beginning of the GridCoordFilter entities.
-        // Then in the process of pushing, its id may be duplicated in the GridCoordFilter entities.
-        //   The specific cause seems to be the IndexableSet doing weird stuff when Remove is called, when the GridCoordComponent is removed from the pushee at the end of Push
-        // This causes the pusher to be iterated over twice
-
-        // So we either keep a list of seen entities and only check those that haven't been seen,
-        // take a copy of the entities when this method is entered, and only loop over those,
-        // or delete the message once it has been read once, so that on the second enumeration nothing happens
-        // or avoid the issue altogether by not removing a GridCoordComponent during iteration of the GridCoordFilter
-        // var entitiesToPush = new List<(Entity Entity, BeingPushedComponent Message)>();
-        // foreach (var entity in PushableFilter.Entities)
-        // {
-        //     var pushMessages = ReadMessagesWithEntity<BeingPushedComponent>(entity);
-        //
-        //     foreach (var pushMessage in pushMessages)
-        //     {
-        //         entitiesToPush.Add((entity, pushMessage));
-        //     }
-        // }
-        //
-        // entitiesToPush.ForEach(tuple => Push(tuple.Entity, tuple.Message.Direction, tuple.Message.EntityMustBePushable));
     }
 
     private void Push(Entity entity, GridDirection gridDirection, bool entityMustBePushable)

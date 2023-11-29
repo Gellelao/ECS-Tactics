@@ -116,7 +116,9 @@ public class InputSystem : MoonTools.ECS.System
                         var spellToPrepOnClick = Get<SpellToPrepOnClickComponent>(button);
 
                         // There must only be one selected unit and it must the the unit casting this spell
-                        var (originGridX, originGridY) = Get<GridCoordComponent>(GetSingletonEntity<SelectedFlag>());
+                        var selectedEntity = GetSingletonEntity<SelectedFlag>();
+                        if(!Has<GridCoordComponent>(selectedEntity)) continue;
+                        var (originGridX, originGridY) = Get<GridCoordComponent>(selectedEntity);
 
                         Send(new PrepSpellMessage(spellToPrepOnClick.SpellId, originGridX, originGridY));
 

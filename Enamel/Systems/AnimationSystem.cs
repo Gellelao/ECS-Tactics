@@ -86,6 +86,7 @@ public class AnimationSystem : MoonTools.ECS.System
 
     private void HandleMessages()
     {
+        if(!Some<SelectedFlag>()) return;
         var selectedEntity = GetSingletonEntity<SelectedFlag>();
         if (SomeMessage<PrepSpellMessage>())
         {

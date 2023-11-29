@@ -43,19 +43,22 @@ public class SelectionPreviewSystem : SpellSystem
         DestroySpellPreviews();
 
         var spellToPrepMessage = ReadMessage<PrepSpellMessage>();
-        var origin = new Vector2(spellToPrepMessage.OriginGridX, spellToPrepMessage.OriginGridY);
+        var originX = spellToPrepMessage.OriginGridX;
+        var originY = spellToPrepMessage.OriginGridY;
         var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
         var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
         var canTargetImpassable = Has<CanTargetImpassableFlag>(spellToPrep);
+        var canTargetSelf = Has<CanTargetSelfFlag>(spellToPrep);
         var cardinalOnly = Has<CardinalCastRestrictionFlag>(spellToPrep);
         
         for (var x = 0; x < Constants.MAP_WIDTH; x++)
         {
             for (var y = 0; y < Constants.MAP_HEIGHT; y++)
             {
+                if (!canTargetSelf && TargetingOrigin(originX, originY, x, y)) continue;
                 if (!canTargetImpassable && ImpassableUnitAtCoord(x, y)) continue;
-                if (cardinalOnly && NotCardinal(origin, x, y)) continue;
-                var distance = Math.Abs(x - origin.X) + Math.Abs(y - origin.Y);
+                if (cardinalOnly && NotCardinal(originX, originY, x, y)) continue;
+                var distance = Math.Abs(x - originX) + Math.Abs(y - originY);
                 if (distance <= spellRange)
                 {
                     CreatePreview(x, y, spellToPrepMessage.SpellId);
@@ -72,6 +75,11 @@ public class SelectionPreviewSystem : SpellSystem
         }
     }
 
+    private static bool TargetingOrigin(int originX, int originY, int x, int y)
+    {
+        return originX == x && originY == y;
+    }
+
     private bool ImpassableUnitAtCoord(int x, int y)
     {
         foreach (var entity in ImpassableGridCoordFilter.Entities)
@@ -86,9 +94,9 @@ public class SelectionPreviewSystem : SpellSystem
         return false;
     }
 
-    private bool NotCardinal(Vector2 origin, int x, int y)
+    private static bool NotCardinal(int originX, int originY, int x, int y)
     {
-        return x != (int)origin.X && y != (int)origin.Y;
+        return x != originX && y != originY;
     }
 
     private void CreatePreview(int x, int y, SpellId spellId)
