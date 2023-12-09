@@ -8,21 +8,30 @@ public static class Constants
     public const int PIXEL_SCREEN_WIDTH = 320;
     public const int PIXEL_SCREEN_HEIGHT = 180;
     public const float PIXEL_RATIO = PIXEL_SCREEN_WIDTH / PIXEL_SCREEN_HEIGHT;
+    
     public static readonly Color HighlightColour = new(200, 200, 255);
+    
     public const int MAP_WIDTH = 8;
     public const int MAP_HEIGHT = 8;
     public const int TILE_WIDTH = 28;
     public const int TILE_HEIGHT = 14;
+    
     public const int DEFAULT_WALK_SPEED = 10;
     public const int DEFAULT_PROJECTILE_SPEED = 100;
+    
     public const int DEFAULT_MOVES_PER_TURN = 3;
+    
     public const int CURRENT_TURN_TEXT_SIZE = 20;
     public const int SPELL_CARD_TEXT_SIZE = 10;
+    
     public const int PLAYER_FRAME_WIDTH = 22;
     public const int PLAYER_FRAME_HEIGHT = 32;
+    
     public const int DEFAULT_MILLIS_BETWEEN_FRAMES = 180;
+    
     public static readonly Color CurrentTurnTextColour = Color.White;
     public static readonly Color SpellCardTextColour = Color.Black;
+    
     public static readonly PlayerNumber[] TwoPlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One];
 
     public static readonly PlayerNumber[] ThreePlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three,

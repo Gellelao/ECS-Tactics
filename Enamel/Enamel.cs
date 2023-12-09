@@ -47,9 +47,6 @@ public class Enamel : Game
     private SpriteBatch _spriteBatch;
     private FontSystem _fontSystem;
 
-    private const int ScreenWidth = 1280;
-    private const int ScreenHeight = 720;
-    private const int UpscaleFactor = 4;
     private RenderTarget2D _renderTarget;
     private Rectangle _finalRenderRectangle;
 
@@ -66,13 +63,13 @@ public class Enamel : Game
         GraphicsDeviceManager = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
 
-        GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
-        GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
+        GraphicsDeviceManager.PreferredBackBufferWidth = Constants.PIXEL_SCREEN_WIDTH*2;
+        GraphicsDeviceManager.PreferredBackBufferHeight = Constants.PIXEL_SCREEN_HEIGHT*2;
         GraphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
         GraphicsDeviceManager.PreferMultiSampling = false;
         GraphicsDeviceManager.IsFullScreen = false;
         Window.AllowUserResizing = true;
-        Window.ClientSizeChanged += new EventHandler<EventArgs>(OnWindowClientSizeChanged);
+        Window.ClientSizeChanged += OnWindowClientSizeChanged;
 
         IsFixedTimeStep = false;
         IsMouseVisible = true;
@@ -133,6 +130,7 @@ public class Enamel : Game
         textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
         textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
         textures[(int)Sprite.Smoke] = Content.Load<Texture2D>("SmokePuff");
+        textures[(int)Sprite.TitleScreen] = Content.Load<Texture2D>("TitleScreen");
         
         // Animations
         var animations = new AnimationData[100];
@@ -157,11 +155,11 @@ public class Enamel : Game
         SYSTEMS
         */
         // I think these only work if the map is square but it probably will be
-        var mapHeightInPixels = Constants.TILE_HEIGHT * Constants.MAP_HEIGHT * UpscaleFactor;
-        var xOffset = ScreenWidth / 2 / UpscaleFactor - Constants.TILE_WIDTH/2;
-        var yOffset = (ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
+        //var mapHeightInPixels = Constants.TILE_HEIGHT * Constants.MAP_HEIGHT * UpscaleFactor;
+        var xOffset = 10;//ScreenWidth / 2 / UpscaleFactor - Constants.TILE_WIDTH/2;
+        var yOffset = 10;//(ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, xOffset, yOffset);
-        _inputSystem = new InputSystem(World, UpscaleFactor, xOffset, yOffset);
+        _inputSystem = new InputSystem(World, 1, xOffset, yOffset);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _gridMoveSystem = new GridMoveSystem(World, xOffset, yOffset);
@@ -180,7 +178,7 @@ public class Enamel : Game
         _animationSystem = new AnimationSystem(World, animations);
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
         _screenMoveSystem = new ScreenMoveSystem(World);
-        _menuSystem = new MenuSystem(World, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
+        _menuSystem = new MenuSystem(World);
 
         /*
         RENDERERS
@@ -307,7 +305,7 @@ public class Enamel : Game
         base.Draw(gameTime);
     }
 
-    private void OnWindowClientSizeChanged(object sender, EventArgs e)
+    private void OnWindowClientSizeChanged(object? sender, EventArgs e)
     {
         _finalRenderRectangle = GetFinalRenderRectangle();
     }

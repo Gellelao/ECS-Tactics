@@ -14,5 +14,6 @@ public enum Sprite
     Fireball,
     ArcaneBlock,
     ArcaneBubble,
-    Smoke
+    Smoke,
+    TitleScreen
 }
