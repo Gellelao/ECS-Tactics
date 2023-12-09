@@ -5,6 +5,9 @@ namespace Enamel;
 
 public static class Constants
 {
+    public const int PIXEL_SCREEN_WIDTH = 320;
+    public const int PIXEL_SCREEN_HEIGHT = 180;
+    public const float PIXEL_RATIO = PIXEL_SCREEN_WIDTH / PIXEL_SCREEN_HEIGHT;
     public static readonly Color HighlightColour = new(200, 200, 255);
     public const int MAP_WIDTH = 8;
     public const int MAP_HEIGHT = 8;
@@ -20,15 +23,15 @@ public static class Constants
     public const int DEFAULT_MILLIS_BETWEEN_FRAMES = 180;
     public static readonly Color CurrentTurnTextColour = Color.White;
     public static readonly Color SpellCardTextColour = Color.Black;
-    public static readonly PlayerNumber[] TwoPlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One};
+    public static readonly PlayerNumber[] TwoPlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One];
 
-    public static readonly PlayerNumber[] ThreePlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three,
+    public static readonly PlayerNumber[] ThreePlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three,
                                                                   PlayerNumber.Two, PlayerNumber.Three, PlayerNumber.One,
                                                                   PlayerNumber.Three, PlayerNumber.One, PlayerNumber.Two
-    };
-    public static readonly PlayerNumber[] FourPlayerTurnOrder = {PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three, PlayerNumber.Four,
+    ];
+    public static readonly PlayerNumber[] FourPlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three, PlayerNumber.Four,
                                                                  PlayerNumber.Four, PlayerNumber.Three, PlayerNumber.Two, PlayerNumber.One,
                                                                  PlayerNumber.Three, PlayerNumber.Four, PlayerNumber.One, PlayerNumber.Two,
                                                                  PlayerNumber.Two, PlayerNumber.One, PlayerNumber.Four, PlayerNumber.Three
-    };
+    ];
 }

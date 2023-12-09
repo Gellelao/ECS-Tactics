@@ -47,10 +47,11 @@ public class Enamel : Game
     private SpriteBatch _spriteBatch;
     private FontSystem _fontSystem;
 
-    private const int ScreenWidth = 1920;
-    private const int ScreenHeight = 1080;
+    private const int ScreenWidth = 1280;
+    private const int ScreenHeight = 720;
     private const int UpscaleFactor = 4;
     private RenderTarget2D _renderTarget;
+    private Rectangle _finalRenderRectangle;
 
 
     [STAThread]
@@ -62,9 +63,6 @@ public class Enamel : Game
 
     private Enamel()
     {
-        //setup our graphics device, default window size, etc
-        //here is where i will make a plea to you, intrepid game developer:
-        //please default your game to windowed mode.
         GraphicsDeviceManager = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
 
@@ -72,6 +70,9 @@ public class Enamel : Game
         GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         GraphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
         GraphicsDeviceManager.PreferMultiSampling = false;
+        GraphicsDeviceManager.IsFullScreen = false;
+        Window.AllowUserResizing = true;
+        Window.ClientSizeChanged += new EventHandler<EventArgs>(OnWindowClientSizeChanged);
 
         IsFixedTimeStep = false;
         IsMouseVisible = true;
@@ -80,7 +81,8 @@ public class Enamel : Game
     //you'll want to do most setup in LoadContent() rather than your constructor.
     protected override void LoadContent()
     {
-        _renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
+        _renderTarget = new RenderTarget2D(GraphicsDevice, Constants.PIXEL_SCREEN_WIDTH, Constants.PIXEL_SCREEN_HEIGHT);
+        _finalRenderRectangle = GetFinalRenderRectangle();
 
         /*
         CONTENT
@@ -299,10 +301,38 @@ public class Enamel : Game
             RasterizerState.CullCounterClockwise,
             null,
             Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
-        _spriteBatch.Draw(_renderTarget, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);
+        _spriteBatch.Draw(_renderTarget, _finalRenderRectangle, Color.White);
         _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    private void OnWindowClientSizeChanged(object sender, EventArgs e)
+    {
+        _finalRenderRectangle = GetFinalRenderRectangle();
+    }
+
+    private Rectangle GetFinalRenderRectangle()
+    {
+        float windowWidth = Window.ClientBounds.Width;
+        float windowHeight = Window.ClientBounds.Height;
+        float windowAspectRatio = windowWidth / windowHeight;
+        float scale;
+        if (windowAspectRatio > Constants.PIXEL_RATIO)
+        {
+            // Window is wider than the target, scale based on height
+            scale = (float)windowHeight / Constants.PIXEL_SCREEN_HEIGHT;
+        }
+        else
+        {
+            // Window is narrower than the target, scale based on width
+            scale = (float)windowWidth / Constants.PIXEL_SCREEN_WIDTH;
+        }
+
+        int offsetX = (int)((windowWidth - (Constants.PIXEL_SCREEN_WIDTH * scale)) / 2);
+        int offsetY = (int)((windowHeight - (Constants.PIXEL_SCREEN_HEIGHT * scale)) / 2);
+
+        return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
     }
 
     private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
