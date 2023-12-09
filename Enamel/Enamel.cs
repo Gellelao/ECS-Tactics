@@ -36,9 +36,10 @@ public class Enamel : Game
     private static DamageSystem? _damageSystem;
     private static UnitDisablingSystem? _unitDisablingSystem;
     private static PushSystem? _pushSystem;
-    private static AnimationSystem _animationSystem;
-    private static DestroyAfterDurationSystem _destroyAfterDurationSystem;
-    private static ScreenMoveSystem _screenMoveSystem;
+    private static AnimationSystem? _animationSystem;
+    private static DestroyAfterDurationSystem? _destroyAfterDurationSystem;
+    private static ScreenMoveSystem? _screenMoveSystem;
+    private static MenuSystem? _menuSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -177,6 +178,7 @@ public class Enamel : Game
         _animationSystem = new AnimationSystem(World, animations);
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
         _screenMoveSystem = new ScreenMoveSystem(World);
+        _menuSystem = new MenuSystem(World, ScreenWidth/UpscaleFactor, ScreenHeight/UpscaleFactor);
 
         /*
         RENDERERS
@@ -245,6 +247,8 @@ public class Enamel : Game
         World.Send(new LearnSpellMessage(SpellId.StepOnce));
         World.Send(new LearnSpellMessage(SpellId.Fireball));
         World.Send(new LearnSpellMessage(SpellId.RockCharge));
+        
+        World.Send(new GoToMainMenuMessage());
 
         base.LoadContent();
     }
@@ -254,6 +258,7 @@ public class Enamel : Game
         var elapsedTime = gameTime.ElapsedGameTime;
         _destroyAfterDurationSystem.Update(elapsedTime);
         _screenMoveSystem.Update(elapsedTime);
+        _menuSystem.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
