@@ -7,7 +7,7 @@ public static class Constants
 {
     public const int PIXEL_SCREEN_WIDTH = 320;
     public const int PIXEL_SCREEN_HEIGHT = 180;
-    public const float PIXEL_RATIO = PIXEL_SCREEN_WIDTH / PIXEL_SCREEN_HEIGHT;
+    public const float PIXEL_RATIO = (float)PIXEL_SCREEN_WIDTH / PIXEL_SCREEN_HEIGHT;
     
     public static readonly Color HighlightColour = new(200, 200, 255);
     

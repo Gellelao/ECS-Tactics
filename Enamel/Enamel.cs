@@ -93,63 +93,8 @@ public class Enamel : Game
             )
         ));
 
-        // Unsure if this is the way to do this but keep all textures in a dictionary and refer to them by index?
-        var textures = new Texture2D[100];
-
-        var redPixel = new Texture2D(GraphicsDevice, 1, 1);
-        redPixel.SetData(new[] { Color.Red });
-
-        var greenPixel = new Texture2D(GraphicsDevice, 1, 1);
-        greenPixel.SetData(new[] { Color.ForestGreen });
-        var greenRectangle = new RenderTarget2D(GraphicsDevice, 40, 20);
-        GraphicsDevice.SetRenderTarget(greenRectangle);
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(greenPixel, new Rectangle(0, 0, 40, 20), Color.White);
-        _spriteBatch.End();
-        GraphicsDevice.SetRenderTarget(null);
-
-        var yellowPixel = new Texture2D(GraphicsDevice, 1, 1);
-        yellowPixel.SetData(new[] { Color.Yellow });
-        var yellowSquare = new RenderTarget2D(GraphicsDevice, 30, 30);
-        GraphicsDevice.SetRenderTarget(yellowSquare);
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(yellowPixel, new Rectangle(0, 0, 30, 30), Color.White);
-        _spriteBatch.End();
-        GraphicsDevice.SetRenderTarget(null);
-
-        textures[(int)Sprite.RedPixel] = redPixel;
-        textures[(int)Sprite.GreenRectangle] = greenRectangle;
-        textures[(int)Sprite.YellowSquare] = yellowSquare;
-        textures[(int)Sprite.Tile] = Content.Load<Texture2D>("GroundTile");
-        textures[(int)Sprite.GreenCube] = Content.Load<Texture2D>("greenCube");
-        textures[(int)Sprite.BlueWizard] = Content.Load<Texture2D>("blueWiz");
-        textures[(int)Sprite.YellowCube] = Content.Load<Texture2D>("yellowCube");
-        textures[(int)Sprite.SelectedTile] = Content.Load<Texture2D>("Selected");
-        textures[(int)Sprite.TileSelectPreview] = Content.Load<Texture2D>("TilePreview");
-        textures[(int)Sprite.Fireball] = Content.Load<Texture2D>("fireball");
-        textures[(int)Sprite.ArcaneBlock] = Content.Load<Texture2D>("ArcaneCube");
-        textures[(int)Sprite.ArcaneBubble] = Content.Load<Texture2D>("bubble");
-        textures[(int)Sprite.Smoke] = Content.Load<Texture2D>("SmokePuff");
-        textures[(int)Sprite.TitleScreen] = Content.Load<Texture2D>("TitleScreen");
-        
-        // Animations
-        var animations = new AnimationData[100];
-        // X and Y are the coords of the segment of the sprite sheet we want to draw, if each sprite was a cell in an array
-        // we'll multiply X and Y by the size of the sprite to get the pixel coords when rendering.
-        // Here we are only defining arrays of Y values, because X is determined by the direction of the sprite (see sprite sheet, each column has all the sprites for once direction)
-        var blueWizAnimations = new int[Enum.GetNames(typeof(AnimationType)).Length][];
-        blueWizAnimations[(int)AnimationType.Idle] = [1];
-        blueWizAnimations[(int)AnimationType.Walk] = [0, 1, 2, 1];
-        blueWizAnimations[(int)AnimationType.Hurt] = [3];
-        blueWizAnimations[(int)AnimationType.Raise] = [4];
-        blueWizAnimations[(int)AnimationType.Throw] = [5];
-        animations[(int) AnimationSet.BlueWiz] = new AnimationData(
-            Constants.PLAYER_FRAME_WIDTH,
-            Constants.PLAYER_FRAME_HEIGHT, 
-            blueWizAnimations
-        );
-        
-        animations[(int) AnimationSet.Smoke] = new AnimationData(15, 18, [[0, 1, 2, 3]]);
+        var textures = ContentUtils.LoadTextures(Content, GraphicsDevice, _spriteBatch);
+        var animations = ContentUtils.LoadAnimations();
 
         /*
         SYSTEMS
@@ -256,9 +201,9 @@ public class Enamel : Game
     protected override void Update(GameTime gameTime)
     {
         var elapsedTime = gameTime.ElapsedGameTime;
-        _destroyAfterDurationSystem.Update(elapsedTime);
-        _screenMoveSystem.Update(elapsedTime);
-        _menuSystem.Update(elapsedTime);
+        _destroyAfterDurationSystem?.Update(elapsedTime);
+        _screenMoveSystem?.Update(elapsedTime);
+        _menuSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
@@ -271,7 +216,7 @@ public class Enamel : Game
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
         _unitDisablingSystem?.Update(elapsedTime);
-        _animationSystem.Update(elapsedTime);
+        _animationSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // Must run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // Must run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.
@@ -291,6 +236,7 @@ public class Enamel : Game
         _textRenderer?.Draw();
 
         GraphicsDevice.SetRenderTarget(null);
+        GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin(SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
@@ -319,16 +265,16 @@ public class Enamel : Game
         if (windowAspectRatio > Constants.PIXEL_RATIO)
         {
             // Window is wider than the target, scale based on height
-            scale = (float)windowHeight / Constants.PIXEL_SCREEN_HEIGHT;
+            scale = windowHeight / Constants.PIXEL_SCREEN_HEIGHT;
         }
         else
         {
             // Window is narrower than the target, scale based on width
-            scale = (float)windowWidth / Constants.PIXEL_SCREEN_WIDTH;
+            scale = windowWidth / Constants.PIXEL_SCREEN_WIDTH;
         }
 
-        int offsetX = (int)((windowWidth - (Constants.PIXEL_SCREEN_WIDTH * scale)) / 2);
-        int offsetY = (int)((windowHeight - (Constants.PIXEL_SCREEN_HEIGHT * scale)) / 2);
+        var offsetX = (int)((windowWidth - (Constants.PIXEL_SCREEN_WIDTH * scale)) / 2);
+        var offsetY = (int)((windowHeight - (Constants.PIXEL_SCREEN_HEIGHT * scale)) / 2);
 
         return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
     }
