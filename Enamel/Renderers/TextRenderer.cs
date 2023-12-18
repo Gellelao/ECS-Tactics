@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
 using Enamel.Components;
 using FontStashSharp;
-using System;
 using Enamel.Components.UI;
 
 namespace Enamel.Renderers;
@@ -12,13 +11,13 @@ public class TextRenderer : Renderer
 {
     private Filter DebugCoordFilter { get; }
     private Filter TextFilter { get; }
-    private SpriteBatch SpriteBatch { get; }
-    private readonly FontSystem _fontSystem;
+    private SpriteBatch _spriteBatch { get; }
+    private readonly SpriteFontBase[] _fonts;
 
-    public TextRenderer(World world, SpriteBatch spriteBatch, FontSystem fontSystem) : base(world)
+    public TextRenderer(World world, SpriteBatch spriteBatch, SpriteFontBase[] fonts) : base(world)
     {
-        SpriteBatch = spriteBatch;
-        _fontSystem = fontSystem;
+        _spriteBatch = spriteBatch;
+        _fonts = fonts;
         DebugCoordFilter = FilterBuilder
             .Include<DebugCoordComponent>()
             .Build();
@@ -27,7 +26,7 @@ public class TextRenderer : Renderer
 
     public void Draw()
     {
-        SpriteBatch.Begin(SpriteSortMode.Deferred,
+        _spriteBatch.Begin(SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
             SamplerState.PointClamp,
             DepthStencilState.None,
@@ -38,12 +37,12 @@ public class TextRenderer : Renderer
         // Draw regular text
         foreach (var entity in TextFilter.Entities)
         {
-            var (textIndex, size, colour) = Get<TextComponent>(entity);
+            var (textIndex, fontId, colour) = Get<TextComponent>(entity);
             var text = TextStorage.GetString(textIndex);
             var positionComponent = Get<ScreenPositionComponent>(entity);
 
-            SpriteBatch.DrawString(
-                _fontSystem.GetFont(size),
+            _spriteBatch.DrawString(
+                _fonts[(int)fontId],
                 text,
                 new Vector2(positionComponent.X, positionComponent.Y),
                 colour
@@ -66,6 +65,6 @@ public class TextRenderer : Renderer
         //     );
         // }
 #endif
-        SpriteBatch.End();
+        _spriteBatch.End();
     }
 }

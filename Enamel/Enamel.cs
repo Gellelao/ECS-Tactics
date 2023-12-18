@@ -88,15 +88,9 @@ public class Enamel : Game
         */
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _fontSystem = new FontSystem();
-        _fontSystem.AddFont(File.ReadAllBytes(
-            Path.Combine(
-                Content.RootDirectory, "opensans.ttf"
-            )
-        ));
-
         var textures = ContentUtils.LoadTextures(Content, GraphicsDevice, _spriteBatch);
         var animations = ContentUtils.LoadAnimations();
+        var fonts = ContentUtils.LoadFonts(Content, GraphicsDevice);
 
         /*
         SYSTEMS
@@ -130,7 +124,7 @@ public class Enamel : Game
         RENDERERS
         */
         _mapRenderer = new SpriteRenderer(World, _spriteBatch, textures);
-        _textRenderer = new TextRenderer(World, _spriteBatch, _fontSystem);
+        _textRenderer = new TextRenderer(World, _spriteBatch, fonts);
 
         /*
         ENTITIES
@@ -186,7 +180,7 @@ public class Enamel : Game
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
         World.Set(turnTracker, new PlayerCountComponent(3));
-        World.Set(turnTracker, new ScreenPositionComponent(200, 10));
+        World.Set(turnTracker, new ScreenPositionComponent(100, 10));
 
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev

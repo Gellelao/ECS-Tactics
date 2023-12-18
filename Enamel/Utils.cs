@@ -20,7 +20,7 @@ public static class Utils
         var xDiff = originX - targetX;
         if (xDiff != 0 && yDiff != 0)
         {
-            throw new NotImplementedException("Diagonal projectiles not implemented");
+            throw new NotImplementedException("Diagonal directions not implemented");
         }
 
         if (xDiff < 0) return GridDirection.East;

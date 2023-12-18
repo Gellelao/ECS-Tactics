@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using Enamel.Enums;
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -73,5 +75,14 @@ public static class ContentUtils
         animations[(int) AnimationSet.Smoke] = new AnimationData(15, 18, [[0, 1, 2, 3]]);
 
         return animations;
+    }
+
+    public static SpriteFontBase[] LoadFonts(ContentManager content, GraphicsDevice graphicsDevice){
+        // Here, "absolute" refers to the name of the font, not the kind of directory path!
+        var absolutePath = Path.Combine(content.RootDirectory, "fonts", "absolute");
+        var absoluteData = File.ReadAllText(Path.Combine(absolutePath, "absolute.fnt"));
+        SpriteFontBase absoluteFont = StaticSpriteFont.FromBMFont(absoluteData, fileName => File.OpenRead(Path.Combine(absolutePath, fileName)), graphicsDevice);
+
+        return [absoluteFont];
     }
 }

@@ -1,5 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Enamel.Enums;
+using Microsoft.Xna.Framework;
 
 namespace Enamel.Components.UI;
 
-public readonly record struct TextComponent(int TextIndex, int Size, Color Color);
+public readonly record struct TextComponent(int TextIndex, Font Font, Color Color);
