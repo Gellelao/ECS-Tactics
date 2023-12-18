@@ -47,9 +47,9 @@ public class InputSystem : MoonTools.ECS.System
 
         if(SomeMessage<ScreenDetailsChangedMessage>()){
             var newScreenDetails = ReadMessage<ScreenDetailsChangedMessage>();
-            _screenOffsetX = newScreenDetails.OffsetX;
-            _screenOffsetY = newScreenDetails.OffsetY;
             _scale = newScreenDetails.Scale;
+            _screenOffsetX = (int)Math.Round(newScreenDetails.OffsetX/_scale);
+            _screenOffsetY = (int)Math.Round(newScreenDetails.OffsetY/_scale);
         }
 
         int mouseX = (int)Math.Round(mouseCurrent.X / _scale);
@@ -155,10 +155,9 @@ public class InputSystem : MoonTools.ECS.System
 
     private Vector2 ScreenToGridCoords(int mouseX, int mouseY)
     {
-        // I'm not sure why the ScreenOffsets need dividing in half here...
         // Camera pos is determined by the game, while the screen offsets are set if the user resizes the window to non-16:9 resolutions 
-        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _cameraX - (_screenOffsetX/2);
-        float mouseFloatY = mouseY - _cameraY - (_screenOffsetY/2);
+        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _cameraX - _screenOffsetX;
+        float mouseFloatY = mouseY - _cameraY - _screenOffsetY;
         float tileWidthFloat = Constants.TILE_WIDTH;
         float tileHeightFloat = Constants.TILE_HEIGHT;
 
@@ -170,6 +169,8 @@ public class InputSystem : MoonTools.ECS.System
 
     private bool MouseInRectangle(int mouseX, int mouseY, int rectX, int rectY, int rectWidth, int rectHeight)
     {
+        mouseX -= _screenOffsetX;
+        mouseY -= _screenOffsetY;
         return mouseX > rectX && mouseX < rectX + rectWidth &&
                mouseY > rectY && mouseY < rectY + rectHeight;
     }
