@@ -1,8 +1,6 @@
 using System;
 using MoonTools.ECS;
 using Enamel.Components;
-using Microsoft.Xna.Framework;
-using MoonTools.Structs;
 
 namespace Enamel.Systems;
 

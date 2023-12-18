@@ -16,11 +16,13 @@ public class InputSystem : MoonTools.ECS.System
     private Filter ClickableUiFilter { get; }
     public Filter HighlightedFilter { get; }
     private MouseState _mousePrevious;
-    private readonly int _xOffset;
-    private readonly int _yOffset;
+    private readonly int _cameraX;
+    private readonly int _cameraY;
+    private int _screenOffsetX;
+    private int _screenOffsetY;
     private float _scale;
 
-    public InputSystem(World world, float scale, int xOffset, int yOffset) : base(world)
+    public InputSystem(World world, float scale, int cameraX, int cameraY) : base(world)
     {
         SelectableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
@@ -31,8 +33,10 @@ public class InputSystem : MoonTools.ECS.System
             .Exclude<DisabledFlag>()
             .Build();
         HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
-        _xOffset = xOffset;
-        _yOffset = yOffset;
+        _cameraX = cameraX;
+        _cameraY = cameraY;
+        _screenOffsetX = 0;
+        _screenOffsetY = 0;
         _scale = scale;
     }
 
@@ -41,8 +45,11 @@ public class InputSystem : MoonTools.ECS.System
     {
         var mouseCurrent = Mouse.GetState();
 
-        if(SomeMessage<ScreenScaleChangedMessage>()){
-            _scale = ReadMessage<ScreenScaleChangedMessage>().NewScale;
+        if(SomeMessage<ScreenDetailsChangedMessage>()){
+            var newScreenDetails = ReadMessage<ScreenDetailsChangedMessage>();
+            _screenOffsetX = newScreenDetails.OffsetX;
+            _screenOffsetY = newScreenDetails.OffsetY;
+            _scale = newScreenDetails.Scale;
         }
 
         int mouseX = (int)Math.Round(mouseCurrent.X / _scale);
@@ -148,8 +155,10 @@ public class InputSystem : MoonTools.ECS.System
 
     private Vector2 ScreenToGridCoords(int mouseX, int mouseY)
     {
-        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _xOffset;
-        float mouseFloatY = mouseY - _yOffset;
+        // I'm not sure why the ScreenOffsets need dividing in half here...
+        // Camera pos is determined by the game, while the screen offsets are set if the user resizes the window to non-16:9 resolutions 
+        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _cameraX - (_screenOffsetX/2);
+        float mouseFloatY = mouseY - _cameraY - (_screenOffsetY/2);
         float tileWidthFloat = Constants.TILE_WIDTH;
         float tileHeightFloat = Constants.TILE_HEIGHT;
 

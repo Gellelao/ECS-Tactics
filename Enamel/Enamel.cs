@@ -101,13 +101,14 @@ public class Enamel : Game
         /*
         SYSTEMS
         */
-        var xOffset = Constants.PIXEL_SCREEN_WIDTH/2;
-        var yOffset = Constants.PIXEL_SCREEN_HEIGHT/2;
-        _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, xOffset, yOffset);
-        _inputSystem = new InputSystem(World, scale, xOffset, yOffset);
+        // Can use these to make a basic camera system - moving the offsets should just move the camera?
+        var cameraX = Constants.PIXEL_SCREEN_WIDTH/2;
+        var cameraY = Constants.PIXEL_SCREEN_HEIGHT/2;
+        _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
+        _inputSystem = new InputSystem(World, scale, cameraX, cameraY);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
-        _gridMoveSystem = new GridMoveSystem(World, xOffset, yOffset);
+        _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
@@ -276,7 +277,7 @@ public class Enamel : Game
         var offsetX = (int)((windowWidth - (Constants.PIXEL_SCREEN_WIDTH * scale)) / 2);
         var offsetY = (int)((windowHeight - (Constants.PIXEL_SCREEN_HEIGHT * scale)) / 2);
 
-        World.Send(new ScreenScaleChangedMessage(scale));
+        World.Send(new ScreenDetailsChangedMessage(scale, offsetX, offsetY));
 
         return (new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale)), scale);
     }
