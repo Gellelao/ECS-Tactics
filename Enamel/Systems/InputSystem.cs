@@ -16,11 +16,11 @@ public class InputSystem : MoonTools.ECS.System
     private Filter ClickableUiFilter { get; }
     public Filter HighlightedFilter { get; }
     private MouseState _mousePrevious;
-    private readonly int _upscaleFactor;
     private readonly int _xOffset;
     private readonly int _yOffset;
+    private float _scale;
 
-    public InputSystem(World world, int upscaleFactor, int xOffset, int yOffset) : base(world)
+    public InputSystem(World world, float scale, int xOffset, int yOffset) : base(world)
     {
         SelectableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
@@ -31,9 +31,9 @@ public class InputSystem : MoonTools.ECS.System
             .Exclude<DisabledFlag>()
             .Build();
         HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
-        _upscaleFactor = upscaleFactor;
         _xOffset = xOffset;
         _yOffset = yOffset;
+        _scale = scale;
     }
 
 
@@ -41,8 +41,13 @@ public class InputSystem : MoonTools.ECS.System
     {
         var mouseCurrent = Mouse.GetState();
 
-        var mouseX = mouseCurrent.X / _upscaleFactor;
-        var mouseY = mouseCurrent.Y / _upscaleFactor;
+        if(SomeMessage<ScreenScaleChangedMessage>()){
+            _scale = ReadMessage<ScreenScaleChangedMessage>().NewScale;
+        }
+
+        int mouseX = (int)Math.Round(mouseCurrent.X / _scale);
+        int mouseY = (int)Math.Round(mouseCurrent.Y / _scale);
+
         OnUpdate(mouseX, mouseY);
         if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
         {

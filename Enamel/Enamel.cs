@@ -12,6 +12,7 @@ using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
 using Enamel.Spawners;
+using System.Net.Mail;
 
 namespace Enamel;
 
@@ -79,7 +80,8 @@ public class Enamel : Game
     protected override void LoadContent()
     {
         _renderTarget = new RenderTarget2D(GraphicsDevice, Constants.PIXEL_SCREEN_WIDTH, Constants.PIXEL_SCREEN_HEIGHT);
-        _finalRenderRectangle = GetFinalRenderRectangle();
+        var (rectangle, scale) = GetFinalRenderRectangle();
+        _finalRenderRectangle = rectangle;
 
         /*
         CONTENT
@@ -99,12 +101,10 @@ public class Enamel : Game
         /*
         SYSTEMS
         */
-        // I think these only work if the map is square but it probably will be
-        //var mapHeightInPixels = Constants.TILE_HEIGHT * Constants.MAP_HEIGHT * UpscaleFactor;
-        var xOffset = 10;//ScreenWidth / 2 / UpscaleFactor - Constants.TILE_WIDTH/2;
-        var yOffset = 10;//(ScreenHeight - mapHeightInPixels) / 2 / UpscaleFactor;
+        var xOffset = Constants.PIXEL_SCREEN_WIDTH/2;
+        var yOffset = Constants.PIXEL_SCREEN_HEIGHT/2;
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, xOffset, yOffset);
-        _inputSystem = new InputSystem(World, 1, xOffset, yOffset);
+        _inputSystem = new InputSystem(World, scale, xOffset, yOffset);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _gridMoveSystem = new GridMoveSystem(World, xOffset, yOffset);
@@ -193,7 +193,7 @@ public class Enamel : Game
         World.Send(new LearnSpellMessage(SpellId.Fireball));
         World.Send(new LearnSpellMessage(SpellId.RockCharge));
         
-        World.Send(new GoToMainMenuMessage());
+        //World.Send(new GoToMainMenuMessage());
 
         base.LoadContent();
     }
@@ -253,10 +253,10 @@ public class Enamel : Game
 
     private void OnWindowClientSizeChanged(object? sender, EventArgs e)
     {
-        _finalRenderRectangle = GetFinalRenderRectangle();
+        _finalRenderRectangle = GetFinalRenderRectangle().Item1;
     }
 
-    private Rectangle GetFinalRenderRectangle()
+    private (Rectangle, float) GetFinalRenderRectangle()
     {
         float windowWidth = Window.ClientBounds.Width;
         float windowHeight = Window.ClientBounds.Height;
@@ -276,7 +276,9 @@ public class Enamel : Game
         var offsetX = (int)((windowWidth - (Constants.PIXEL_SCREEN_WIDTH * scale)) / 2);
         var offsetY = (int)((windowHeight - (Constants.PIXEL_SCREEN_HEIGHT * scale)) / 2);
 
-        return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
+        World.Send(new ScreenScaleChangedMessage(scale));
+
+        return (new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale)), scale);
     }
 
     private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
