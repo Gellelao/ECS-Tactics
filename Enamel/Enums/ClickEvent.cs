@@ -4,5 +4,9 @@ public enum ClickEvent
 {
     EndTurn,
     LearnSpell,
-    PrepSpell
+    PrepSpell,
+    GoToCharacterSelect,
+    OpenOptions,
+    ExitGame,
+    GoToMainMenu
 }

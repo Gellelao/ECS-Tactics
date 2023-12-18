@@ -188,7 +188,7 @@ public class Enamel : Game
         World.Send(new LearnSpellMessage(SpellId.Fireball));
         World.Send(new LearnSpellMessage(SpellId.RockCharge));
         
-        //World.Send(new GoToMainMenuMessage());
+        World.Send(new GoToMainMenuMessage());
 
         base.LoadContent();
     }
@@ -198,8 +198,8 @@ public class Enamel : Game
         var elapsedTime = gameTime.ElapsedGameTime;
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
-        _menuSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
+        _menuSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed

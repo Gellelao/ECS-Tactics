@@ -135,6 +135,18 @@ public class InputSystem : MoonTools.ECS.System
                         Send(new PrepSpellMessage(spellToPrepOnClick.SpellId, originGridX, originGridY));
 
                         break;
+                    case ClickEvent.GoToMainMenu:
+                        Send(new GoToMainMenuMessage());
+                        break;
+                    case ClickEvent.GoToCharacterSelect:
+                        Send(new GoToCharacterSelectMessage());
+                        break;
+                    case ClickEvent.OpenOptions:
+                        Send(new OpenOptionsMessage());
+                        break;
+                    case ClickEvent.ExitGame:
+                        Send(new ExitGameMessage());
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
