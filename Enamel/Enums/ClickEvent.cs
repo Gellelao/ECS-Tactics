@@ -8,5 +8,6 @@ public enum ClickEvent
     GoToCharacterSelect,
     OpenOptions,
     ExitGame,
-    GoToMainMenu
+    GoToMainMenu,
+    DeployWizards,
 }

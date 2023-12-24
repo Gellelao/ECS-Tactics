@@ -46,7 +46,17 @@ public class MenuSystem(World world) : MoonTools.ECS.System(world)
             var backButton = CreateUiEntity(80, 110, 50, 15);
             World.Set(backButton, new TextComponent(TextStorage.GetId("Back"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             World.Set(backButton, new OnClickComponent(ClickEvent.GoToMainMenu));
+
+            var deployButton = CreateUiEntity(150, 110, 50, 15);
+            World.Set(deployButton, new TextComponent(TextStorage.GetId("Play"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
+            World.Set(deployButton, new OnClickComponent(ClickEvent.DeployWizards));
         }
+
+        if (SomeMessage<DeployWizardsMessage>())
+        {
+            DestroyExistingUiEntities();
+        }
+
     }
 
     private void DestroyExistingUiEntities(){

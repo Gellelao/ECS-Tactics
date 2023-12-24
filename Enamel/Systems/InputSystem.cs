@@ -147,6 +147,9 @@ public class InputSystem : MoonTools.ECS.System
                     case ClickEvent.ExitGame:
                         Send(new ExitGameMessage());
                         break;
+                    case ClickEvent.DeployWizards:
+                        Send(new DeployWizardsMessage());
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
