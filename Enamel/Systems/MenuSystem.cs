@@ -53,6 +53,7 @@ public class MenuSystem(World world) : MoonTools.ECS.System(world)
         foreach(Entity entity in uiEntities){
             Destroy(entity);
         }
+        uiEntities.Clear();
     }
 
     private Entity CreateUiEntity(int x, int y, int width, int height){
