@@ -17,7 +17,7 @@ public class UnitSelectionSystem : MoonTools.ECS.System
     {
         SelectableCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
-            .Exclude<SpellToCastOnClickComponent>()
+            .Exclude<SpellToCastOnSelectComponent>()
             .Exclude<DisabledFlag>()
             .Build();
         SelectedFilter = FilterBuilder.Include<SelectedFlag>().Build();

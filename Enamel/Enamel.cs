@@ -160,22 +160,19 @@ public class Enamel : Game
         World.Set(learnFireballButton, new ScreenPositionComponent(50, 200));
         World.Set(learnFireballButton, new DimensionsComponent(40, 20));
         World.Set(learnFireballButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell));
-        World.Set(learnFireballButton, new SpellToLearnOnClickComponent(SpellId.Fireball));
+        World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.Fireball));
 
         var learnArcaneBlockButton = World.CreateEntity();
         World.Set(learnArcaneBlockButton, new ScreenPositionComponent(50, 230));
         World.Set(learnArcaneBlockButton, new DimensionsComponent(40, 20));
         World.Set(learnArcaneBlockButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell));
-        World.Set(learnArcaneBlockButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBlock));
+        World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.ArcaneBlock));
 
         var learnArcaneBubbleButton = World.CreateEntity();
         World.Set(learnArcaneBubbleButton, new ScreenPositionComponent(50, 260));
         World.Set(learnArcaneBubbleButton, new DimensionsComponent(40, 20));
         World.Set(learnArcaneBubbleButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnArcaneBubbleButton, new OnClickComponent(ClickEvent.LearnSpell));
-        World.Set(learnArcaneBubbleButton, new SpellToLearnOnClickComponent(SpellId.ArcaneBubble));
+        World.Set(learnArcaneBubbleButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.ArcaneBubble));
 
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){

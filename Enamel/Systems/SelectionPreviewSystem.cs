@@ -17,7 +17,7 @@ public class SelectionPreviewSystem : SpellSystem
 
     public SelectionPreviewSystem(World world) : base(world)
     {
-        SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnClickComponent>().Build();
+        SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnSelectComponent>().Build();
         ImpassableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
             .Include<ImpassableFlag>().Build();
@@ -105,6 +105,6 @@ public class SelectionPreviewSystem : SpellSystem
         Set(preview, new GridCoordComponent(x, y));
         Set(preview, new TextureIndexComponent(Sprite.TileSelectPreview));
         Set(preview, new DrawLayerComponent(DrawLayer.Signage));
-        Set(preview, new SpellToCastOnClickComponent(spellId));
+        Set(preview, new SpellToCastOnSelectComponent(spellId));
     }
 }

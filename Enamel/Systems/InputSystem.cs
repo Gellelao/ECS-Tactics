@@ -113,26 +113,17 @@ public class InputSystem : MoonTools.ECS.System
                         Send(new EndTurnMessage());
                         break;
                     case ClickEvent.LearnSpell:
-                        if (!Has<SpellToLearnOnClickComponent>(button))
-                            throw new ComponentNotFoundException(
-                                "The LearnSpell click event requires the button entity to also have a SpellToLearnOnClick component");
-                        var spellToLearnOnClick = Get<SpellToLearnOnClickComponent>(button).SpellId;
-
-                        Send(new LearnSpellMessage(spellToLearnOnClick));
-
+                        // We must assume that the Id is a SpellId if passed along with the LearnSpell ClickEvent
+                        Send(new LearnSpellMessage((SpellId)onClick.Id));
                         break;
                     case ClickEvent.PrepSpell:
-                        if (!Has<SpellToPrepOnClickComponent>(button))
-                            throw new ComponentNotFoundException(
-                                "The PrepSpell click event requires the button entity to also have a SpellToPrepOnClickComponent component");
-                        var spellToPrepOnClick = Get<SpellToPrepOnClickComponent>(button);
-
                         // There must only be one selected unit and it must the the unit casting this spell
                         var selectedEntity = GetSingletonEntity<SelectedFlag>();
                         if(!Has<GridCoordComponent>(selectedEntity)) continue;
                         var (originGridX, originGridY) = Get<GridCoordComponent>(selectedEntity);
 
-                        Send(new PrepSpellMessage(spellToPrepOnClick.SpellId, originGridX, originGridY));
+                        // Again we must assume that the Id is a SpellId if passed along with the PrepSpell ClickEvent
+                        Send(new PrepSpellMessage((SpellId)onClick.Id, originGridX, originGridY));
 
                         break;
                     case ClickEvent.GoToMainMenu:

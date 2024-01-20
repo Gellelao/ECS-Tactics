@@ -22,6 +22,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
         DisplaySpellCardsFilter = FilterBuilder
             .Include<DisplaySpellCardsComponent>()
             .Build();
+        // Use a relation here instead to get spell cards for a given character?
         SpellCardFilter = FilterBuilder.Include<SpellToPrepOnClickComponent>().Build();
     }
 
@@ -53,8 +54,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             Set(spellCard, new TextureIndexComponent(Sprite.YellowSquare));
             Set(spellCard, new DrawLayerComponent(DrawLayer.UserInterface));
             Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Font.Absolute, Constants.SpellCardTextColour));
-            Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell));
-            Set(spellCard, new SpellToPrepOnClickComponent(spellIdComponent.SpellId));
+            Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell, (int)spellIdComponent.SpellId));
             screenX += 40;
         }
     }

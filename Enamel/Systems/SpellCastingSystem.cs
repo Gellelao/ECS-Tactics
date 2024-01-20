@@ -19,7 +19,7 @@ public class SpellCastingSystem : SpellSystem
     public SpellCastingSystem(World world, SpellCastSpawner spawner) : base(world)
     {
         _spawner = spawner;
-        SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnClickComponent>().Build();
+        SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnSelectComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -33,7 +33,7 @@ public class SpellCastingSystem : SpellSystem
             
             var casterEntity = GetSingletonEntity<SelectedFlag>();
 
-            var spellToCastComponent = Get<SpellToCastOnClickComponent>(spellPreview);
+            var spellToCastComponent = Get<SpellToCastOnSelectComponent>(spellPreview);
             var spell = GetSpell(spellToCastComponent.SpellId);
 
             ResolveSpell(spell, casterEntity, targetX, targetY);
