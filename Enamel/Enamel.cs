@@ -144,10 +144,10 @@ public class Enamel : Game
         // So just putting spells first until I decide to figure out why that happens
         CreateSpells();
 
-        var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
-        World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
+        //var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
+        //World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
         
-        CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
+        //CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
 
         var endTurnButton = World.CreateEntity();
         World.Set(endTurnButton, new ScreenPositionComponent(400, 300));
@@ -187,11 +187,11 @@ public class Enamel : Game
             }
         }
 
-        World.Send(new EndTurnMessage());
+        //World.Send(new EndTurnMessage());
         // Set up player 1 for dev
-        World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.Fireball));
-        World.Send(new LearnSpellMessage(SpellId.RockCharge));
+        //World.Send(new LearnSpellMessage(SpellId.StepOnce));
+        //World.Send(new LearnSpellMessage(SpellId.Fireball));
+        //World.Send(new LearnSpellMessage(SpellId.RockCharge));
         
         World.Send(new GoToMainMenuMessage());
 

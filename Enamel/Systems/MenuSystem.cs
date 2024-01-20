@@ -13,6 +13,7 @@ public class MenuSystem : MoonTools.ECS.System
 {
     private readonly List<Entity> _uiEntities = [];
     private Entity _sheetRow;
+    private Entity _addPlayerButton;
 
     private Filter PlayerFilter { get; }
 
@@ -26,6 +27,7 @@ public class MenuSystem : MoonTools.ECS.System
         if (SomeMessage<GoToMainMenuMessage>())
         {
             DestroyExistingUiEntities();
+            DestroyAllPlayers();
 
             var mainMenu = CreateUiEntity(0, 0);
             Set(mainMenu, new TextureIndexComponent(Sprite.TitleScreen));
@@ -52,12 +54,8 @@ public class MenuSystem : MoonTools.ECS.System
             
             _sheetRow = CreateUiEntity(0, 40);
             Set(_sheetRow, new CenterChildrenComponent(2));
-            
-            var addPlayerButton = CreateUiEntity(80, 40, 40, 60);
-            Set(addPlayerButton, new TextureIndexComponent(Sprite.AddPlayer));
-            Set(addPlayerButton, new OnClickComponent(ClickEvent.AddPlayer));
-            Set(addPlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
-            Relate(_sheetRow, addPlayerButton, new IsParentRelation());
+
+            CreateAddPlayerButton();
             
             // Start with 1 player
             AddPlayer();
@@ -82,6 +80,23 @@ public class MenuSystem : MoonTools.ECS.System
         }
     }
 
+    private void DestroyAllPlayers()
+    {
+        foreach (var entity in PlayerFilter.Entities)
+        {
+            Destroy(entity);
+        }
+    }
+
+    private void CreateAddPlayerButton()
+    {
+        _addPlayerButton = CreateUiEntity(80, 40, 40, 60);
+        Set(_addPlayerButton, new TextureIndexComponent(Sprite.AddPlayer));
+        Set(_addPlayerButton, new OnClickComponent(ClickEvent.AddPlayer));
+        Set(_addPlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
+        Relate(_sheetRow, _addPlayerButton, new IsParentRelation());
+    }
+
     private void AddPlayer()
     {
         var existingPlayerCount = PlayerFilter.Count;
@@ -92,14 +107,18 @@ public class MenuSystem : MoonTools.ECS.System
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
+
+        if (existingPlayerCount >= 5)
+        {
+            Destroy(_addPlayerButton);
+        }
     }
 
     private void DestroyExistingUiEntities(){
-        foreach(Entity entity in _uiEntities){
+        foreach(var entity in _uiEntities){
             Destroy(entity);
         }
         _uiEntities.Clear();
-        Destroy(_sheetRow);
     }
 
     private Entity CreateUiEntity(int x, int y, int width, int height){
