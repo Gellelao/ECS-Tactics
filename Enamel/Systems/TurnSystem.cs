@@ -2,6 +2,7 @@
 using System.Linq;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.Relations;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using MoonTools.ECS;
@@ -10,37 +11,41 @@ namespace Enamel.Systems;
 
 public class TurnSystem : MoonTools.ECS.System
 {
-    private Filter ControlledByPlayerFilter { get; }
+    private Filter PlayerFilter { get; }
 
     public TurnSystem(World world) : base(world)
     {
-        ControlledByPlayerFilter = FilterBuilder.Include<ControlledByPlayerComponent>().Build();
+        PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
         if (!SomeMessage<EndTurnMessage>()) return;
 
-        // At this point there must be an end turn message, so proceed with ending the turn
-        var numberOfPlayers = GetSingleton<PlayerCountComponent>().NumberOfPlayers;
+        var numberOfPlayers = PlayerFilter.Count;
         var turnIndex = IncrementTurnIndex(numberOfPlayers);
         var nextPlayer = GetTurnOrder(numberOfPlayers)[turnIndex];
 
-        foreach (var entity in ControlledByPlayerFilter.Entities)
+        foreach (var player in PlayerFilter.Entities)
         {
-            var controllingPlayer = Get<ControlledByPlayerComponent>(entity);
-            if (controllingPlayer.PlayerNumber == nextPlayer)
+            var playerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
+            var playersCharacters = OutRelations<ControlsRelation>(player);
+            if (playerNumber == nextPlayer)
             {
-                // Each unit controlled by the next player becomes selectable and has their moves per turn reset
-                var movesThisTurn = Get<MovesPerTurnComponent>(entity).Amount;
-                Set(entity, new RemainingMovesComponent(movesThisTurn));
-                Remove<DisabledFlag>(entity);
+                // Each unit controlled by the next player becomes selectable
+                foreach (var character in playersCharacters)
+                {
+                    Remove<DisabledFlag>(character);
+                }
             }
             else
             {
                 // Can't select units belonging to other players
-                Set(entity, new DisabledFlag());
-                Remove<SelectedFlag>(entity);
+                foreach (var character in playersCharacters)
+                {
+                    Set(character, new DisabledFlag());
+                    Remove<SelectedFlag>(character);
+                }
             }
         }
     }

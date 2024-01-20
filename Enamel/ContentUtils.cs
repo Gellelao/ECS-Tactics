@@ -59,7 +59,7 @@ public static class ContentUtils
         var animations = new AnimationData[100];
         // X and Y are the coords of the segment of the sprite sheet we want to draw, if each sprite was a cell in an array
         // we'll multiply X and Y by the size of the sprite to get the pixel coords when rendering.
-        // Here we are only defining arrays of Y values, because X is determined by the direction of the sprite (see sprite sheet, each column has all the sprites for once direction)
+        // Here we are only defining arrays of Y values, because X is determined by the direction of the sprite (see sprite sheet, each column has all the sprites for one direction)
         var blueWizAnimations = new int[Enum.GetNames(typeof(AnimationType)).Length][];
         blueWizAnimations[(int)AnimationType.Idle] = [1];
         blueWizAnimations[(int)AnimationType.Walk] = [0, 1, 2, 1];

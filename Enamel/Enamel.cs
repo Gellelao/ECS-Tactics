@@ -13,6 +13,7 @@ using FontStashSharp;
 using Enamel.Enums;
 using Enamel.Spawners;
 using System.Net.Mail;
+using Enamel.Components.Relations;
 
 namespace Enamel;
 
@@ -179,7 +180,6 @@ public class Enamel : Game
 
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
-        World.Set(turnTracker, new PlayerCountComponent(3));
         World.Set(turnTracker, new ScreenPositionComponent(100, 10));
 
         World.Send(new EndTurnMessage());
@@ -278,22 +278,25 @@ public class Enamel : Game
 
     private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
     {
-        var playerEntity = World.CreateEntity();
-        World.Set(playerEntity, new TextureIndexComponent(sprite));
-        // Obviously make the animation set configurable once I have more than 1 to choose from
-        World.Set(playerEntity, new AnimationSetComponent(AnimationSet.BlueWiz));
-        World.Set(playerEntity, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        World.Set(playerEntity, new FacingDirectionComponent(GridDirection.South));
-        World.Set(playerEntity, new SpriteOriginComponent(-4, 18));
-        World.Set(playerEntity, new DrawLayerComponent(DrawLayer.Units));
-        World.Set(playerEntity, new GridCoordComponent(x, y));
-        World.Set(playerEntity, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN)); // Can probably delete this along with the component and the TurnSystem logic for it
-        World.Set(playerEntity, new ImpassableFlag());
-        World.Set(playerEntity, new ControlledByPlayerComponent(playerNumber));
-        World.Set(playerEntity, new HealthComponent(1));
+        var player = World.CreateEntity();
+        World.Set(player, new PlayerNumberComponent(playerNumber));
+        
+        var playerCharacter = World.CreateEntity();
+        World.Relate(player, playerCharacter, new ControlsRelation());
+        
+        World.Set(playerCharacter, new TextureIndexComponent(sprite));
+        World.Set(playerCharacter, new AnimationSetComponent(AnimationSet.BlueWiz));
+        World.Set(playerCharacter, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
+        World.Set(playerCharacter, new FacingDirectionComponent(GridDirection.South));
+        World.Set(playerCharacter, new SpriteOriginComponent(-4, 18));
+        World.Set(playerCharacter, new DrawLayerComponent(DrawLayer.Units));
+        World.Set(playerCharacter, new GridCoordComponent(x, y));
+        World.Set(playerCharacter, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN)); // Can probably delete this along with the component and the TurnSystem logic for it
+        World.Set(playerCharacter, new ImpassableFlag());
+        World.Set(playerCharacter, new HealthComponent(1));
         // Just for testing, I think players would normally only get this flag if they've had some effect applied to them by another player
-        World.Set(playerEntity, new PushableFlag());
-        return playerEntity;
+        World.Set(playerCharacter, new PushableFlag());
+        return playerCharacter;
     }
 
     private void CreateSpells()
