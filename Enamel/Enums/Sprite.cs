@@ -15,5 +15,7 @@ public enum Sprite
     ArcaneBlock,
     ArcaneBubble,
     Smoke,
-    TitleScreen
+    TitleScreen,
+    CharacterSheet,
+    AddPlayer
 }

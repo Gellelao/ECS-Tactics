@@ -7,7 +7,5 @@ public enum PlayerNumber
     Three,
     Four,
     Five,
-    Six,
-    Seven,
-    Eight
+    Six
 }

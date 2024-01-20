@@ -150,6 +150,9 @@ public class InputSystem : MoonTools.ECS.System
                     case ClickEvent.DeployWizards:
                         Send(new DeployWizardsMessage());
                         break;
+                    case ClickEvent.AddPlayer:
+                        Send(new AddPlayerMessage());
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

@@ -50,6 +50,8 @@ public static class ContentUtils
         textures[(int)Sprite.ArcaneBubble] = content.Load<Texture2D>("bubble");
         textures[(int)Sprite.Smoke] = content.Load<Texture2D>("SmokePuff");
         textures[(int)Sprite.TitleScreen] = content.Load<Texture2D>("TitleScreen");
+        textures[(int)Sprite.CharacterSheet] = content.Load<Texture2D>("CharacterSheet");
+        textures[(int)Sprite.AddPlayer] = content.Load<Texture2D>("AddPlayer");
 
         return textures;
     }

@@ -42,6 +42,7 @@ public class Enamel : Game
     private static DestroyAfterDurationSystem? _destroyAfterDurationSystem;
     private static ScreenMoveSystem? _screenMoveSystem;
     private static MenuSystem? _menuSystem;
+    private static CenterChildrenSystem? _centerChildrenSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -120,6 +121,7 @@ public class Enamel : Game
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
         _screenMoveSystem = new ScreenMoveSystem(World);
         _menuSystem = new MenuSystem(World);
+        _centerChildrenSystem = new CenterChildrenSystem(World);
 
         /*
         RENDERERS
@@ -200,6 +202,7 @@ public class Enamel : Game
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
         _menuSystem?.Update(elapsedTime);
+        _centerChildrenSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
@@ -300,9 +303,11 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
+        Console.WriteLine("Creating spell StepOnce");
         var stepOnceSpell = World.CreateEntity();
         World.Set(stepOnceSpell, new SpellIdComponent(SpellId.StepOnce));
         World.Set(stepOnceSpell, new CastRangeComponent(1));
+        Console.WriteLine("Done");
         
         var fireballSpell = World.CreateEntity();
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
