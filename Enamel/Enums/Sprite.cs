@@ -17,5 +17,6 @@ public enum Sprite
     Smoke,
     TitleScreen,
     CharacterSheet,
-    AddPlayer
+    AddPlayer,
+    CloseButton
 }

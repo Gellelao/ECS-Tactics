@@ -108,6 +108,11 @@ public class MenuSystem : MoonTools.ECS.System
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
 
+        var closeButton = CreateUiEntity(0, 0, 5, 5);
+        Set(closeButton, new RelativePositionFlag());
+        Set(closeButton, new TextureIndexComponent(Sprite.CloseButton));
+        Relate(characterSheet,  closeButton, new IsParentRelation());
+
         if (existingPlayerCount >= 5)
         {
             Destroy(_addPlayerButton);

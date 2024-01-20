@@ -132,8 +132,9 @@ public class Enamel : Game
         /*
         ENTITIES
         */
+        
+        // Had a weird issue where the first entity would cause errors, so create a throwaway entity here for now
         var zeroEntity = World.CreateEntity();
-        //World.Destroy(zeroEntity);
         
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
