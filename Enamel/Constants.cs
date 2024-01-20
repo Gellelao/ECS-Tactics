@@ -19,8 +19,6 @@ public static class Constants
     public const int DEFAULT_WALK_SPEED = 10;
     public const int DEFAULT_PROJECTILE_SPEED = 100;
     
-    public const int DEFAULT_MOVES_PER_TURN = 3;
-    
     public const int PLAYER_FRAME_WIDTH = 22;
     public const int PLAYER_FRAME_HEIGHT = 32;
     

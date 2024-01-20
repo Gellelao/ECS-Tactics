@@ -291,7 +291,6 @@ public class Enamel : Game
         World.Set(playerCharacter, new SpriteOriginComponent(-4, 18));
         World.Set(playerCharacter, new DrawLayerComponent(DrawLayer.Units));
         World.Set(playerCharacter, new GridCoordComponent(x, y));
-        World.Set(playerCharacter, new MovesPerTurnComponent(Constants.DEFAULT_MOVES_PER_TURN)); // Can probably delete this along with the component and the TurnSystem logic for it
         World.Set(playerCharacter, new ImpassableFlag());
         World.Set(playerCharacter, new HealthComponent(1));
         // Just for testing, I think players would normally only get this flag if they've had some effect applied to them by another player
