@@ -89,7 +89,7 @@ public class MenuSystem : MoonTools.ECS.System
         Set(player, new PlayerNumberComponent((PlayerNumber)existingPlayerCount));
         
         var characterSheet = CreateUiEntity(80, 40, 40, 60);
-        Set(characterSheet, new TextureIndexComponent(Sprite.AddPlayer));
+        Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
     }

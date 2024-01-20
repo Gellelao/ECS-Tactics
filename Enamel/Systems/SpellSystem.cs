@@ -22,7 +22,6 @@ public abstract class SpellSystem : MoonTools.ECS.System
         foreach (var spell in SpellIdFilter.Entities)
         {
             var id = Get<SpellIdComponent>(spell).SpellId;
-            Console.WriteLine($"Found spell {id}");
             if (id == spellId) return spell;
         }
 

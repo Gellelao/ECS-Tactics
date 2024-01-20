@@ -132,6 +132,13 @@ public class Enamel : Game
         /*
         ENTITIES
         */
+        var zeroEntity = World.CreateEntity();
+        //World.Destroy(zeroEntity);
+        
+        var turnTracker = World.CreateEntity();
+        World.Set(turnTracker, new TurnIndexComponent(-1));
+        World.Set(turnTracker, new ScreenPositionComponent(100, 10));
+        
         // Spells
         // For whatever reason, putting the spell template creation after the ground tiles caused an exception when drawing.
         // So just putting spells first until I decide to figure out why that happens
@@ -179,10 +186,6 @@ public class Enamel : Game
                 World.Set(tile, new DrawLayerComponent(DrawLayer.Tiles));
             }
         }
-
-        var turnTracker = World.CreateEntity();
-        World.Set(turnTracker, new TurnIndexComponent(-1));
-        World.Set(turnTracker, new ScreenPositionComponent(100, 10));
 
         World.Send(new EndTurnMessage());
         // Set up player 1 for dev
@@ -303,11 +306,9 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
-        Console.WriteLine("Creating spell StepOnce");
         var stepOnceSpell = World.CreateEntity();
         World.Set(stepOnceSpell, new SpellIdComponent(SpellId.StepOnce));
         World.Set(stepOnceSpell, new CastRangeComponent(1));
-        Console.WriteLine("Done");
         
         var fireballSpell = World.CreateEntity();
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
