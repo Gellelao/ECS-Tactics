@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MoonTools.ECS;
 using Enamel.Components;
 using Enamel.Components.Messages;
@@ -14,7 +15,8 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
 {
     private readonly World _world;
     private Filter DisplaySpellCardsFilter { get; }
-    private Filter SpellCardFilter { get; }
+
+    private readonly List<Entity> _spellCards;
 
     public PlayerButtonsSystem(World world) : base(world)
     {
@@ -22,18 +24,19 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
         DisplaySpellCardsFilter = FilterBuilder
             .Include<DisplaySpellCardsComponent>()
             .Build();
-        // Use a relation here instead to get spell cards for a given character?
-        SpellCardFilter = FilterBuilder.Include<SpellToPrepOnClickComponent>().Build();
+        _spellCards = new List<Entity>();
     }
 
     public override void Update(TimeSpan delta)
     {
         foreach (var entity in DisplaySpellCardsFilter.Entities)
         {
-            foreach (var spellCard in SpellCardFilter.Entities)
+            // The outer loop only runs when we want to display new cards, so this is where we should destroy old ones
+            foreach (var spellCard in _spellCards)
             {
                 Destroy(spellCard);
             }
+            _spellCards.Clear();
 
             CreateSpellCardsForEntity(entity);
             Remove<DisplaySpellCardsComponent>(entity);
@@ -55,6 +58,8 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             Set(spellCard, new DrawLayerComponent(DrawLayer.UserInterface));
             Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Font.Absolute, Constants.SpellCardTextColour));
             Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell, (int)spellIdComponent.SpellId));
+            _spellCards.Add(spellCard);
+            
             screenX += 40;
         }
     }
