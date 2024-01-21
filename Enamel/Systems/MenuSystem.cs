@@ -101,7 +101,8 @@ public class MenuSystem : MoonTools.ECS.System
     {
         var existingPlayerCount = PlayerFilter.Count;
         var player = World.CreateEntity();
-        Set(player, new PlayerNumberComponent((PlayerNumber)existingPlayerCount));
+        var playerNumber = (PlayerNumber)existingPlayerCount;
+        Set(player, new PlayerNumberComponent(playerNumber));
         
         var characterSheet = CreateUiEntity(80, 40, 40, 60);
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
@@ -109,9 +110,10 @@ public class MenuSystem : MoonTools.ECS.System
         Relate(_sheetRow, characterSheet, new IsParentRelation());
 
         var closeButton = CreateUiEntity(0, 0, 5, 5);
-        Set(closeButton, new RelativePositionFlag());
+        Set(closeButton, new RelativePositionComponent(0, 0));
         Set(closeButton, new TextureIndexComponent(Sprite.CloseButton));
-        Relate(characterSheet,  closeButton, new IsParentRelation());
+        Set(closeButton, new OnClickComponent(ClickEvent.DeletePlayer, (int)playerNumber));
+        Relate(characterSheet, closeButton, new IsParentRelation());
 
         if (existingPlayerCount >= 5)
         {

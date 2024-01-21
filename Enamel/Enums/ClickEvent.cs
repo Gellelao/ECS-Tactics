@@ -10,5 +10,6 @@ public enum ClickEvent
     ExitGame,
     GoToMainMenu,
     DeployWizards,
-    AddPlayer
+    AddPlayer,
+    DeletePlayer
 }

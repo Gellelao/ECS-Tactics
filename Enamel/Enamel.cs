@@ -43,6 +43,7 @@ public class Enamel : Game
     private static ScreenMoveSystem? _screenMoveSystem;
     private static MenuSystem? _menuSystem;
     private static CenterChildrenSystem? _centerChildrenSystem;
+    private static RelativePositionSystem? _relativePositionSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -122,6 +123,7 @@ public class Enamel : Game
         _screenMoveSystem = new ScreenMoveSystem(World);
         _menuSystem = new MenuSystem(World);
         _centerChildrenSystem = new CenterChildrenSystem(World);
+        _relativePositionSystem = new RelativePositionSystem(World);
 
         /*
         RENDERERS
@@ -204,6 +206,7 @@ public class Enamel : Game
         _inputSystem?.Update(elapsedTime);
         _menuSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
+        _relativePositionSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
