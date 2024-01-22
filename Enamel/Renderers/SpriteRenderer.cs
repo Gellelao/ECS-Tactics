@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
 using Enamel.Components;
+using Enamel.Components.Relations;
 using Enamel.Enums;
 
 namespace Enamel.Renderers;
@@ -54,34 +55,43 @@ public class SpriteRenderer : Renderer
     /// Given a list of entities with PostitionCompnents and DrawLayerComponents, return them ordered such that:
     /// * All entities in lower layers are drawn before entities in higher layers
     /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?) Y values
+    /// * Also ensure that parents are rendered before children, breaking the y value ordering if necessary
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
     private IEnumerable<List<Entity>> GetRenderOrder(ReverseSpanEnumerator<Entity> entities)
     {
         // Create a list with one entry for each draw layer
-        var layerList = new List<List<List<Entity>>>();
+        var layerList = new List<List<Entity>>();
         foreach (int currentLayer in Enum.GetValues(typeof(DrawLayer)))
         {
             var currentLayerEnum = (DrawLayer) currentLayer;
-            
-            layerList.Add(GetRenderOrderForLayer(currentLayerEnum, entities));
+
+            var entitiesForLayer = new List<Entity>();
+            foreach (var entity in entities)
+            {
+                var drawLayer = Get<DrawLayerComponent>(entity).Layer;
+                if (drawLayer != currentLayerEnum)
+                {
+                    entitiesForLayer.Add(entity);
+                }
+            }
+
+            layerList.Add(GetRenderOrderForLayer(entitiesForLayer));
         }
         
         // Combine the draw layer lists into one big list. This results in the first item being all the entities to
         // draw first, the second item being all the entities to draw second, etc. Taking into account both draw layer
         // and Y value.
-        return layerList.SelectMany(list => list);
+        return layerList;
     }
 
-    private List<List<Entity>> GetRenderOrderForLayer(DrawLayer layer, ReverseSpanEnumerator<Entity> entities)
+    private List<Entity> GetRenderOrderForLayer(List<Entity> entities)
     {
         // Create a dictionary with lists of entities at each Y level
         var renderOrderDict = new Dictionary<int, List<Entity>>();
         foreach (var entity in entities)
         {
-            var drawLayer = Get<DrawLayerComponent>(entity).Layer;
-            if (drawLayer != layer) continue; // Ignore entities that are not in the current draw layer
             
             var yPos = Get<ScreenPositionComponent>(entity).Y;
             if (renderOrderDict.TryGetValue(yPos, out var list))
@@ -95,10 +105,49 @@ public class SpriteRenderer : Renderer
         }
 
         // Order by Y value and select out just the list of ordered entities
-        return renderOrderDict
+        var yOrderedList = renderOrderDict
             .OrderBy(kvp => kvp.Key)
             .Select(kvp => kvp.Value)
-            .ToList();
+            .SelectMany(list => list);
+
+        return yOrderedList.ToList();
+        // Now put parents before children. This may break the Y-sorting but thats ok
+        //return HierarchicalSort(yOrderedList);
+    }
+
+    private List<Entity> HierarchicalSort(IEnumerable<Entity> entities)
+    {
+        var visited = new HashSet<Entity>();
+        var sortedList = new List<Entity>();
+
+        foreach (var entity in entities)
+        {
+            if (!visited.Contains(entity))
+            {
+                Dfs(entity, visited, sortedList);
+            }
+        }
+
+        sortedList.Reverse();
+
+        return sortedList;
+    }
+
+    private void Dfs(Entity entity, HashSet<Entity> visited, List<Entity> sortedList)
+    {
+        visited.Add(entity);
+
+        var children = OutRelations<IsParentRelation>(entity);
+
+        foreach (var child in children)
+        {
+            if (!visited.Contains(child))
+            {
+                Dfs(child, visited, sortedList);
+            }
+        }
+
+        sortedList.Add(entity);
     }
 
     private void DrawEntity(Entity entity)
