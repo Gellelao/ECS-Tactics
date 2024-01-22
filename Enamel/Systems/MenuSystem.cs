@@ -92,7 +92,7 @@ public class MenuSystem : MoonTools.ECS.System
 
     private void CreateAddPlayerButton()
     {
-        _addPlayerButton = CreateUiEntity(80, 40, 40, 60);
+        _addPlayerButton = CreateUiEntity(80, 40, 40, 30);
         Set(_addPlayerButton, new TextureIndexComponent(Sprite.AddPlayer));
         Set(_addPlayerButton, new OnClickComponent(ClickEvent.AddPlayer));
         Set(_addPlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
@@ -101,7 +101,7 @@ public class MenuSystem : MoonTools.ECS.System
 
     private void CreateDeletePlayerButton()
     {
-        _deletePlayerButton = CreateUiEntity(80, 40, 40, 60);
+        _deletePlayerButton = CreateUiEntity(80, 70, 40, 30);
         Set(_deletePlayerButton, new TextureIndexComponent(Sprite.DeletePlayer));
         Set(_deletePlayerButton, new OnClickComponent(ClickEvent.DeletePlayer));
         Set(_deletePlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
