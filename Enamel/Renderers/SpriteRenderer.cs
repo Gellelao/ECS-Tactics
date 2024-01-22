@@ -53,7 +53,7 @@ public class SpriteRenderer : Renderer
     /// <summary>
     /// Given a list of entities with PostitionCompnents and DrawLayerComponents, return them ordered such that:
     /// * All entities in lower layers are drawn before entities in higher layers
-    /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?) Y values 
+    /// * Within each layer, entities at lower(?) Y values are drawn before entities at higher(?) Y values
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
@@ -65,37 +65,40 @@ public class SpriteRenderer : Renderer
         {
             var currentLayerEnum = (DrawLayer) currentLayer;
             
-            // Create a dictionary with lists of entities at each Y level
-            var renderOrderDict = new Dictionary<int, List<Entity>>();
-            foreach (var entity in entities)
-            {
-                var drawLayer = Get<DrawLayerComponent>(entity).Layer;
-                if (drawLayer != currentLayerEnum) continue; // Ignore entities that are not in the current draw layer
-                
-                var yPos = Get<ScreenPositionComponent>(entity).Y;
-                if (renderOrderDict.TryGetValue(yPos, out var list))
-                {
-                    list.Add(entity);
-                }
-                else
-                {
-                    renderOrderDict.Add(yPos, new List<Entity>{ entity });
-                }
-            }
-
-            // Order by Y value and select out just the list of ordered entities
-            var orderWithinLayer = renderOrderDict
-                .OrderBy(kvp => kvp.Key)
-                .Select(kvp => kvp.Value)
-                .ToList();
-            
-            layerList.Add(orderWithinLayer);
+            layerList.Add(GetRenderOrderForLayer(currentLayerEnum, entities));
         }
         
         // Combine the draw layer lists into one big list. This results in the first item being all the entities to
         // draw first, the second item being all the entities to draw second, etc. Taking into account both draw layer
         // and Y value.
         return layerList.SelectMany(list => list);
+    }
+
+    private List<List<Entity>> GetRenderOrderForLayer(DrawLayer layer, ReverseSpanEnumerator<Entity> entities)
+    {
+        // Create a dictionary with lists of entities at each Y level
+        var renderOrderDict = new Dictionary<int, List<Entity>>();
+        foreach (var entity in entities)
+        {
+            var drawLayer = Get<DrawLayerComponent>(entity).Layer;
+            if (drawLayer != layer) continue; // Ignore entities that are not in the current draw layer
+            
+            var yPos = Get<ScreenPositionComponent>(entity).Y;
+            if (renderOrderDict.TryGetValue(yPos, out var list))
+            {
+                list.Add(entity);
+            }
+            else
+            {
+                renderOrderDict.Add(yPos, new List<Entity>{ entity });
+            }
+        }
+
+        // Order by Y value and select out just the list of ordered entities
+        return renderOrderDict
+            .OrderBy(kvp => kvp.Key)
+            .Select(kvp => kvp.Value)
+            .ToList();
     }
 
     private void DrawEntity(Entity entity)
