@@ -144,6 +144,9 @@ public class InputSystem : MoonTools.ECS.System
                     case ClickEvent.AddPlayer:
                         Send(new AddPlayerMessage());
                         break;
+                    case ClickEvent.DeletePlayer:
+                        Send(new DeletePlayerMessage());
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

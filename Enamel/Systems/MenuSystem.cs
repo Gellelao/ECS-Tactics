@@ -62,6 +62,8 @@ public class MenuSystem : MoonTools.ECS.System
             // Start with 1 player
             AddPlayer();
 
+            Set(_deletePlayerButton, new DisabledFlag());
+
             var backButton = CreateUiEntity(80, 110, 50, 15);
             Set(backButton, new TextComponent(TextStorage.GetId("Back"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(backButton, new OnClickComponent(ClickEvent.GoToMainMenu));
@@ -79,6 +81,11 @@ public class MenuSystem : MoonTools.ECS.System
         if (SomeMessage<AddPlayerMessage>())
         {
             AddPlayer();
+        }
+
+        if (SomeMessage<DeletePlayerMessage>())
+        {
+            DeletePlayer();
         }
     }
 
@@ -119,11 +126,61 @@ public class MenuSystem : MoonTools.ECS.System
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
+        Relate(player, characterSheet, new PlayerSheetRelation());
 
         if (existingPlayerCount >= 5)
         {
             Set(_addPlayerButton, new DisabledFlag());
         }
+        Remove<DisabledFlag>(_deletePlayerButton);
+    }
+
+    private void DeletePlayer(){
+        var existingPlayerCount = PlayerFilter.Count;
+        
+        if(existingPlayerCount <= 2){
+            Set(_deletePlayerButton, new DisabledFlag());
+        }
+
+        var highestNumberedPlayer = GetHighestNumberedPlayer();
+        var sheet = OutRelationSingleton<PlayerSheetRelation>(highestNumberedPlayer);
+        
+        Destroy(highestNumberedPlayer);
+        RecursivelyDestroy(sheet);
+        
+        Remove<DisabledFlag>(_addPlayerButton);
+    }
+
+    private Entity GetHighestNumberedPlayer()
+    {
+        var highest = 0;
+        Entity? highestPlayer = null;
+
+        foreach(var player in PlayerFilter.Entities)
+        {
+            var playerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
+            if((int)playerNumber > highest)
+            {
+                highest = (int)playerNumber;
+                highestPlayer = player;
+            }
+        }
+
+        if(highestPlayer == null)
+        {
+            throw new InvalidOperationException("There should be at least one player");
+        }
+
+        return (Entity)highestPlayer;
+    }
+
+    private void RecursivelyDestroy(Entity entity)
+    {
+        var children = OutRelations<IsParentRelation>(entity);
+        foreach(var child in children){
+            RecursivelyDestroy(child);
+        }
+        Destroy(entity);
     }
 
     private void DestroyExistingUiEntities(){

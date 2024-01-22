@@ -42,11 +42,12 @@ public class CenterChildrenSystem : MoonTools.ECS.System
                 {
                     entities = [];
                     childrenByOrder[order] = entities;
+
+                    // If to children have same order we don't want to add width for both of them, so just do it in here
+                    totalWidthOfChildren += width;
                 }
 
                 entities.Add(child);
-
-                totalWidthOfChildren += width;
             }
             
             var orderedChildren = childrenByOrder
