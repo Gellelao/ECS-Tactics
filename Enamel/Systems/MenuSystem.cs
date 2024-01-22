@@ -14,6 +14,7 @@ public class MenuSystem : MoonTools.ECS.System
     private readonly List<Entity> _uiEntities = [];
     private Entity _sheetRow;
     private Entity _addPlayerButton;
+    private Entity _deletePlayerButton;
 
     private Filter PlayerFilter { get; }
 
@@ -56,6 +57,7 @@ public class MenuSystem : MoonTools.ECS.System
             Set(_sheetRow, new CenterChildrenComponent(2));
 
             CreateAddPlayerButton();
+            CreateDeletePlayerButton();
             
             // Start with 1 player
             AddPlayer();
@@ -97,6 +99,15 @@ public class MenuSystem : MoonTools.ECS.System
         Relate(_sheetRow, _addPlayerButton, new IsParentRelation());
     }
 
+    private void CreateDeletePlayerButton()
+    {
+        _deletePlayerButton = CreateUiEntity(80, 40, 40, 60);
+        Set(_deletePlayerButton, new TextureIndexComponent(Sprite.DeletePlayer));
+        Set(_deletePlayerButton, new OnClickComponent(ClickEvent.DeletePlayer));
+        Set(_deletePlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
+        Relate(_sheetRow, _deletePlayerButton, new IsParentRelation());
+    }
+
     private void AddPlayer()
     {
         var existingPlayerCount = PlayerFilter.Count;
@@ -109,15 +120,9 @@ public class MenuSystem : MoonTools.ECS.System
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
 
-        var closeButton = CreateUiEntity(0, 0, 5, 5);
-        Set(closeButton, new RelativePositionComponent(0, 0));
-        Set(closeButton, new TextureIndexComponent(Sprite.CloseButton));
-        Set(closeButton, new OnClickComponent(ClickEvent.DeletePlayer, (int)playerNumber));
-        Relate(characterSheet, closeButton, new IsParentRelation());
-
         if (existingPlayerCount >= 5)
         {
-            Destroy(_addPlayerButton);
+            Set(_addPlayerButton, new DisabledFlag());
         }
     }
 

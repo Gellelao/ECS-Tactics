@@ -31,14 +31,21 @@ public class CenterChildrenSystem : MoonTools.ECS.System
                 : Constants.PIXEL_SCREEN_WIDTH;
 
             var totalWidthOfChildren = 0;
-            var childrenByOrder = new Dictionary<int, Entity>();
+            var childrenByOrder = new Dictionary<int, List<Entity>>();
             
             foreach (var child in children)
             {
                 var order = Get<OrderComponent>(child).Order;
                 var width = Get<DimensionsComponent>(child).Width;
 
-                childrenByOrder.Add(order, child);
+                if (!childrenByOrder.TryGetValue(order, out List<Entity>? entities))
+                {
+                    entities = [];
+                    childrenByOrder[order] = entities;
+                }
+
+                entities.Add(child);
+
                 totalWidthOfChildren += width;
             }
             
@@ -53,11 +60,14 @@ public class CenterChildrenSystem : MoonTools.ECS.System
 
             var xOrigin = center - halfChildrenWidth;
 
-            foreach (var child in orderedChildren)
+            foreach (var childList in orderedChildren)
             {
-                var position = Get<ScreenPositionComponent>(child);
-                var width = Get<DimensionsComponent>(child).Width;
-                Set(child, new ScreenPositionComponent(xOrigin, position.Y));
+                // If there is more than 1 child, just extend xOrigin by the width of the first child for now
+                var width = Get<DimensionsComponent>(childList.First()).Width;
+                foreach (var child in childList){
+                    var position = Get<ScreenPositionComponent>(child);
+                    Set(child, new ScreenPositionComponent(xOrigin, position.Y));
+                }
                 xOrigin += width;
                 xOrigin += buffer;
             }

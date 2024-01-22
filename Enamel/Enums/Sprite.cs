@@ -19,5 +19,5 @@ public enum Sprite
     CharacterSheet,
     AddPlayer,
     CloseButton,
-    RemovePlayer
+    DeletePlayer
 }

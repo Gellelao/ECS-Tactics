@@ -52,7 +52,7 @@ public static class ContentUtils
         textures[(int)Sprite.TitleScreen] = content.Load<Texture2D>("TitleScreen");
         textures[(int)Sprite.CharacterSheet] = content.Load<Texture2D>("CharacterSheet");
         textures[(int)Sprite.AddPlayer] = content.Load<Texture2D>("AddPlayer");
-        textures[(int)Sprite.RemovePlayer] = content.Load<Texture2D>("RemovePlayer");
+        textures[(int)Sprite.DeletePlayer] = content.Load<Texture2D>("RemovePlayer");
         textures[(int)Sprite.CloseButton] = content.Load<Texture2D>("CloseButton");
 
         return textures;
