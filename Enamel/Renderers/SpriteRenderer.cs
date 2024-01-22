@@ -71,7 +71,7 @@ public class SpriteRenderer : Renderer
             foreach (var entity in entities)
             {
                 var drawLayer = Get<DrawLayerComponent>(entity).Layer;
-                if (drawLayer != currentLayerEnum)
+                if (drawLayer == currentLayerEnum)
                 {
                     entitiesForLayer.Add(entity);
                 }
@@ -107,12 +107,12 @@ public class SpriteRenderer : Renderer
         // Order by Y value and select out just the list of ordered entities
         var yOrderedList = renderOrderDict
             .OrderBy(kvp => kvp.Key)
+            .Reverse()
             .Select(kvp => kvp.Value)
             .SelectMany(list => list);
 
-        return yOrderedList.ToList();
         // Now put parents before children. This may break the Y-sorting but thats ok
-        //return HierarchicalSort(yOrderedList);
+        return HierarchicalSort(yOrderedList);
     }
 
     private List<Entity> HierarchicalSort(IEnumerable<Entity> entities)
