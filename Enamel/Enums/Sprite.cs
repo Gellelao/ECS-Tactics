@@ -18,5 +18,6 @@ public enum Sprite
     TitleScreen,
     CharacterSheet,
     AddPlayer,
-    CloseButton
+    CloseButton,
+    RemovePlayer
 }
