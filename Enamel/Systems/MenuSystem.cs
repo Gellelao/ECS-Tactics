@@ -128,6 +128,14 @@ public class MenuSystem : MoonTools.ECS.System
         Relate(_sheetRow, characterSheet, new IsParentRelation());
         Relate(player, characterSheet, new PlayerSheetRelation());
 
+        // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
+        var leftButton = CreateUiEntity(0, 0, 13, 13);
+        Set(leftButton, new RelativePositionComponent(3, 44));
+        Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
+        Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
+        Set(leftButton, new ToggleFrameOnMouseDownFlag());
+        Relate(characterSheet, leftButton, new IsParentRelation());
+
         if (existingPlayerCount >= 5)
         {
             Set(_addPlayerButton, new DisabledFlag());

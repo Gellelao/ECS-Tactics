@@ -54,6 +54,8 @@ public static class ContentUtils
         textures[(int)Sprite.AddPlayer] = content.Load<Texture2D>("AddPlayer");
         textures[(int)Sprite.DeletePlayer] = content.Load<Texture2D>("RemovePlayer");
         textures[(int)Sprite.CloseButton] = content.Load<Texture2D>("CloseButton");
+        textures[(int)Sprite.LeftCharButton] = content.Load<Texture2D>("LeftCharButton");
+        textures[(int)Sprite.RightCharButton] = content.Load<Texture2D>("RightCharButton");
 
         return textures;
     }
@@ -77,6 +79,7 @@ public static class ContentUtils
         );
         
         animations[(int) AnimationSet.Smoke] = new AnimationData(15, 18, [[0, 1, 2, 3]]);
+        animations[(int) AnimationSet.CharButton] = new AnimationData(13, 13, [[0, 1]]);
 
         return animations;
     }

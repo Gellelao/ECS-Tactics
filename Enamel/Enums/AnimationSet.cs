@@ -3,5 +3,6 @@
 public enum AnimationSet
 {
     BlueWiz,
-    Smoke
+    Smoke,
+    CharButton
 }

@@ -14,7 +14,7 @@ public class InputSystem : MoonTools.ECS.System
 {
     private Filter SelectableGridCoordFilter { get; }
     private Filter ClickableUiFilter { get; }
-    public Filter HighlightedFilter { get; }
+    private Filter HighlightedFilter { get; }
     private MouseState _mousePrevious;
     private readonly int _cameraX;
     private readonly int _cameraY;
@@ -170,8 +170,8 @@ public class InputSystem : MoonTools.ECS.System
         // Camera pos is determined by the game, while the screen offsets are set if the user resizes the window to non-16:9 resolutions 
         float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - _cameraX - _screenOffsetX;
         float mouseFloatY = mouseY - _cameraY - _screenOffsetY;
-        float tileWidthFloat = Constants.TILE_WIDTH;
-        float tileHeightFloat = Constants.TILE_HEIGHT;
+        const float tileWidthFloat = Constants.TILE_WIDTH;
+        const float tileHeightFloat = Constants.TILE_HEIGHT;
 
         var gridX = mouseFloatY / tileHeightFloat + mouseFloatX / tileWidthFloat;
         var gridY = mouseFloatY / tileHeightFloat - mouseFloatX / tileWidthFloat;
