@@ -20,7 +20,7 @@ public class ToggleFrameSystem : MoonTools.ECS.System
 
         foreach (var entity in ToggleFilter.Entities)
         {
-            if(mouseCurrent.)
+            //if(mouseCurrent.)
         }
     }
 }

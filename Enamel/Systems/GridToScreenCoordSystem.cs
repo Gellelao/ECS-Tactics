@@ -1,6 +1,7 @@
 using System;
 using MoonTools.ECS;
 using Enamel.Components;
+using static Enamel.Utils.Utils;
 
 namespace Enamel.Systems;
 
@@ -24,7 +25,7 @@ public class GridToScreenCoordSystem : MoonTools.ECS.System
         foreach (var entity in GridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
-            var screenCoords = Utils.GridToScreenCoords(x, y);
+            var screenCoords = GridToScreenCoords(x, y);
             Set(entity, new ScreenPositionComponent(screenCoords.X + _xOffset, screenCoords.Y + _yOffset));
         }
     }

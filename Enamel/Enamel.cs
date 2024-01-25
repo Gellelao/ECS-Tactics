@@ -14,6 +14,7 @@ using Enamel.Enums;
 using Enamel.Spawners;
 using System.Net.Mail;
 using Enamel.Components.Relations;
+using Enamel.Utils;
 
 namespace Enamel;
 
@@ -25,6 +26,7 @@ public class Enamel : Game
     the World is the place where all our entities go.
     */
     private static World World { get; } = new();
+    private static ScreenUtils _screenUtils;
     private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
     private static InputSystem? _inputSystem;
     private static UnitSelectionSystem? _unitSelectionSystem;
@@ -53,6 +55,8 @@ public class Enamel : Game
 
     private RenderTarget2D _renderTarget;
     private Rectangle _finalRenderRectangle;
+
+    private Entity _screenDetailsEntity;
 
 
     [STAThread]
@@ -83,7 +87,7 @@ public class Enamel : Game
     protected override void LoadContent()
     {
         _renderTarget = new RenderTarget2D(GraphicsDevice, Constants.PIXEL_SCREEN_WIDTH, Constants.PIXEL_SCREEN_HEIGHT);
-        var (rectangle, scale) = GetFinalRenderRectangle();
+        var rectangle = GetFinalRenderRectangle();
         _finalRenderRectangle = rectangle;
 
         /*
@@ -101,8 +105,9 @@ public class Enamel : Game
         // Can use these to make a basic camera system - moving the offsets should just move the camera?
         var cameraX = Constants.PIXEL_SCREEN_WIDTH/2;
         var cameraY = Constants.PIXEL_SCREEN_HEIGHT/2;
+        _screenUtils = new ScreenUtils(World, cameraX, cameraY);
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
-        _inputSystem = new InputSystem(World, scale, cameraX, cameraY);
+        _inputSystem = new InputSystem(World, _screenUtils, cameraX, cameraY);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World);
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
@@ -138,6 +143,7 @@ public class Enamel : Game
         // Had a weird issue where the first entity would cause errors, so create a throwaway entity here for now
         var zeroEntity = World.CreateEntity();
         
+        // Global state entities
         var turnTracker = World.CreateEntity();
         World.Set(turnTracker, new TurnIndexComponent(-1));
         World.Set(turnTracker, new ScreenPositionComponent(100, 10));
@@ -201,6 +207,7 @@ public class Enamel : Game
     protected override void Update(GameTime gameTime)
     {
         var elapsedTime = gameTime.ElapsedGameTime;
+        _screenUtils.Update(elapsedTime);
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
@@ -255,10 +262,10 @@ public class Enamel : Game
 
     private void OnWindowClientSizeChanged(object? sender, EventArgs e)
     {
-        _finalRenderRectangle = GetFinalRenderRectangle().Item1;
+        _finalRenderRectangle = GetFinalRenderRectangle();
     }
 
-    private (Rectangle, float) GetFinalRenderRectangle()
+    private Rectangle GetFinalRenderRectangle()
     {
         float windowWidth = Window.ClientBounds.Width;
         float windowHeight = Window.ClientBounds.Height;
@@ -280,7 +287,7 @@ public class Enamel : Game
 
         World.Send(new ScreenDetailsChangedMessage(scale, offsetX, offsetY));
 
-        return (new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale)), scale);
+        return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
     }
 
     private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)

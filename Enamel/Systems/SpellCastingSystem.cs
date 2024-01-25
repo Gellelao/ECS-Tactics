@@ -7,7 +7,7 @@ using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Spawners;
 using MoonTools.ECS;
-using static Enamel.Utils;
+using static Enamel.Utils.Utils;
 
 namespace Enamel.Systems;
 

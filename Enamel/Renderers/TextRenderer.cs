@@ -4,6 +4,7 @@ using MoonTools.ECS;
 using Enamel.Components;
 using FontStashSharp;
 using Enamel.Components.UI;
+using Enamel.Utils;
 
 namespace Enamel.Renderers;
 

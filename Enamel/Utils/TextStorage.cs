@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Enamel;
+namespace Enamel.Utils;
 
 public static class TextStorage
 {

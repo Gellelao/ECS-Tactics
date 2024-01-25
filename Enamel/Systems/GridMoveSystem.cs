@@ -3,6 +3,7 @@ using Enamel.Components;
 using Enamel.Components.Spells.SpawnedEntities;
 using Microsoft.Xna.Framework;
 using MoonTools.ECS;
+using static Enamel.Utils.Utils;
 
 namespace Enamel.Systems;
 
@@ -30,7 +31,7 @@ public class GridMoveSystem : MoonTools.ECS.System
             var targetPosition = Get<MovingToGridCoordComponent>(entity);
             var speed = Has<SpeedComponent>(entity) ? Get<SpeedComponent>(entity).Speed : Constants.DEFAULT_WALK_SPEED;
 
-            var targetScreenPos = Utils.GridToScreenCoords(targetPosition.GridX, targetPosition.GridY);
+            var targetScreenPos = GridToScreenCoords(targetPosition.GridX, targetPosition.GridY);
             targetScreenPos.X += _xOffset;
             targetScreenPos.Y += _yOffset;
 

@@ -2,7 +2,7 @@
 using Enamel.Enums;
 using Microsoft.Xna.Framework;
 
-namespace Enamel;
+namespace Enamel.Utils;
 
 public static class Utils
 {
