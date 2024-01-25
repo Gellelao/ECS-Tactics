@@ -108,6 +108,7 @@ public class Enamel : Game
         
         _screenUtils = new ScreenUtils(World, cameraX, cameraY);
         var spellUtils = new SpellUtils(World);
+        var menuUtils = new MenuUtils(World);
         
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
         _inputSystem = new InputSystem(World, _screenUtils, cameraX, cameraY);
@@ -129,7 +130,7 @@ public class Enamel : Game
         _animationSystem = new AnimationSystem(World, animations);
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
         _screenMoveSystem = new ScreenMoveSystem(World);
-        _menuSystem = new MenuSystem(World);
+        _menuSystem = new MenuSystem(World, menuUtils);
         _centerChildrenSystem = new CenterChildrenSystem(World);
         _relativePositionSystem = new RelativePositionSystem(World);
 

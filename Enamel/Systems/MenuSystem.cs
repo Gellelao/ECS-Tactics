@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
@@ -12,15 +11,16 @@ namespace Enamel.Systems;
 
 public class MenuSystem : MoonTools.ECS.System
 {
-    private readonly List<Entity> _uiEntities = [];
+    private readonly MenuUtils _menuUtils;
     private Entity _sheetRow;
     private Entity _addPlayerButton;
     private Entity _deletePlayerButton;
 
     private Filter PlayerFilter { get; }
 
-    public MenuSystem(World world) : base(world)
+    public MenuSystem(World world, MenuUtils menuUtils) : base(world)
     {
+        _menuUtils = menuUtils;
         PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
     }
     
@@ -28,33 +28,33 @@ public class MenuSystem : MoonTools.ECS.System
     {
         if (SomeMessage<GoToMainMenuMessage>())
         {
-            DestroyExistingUiEntities();
+            _menuUtils.DestroyExistingUiEntities();
             DestroyAllPlayers();
 
-            var mainMenu = CreateUiEntity(0, 0);
+            var mainMenu = _menuUtils.CreateUiEntity(0, 0);
             Set(mainMenu, new TextureIndexComponent(Sprite.TitleScreen));
 
-            var startButton = CreateUiEntity(110, 60, 50, 15);
+            var startButton = _menuUtils.CreateUiEntity(110, 60, 50, 15);
             Set(startButton, new TextComponent(TextStorage.GetId("Start"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(startButton, new OnClickComponent(ClickEvent.GoToCharacterSelect));
 
-            var optionsButton = CreateUiEntity(110, 80, 50, 15);
+            var optionsButton = _menuUtils.CreateUiEntity(110, 80, 50, 15);
             Set(optionsButton, new TextComponent(TextStorage.GetId("Options"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(optionsButton, new OnClickComponent(ClickEvent.OpenOptions));
             
-            var quitButton = CreateUiEntity(110, 100, 50, 15);
+            var quitButton = _menuUtils.CreateUiEntity(110, 100, 50, 15);
             Set(quitButton, new TextComponent(TextStorage.GetId("Quit"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(quitButton, new OnClickComponent(ClickEvent.ExitGame));
         }
 
         if (SomeMessage<GoToCharacterSelectMessage>())
         {
-            DestroyExistingUiEntities();
+            _menuUtils.DestroyExistingUiEntities();
 
-            var mainMenu = CreateUiEntity(0, 0);
+            var mainMenu = _menuUtils.CreateUiEntity(0, 0);
             Set(mainMenu, new TextureIndexComponent(Sprite.TitleScreen));
             
-            _sheetRow = CreateUiEntity(0, 40);
+            _sheetRow = _menuUtils.CreateUiEntity(0, 40);
             Set(_sheetRow, new CenterChildrenComponent(2));
 
             CreateAddPlayerButton();
@@ -65,18 +65,18 @@ public class MenuSystem : MoonTools.ECS.System
 
             Set(_deletePlayerButton, new DisabledFlag());
 
-            var backButton = CreateUiEntity(80, 110, 50, 15);
+            var backButton = _menuUtils.CreateUiEntity(80, 110, 50, 15);
             Set(backButton, new TextComponent(TextStorage.GetId("Back"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(backButton, new OnClickComponent(ClickEvent.GoToMainMenu));
 
-            var deployButton = CreateUiEntity(150, 110, 50, 15);
+            var deployButton = _menuUtils.CreateUiEntity(150, 110, 50, 15);
             Set(deployButton, new TextComponent(TextStorage.GetId("Play"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
             Set(deployButton, new OnClickComponent(ClickEvent.DeployWizards));
         }
 
         if (SomeMessage<DeployWizardsMessage>())
         {
-            DestroyExistingUiEntities();
+            _menuUtils.DestroyExistingUiEntities();
         }
 
         if (SomeMessage<AddPlayerMessage>())
@@ -100,7 +100,7 @@ public class MenuSystem : MoonTools.ECS.System
 
     private void CreateAddPlayerButton()
     {
-        _addPlayerButton = CreateUiEntity(80, 40, 40, 30);
+        _addPlayerButton = _menuUtils.CreateUiEntity(80, 40, 40, 30);
         Set(_addPlayerButton, new TextureIndexComponent(Sprite.AddPlayer));
         Set(_addPlayerButton, new OnClickComponent(ClickEvent.AddPlayer));
         Set(_addPlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
@@ -109,7 +109,7 @@ public class MenuSystem : MoonTools.ECS.System
 
     private void CreateDeletePlayerButton()
     {
-        _deletePlayerButton = CreateUiEntity(80, 70, 40, 30);
+        _deletePlayerButton = _menuUtils.CreateUiEntity(80, 70, 40, 30);
         Set(_deletePlayerButton, new TextureIndexComponent(Sprite.DeletePlayer));
         Set(_deletePlayerButton, new OnClickComponent(ClickEvent.DeletePlayer));
         Set(_deletePlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
@@ -123,14 +123,14 @@ public class MenuSystem : MoonTools.ECS.System
         var playerNumber = (PlayerNumber)existingPlayerCount;
         Set(player, new PlayerNumberComponent(playerNumber));
         
-        var characterSheet = CreateUiEntity(80, 40, 40, 60);
+        var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
         Relate(player, characterSheet, new PlayerSheetRelation());
 
         // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
-        var leftButton = CreateUiEntity(0, 0, 13, 13);
+        var leftButton = _menuUtils.CreateUiEntity(0, 0, 13, 13);
         Set(leftButton, new RelativePositionComponent(3, 44));
         Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
@@ -155,7 +155,7 @@ public class MenuSystem : MoonTools.ECS.System
         var sheet = OutRelationSingleton<PlayerSheetRelation>(highestNumberedPlayer);
         
         Destroy(highestNumberedPlayer);
-        RecursivelyDestroy(sheet);
+        _menuUtils.RecursivelyDestroy(sheet);
         
         Remove<DisabledFlag>(_addPlayerButton);
     }
@@ -181,37 +181,5 @@ public class MenuSystem : MoonTools.ECS.System
         }
 
         return (Entity)highestPlayer;
-    }
-
-    private void RecursivelyDestroy(Entity entity)
-    {
-        var children = OutRelations<IsParentRelation>(entity);
-        foreach(var child in children){
-            RecursivelyDestroy(child);
-        }
-        Destroy(entity);
-    }
-
-    private void DestroyExistingUiEntities(){
-        foreach(var entity in _uiEntities){
-            Destroy(entity);
-        }
-        _uiEntities.Clear();
-    }
-
-    private Entity CreateUiEntity(int x, int y, int width, int height){
-        var entity = CreateUiEntity(x, y);
-        Set(entity, new DimensionsComponent(width, height));
-        return entity;
-    }
-
-    private Entity CreateUiEntity(int x, int y){
-        var entity = World.CreateEntity();
-        Set(entity, new DrawLayerComponent(DrawLayer.UserInterface));
-        Set(entity, new ScreenPositionComponent(x, y));
-
-        _uiEntities.Add(entity);
-
-        return entity;
     }
 }
