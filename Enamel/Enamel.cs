@@ -105,18 +105,21 @@ public class Enamel : Game
         // Can use these to make a basic camera system - moving the offsets should just move the camera?
         var cameraX = Constants.PIXEL_SCREEN_WIDTH/2;
         var cameraY = Constants.PIXEL_SCREEN_HEIGHT/2;
+        
         _screenUtils = new ScreenUtils(World, cameraX, cameraY);
+        var spellUtils = new SpellUtils(World);
+        
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
         _inputSystem = new InputSystem(World, _screenUtils, cameraX, cameraY);
         _unitSelectionSystem = new UnitSelectionSystem(World);
-        _selectionPreviewSystem = new SelectionPreviewSystem(World);
+        _selectionPreviewSystem = new SelectionPreviewSystem(World, spellUtils);
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
         _turnSystem = new TurnSystem(World);
-        _spellManagementSystem = new SpellManagementSystem(World);
+        _spellManagementSystem = new SpellManagementSystem(World, spellUtils);
         _playerButtonsSystem = new PlayerButtonsSystem(World);
 
         var spellCastSpawner = new SpellCastSpawner(World);
-        _spellCastingSystem = new SpellCastingSystem(World, spellCastSpawner);
+        _spellCastingSystem = new SpellCastingSystem(World, spellUtils, spellCastSpawner);
         _projectileSystem = new ProjectileSystem(World);
 
         var particleSpawner = new ParticleSpawner(World, animations);

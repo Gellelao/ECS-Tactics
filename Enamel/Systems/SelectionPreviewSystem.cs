@@ -5,23 +5,26 @@ using Enamel.Components.Messages;
 using Enamel.Components.Spells;
 using Enamel.Components.UI;
 using Enamel.Enums;
+using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class SelectionPreviewSystem : SpellSystem
+public class SelectionPreviewSystem : MoonTools.ECS.System
 {
     private Filter SpellPreviewFilter { get; }
     private Filter ImpassableGridCoordFilter { get; }
     private readonly World _world;
+    private readonly SpellUtils _spellUtils;
 
-    public SelectionPreviewSystem(World world) : base(world)
+    public SelectionPreviewSystem(World world, SpellUtils spellUtils) : base(world)
     {
         SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnSelectComponent>().Build();
         ImpassableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
             .Include<ImpassableFlag>().Build();
         _world = world;
+        _spellUtils = spellUtils;
     }
 
     public override void Update(TimeSpan delta)
@@ -45,7 +48,7 @@ public class SelectionPreviewSystem : SpellSystem
         var spellToPrepMessage = ReadMessage<PrepSpellMessage>();
         var originX = spellToPrepMessage.OriginGridX;
         var originY = spellToPrepMessage.OriginGridY;
-        var spellToPrep = GetSpell(spellToPrepMessage.SpellId);
+        var spellToPrep = _spellUtils.GetSpell(spellToPrepMessage.SpellId);
         var spellRange = Get<CastRangeComponent>(spellToPrep).Range;
         var canTargetImpassable = Has<CanTargetImpassableFlag>(spellToPrep);
         var canTargetSelf = Has<CanTargetSelfFlag>(spellToPrep);

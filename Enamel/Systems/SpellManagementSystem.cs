@@ -2,14 +2,13 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class SpellManagementSystem : SpellSystem
+public class SpellManagementSystem(World world, SpellUtils spellUtils) : MoonTools.ECS.System(world)
 {
-    public SpellManagementSystem(World world) : base(world) { }
-
     public override void Update(TimeSpan delta)
     {
         if (!SomeMessage<LearnSpellMessage>()) return;
@@ -21,7 +20,7 @@ public class SpellManagementSystem : SpellSystem
             var currentlySelectedPlayer = GetSingletonEntity<SelectedFlag>();
             foreach (var spell in spells)
             {
-                var spellEntity = GetSpell(spell.SpellId);
+                var spellEntity = spellUtils.GetSpell(spell.SpellId);
                 Relate(currentlySelectedPlayer, spellEntity, new HasSpellRelation());
             }
         }

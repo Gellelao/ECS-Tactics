@@ -6,18 +6,21 @@ using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Spawners;
+using Enamel.Utils;
 using MoonTools.ECS;
 using static Enamel.Utils.Utils;
 
 namespace Enamel.Systems;
 
-public class SpellCastingSystem : SpellSystem
+public class SpellCastingSystem : MoonTools.ECS.System
 {
+    private readonly SpellUtils _spellUtils;
     private readonly SpellCastSpawner _spawner;
     private Filter SpellPreviewFilter { get; }
 
-    public SpellCastingSystem(World world, SpellCastSpawner spawner) : base(world)
+    public SpellCastingSystem(World world, SpellUtils spellUtils, SpellCastSpawner spawner) : base(world)
     {
+        _spellUtils = spellUtils;
         _spawner = spawner;
         SpellPreviewFilter = FilterBuilder.Include<SpellToCastOnSelectComponent>().Build();
     }
@@ -34,7 +37,7 @@ public class SpellCastingSystem : SpellSystem
             var casterEntity = GetSingletonEntity<SelectedFlag>();
 
             var spellToCastComponent = Get<SpellToCastOnSelectComponent>(spellPreview);
-            var spell = GetSpell(spellToCastComponent.SpellId);
+            var spell = _spellUtils.GetSpell(spellToCastComponent.SpellId);
 
             ResolveSpell(spell, casterEntity, targetX, targetY);
 
