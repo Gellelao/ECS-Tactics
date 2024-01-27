@@ -90,15 +90,15 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
     private void AddPlayer()
     {
         var existingPlayerCount = PlayerFilter.Count;
-        var player = World.CreateEntity();
-        var playerNumber = (PlayerNumber)existingPlayerCount;
-        Set(player, new PlayerNumberComponent(playerNumber));
+        var playerEntity = World.CreateEntity();
+        var playerNumber = (Player)existingPlayerCount;
+        Set(playerEntity, new PlayerNumberComponent(playerNumber));
         
         var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
         Set(characterSheet, new OrderComponent(existingPlayerCount));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
-        Relate(player, characterSheet, new PlayerSheetRelation());
+        Relate(playerEntity, characterSheet, new PlayerSheetRelation());
 
         // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
         var leftButton = _menuUtils.CreateRelativeUiEntity(3, 44, 13, 13);

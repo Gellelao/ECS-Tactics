@@ -302,13 +302,13 @@ public class Enamel : Game
         return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
     }
 
-    private Entity CreatePlayer(PlayerNumber playerNumber, Sprite sprite, int x, int y)
+    private Entity CreatePlayer(Player player, Sprite sprite, int x, int y)
     {
-        var player = World.CreateEntity();
-        World.Set(player, new PlayerNumberComponent(playerNumber));
+        var playerEntity = World.CreateEntity();
+        World.Set(playerEntity, new PlayerNumberComponent(player));
         
         var playerCharacter = World.CreateEntity();
-        World.Relate(player, playerCharacter, new ControlsRelation());
+        World.Relate(playerEntity, playerCharacter, new ControlsRelation());
         
         World.Set(playerCharacter, new TextureIndexComponent(sprite));
         World.Set(playerCharacter, new AnimationSetComponent(AnimationSet.BlueWiz));

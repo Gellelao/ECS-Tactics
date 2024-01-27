@@ -27,15 +27,15 @@ public static class Constants
     public static readonly Color CurrentTurnTextColour = Color.White;
     public static readonly Color SpellCardTextColour = Color.Black;
     
-    public static readonly PlayerNumber[] TwoPlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Two, PlayerNumber.One];
+    public static readonly Player[] TwoPlayerTurnOrder = [Player.One, Player.Two, Player.Two, Player.One];
 
-    public static readonly PlayerNumber[] ThreePlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three,
-                                                                  PlayerNumber.Two, PlayerNumber.Three, PlayerNumber.One,
-                                                                  PlayerNumber.Three, PlayerNumber.One, PlayerNumber.Two
+    public static readonly Player[] ThreePlayerTurnOrder = [Player.One, Player.Two, Player.Three,
+                                                                  Player.Two, Player.Three, Player.One,
+                                                                  Player.Three, Player.One, Player.Two
     ];
-    public static readonly PlayerNumber[] FourPlayerTurnOrder = [PlayerNumber.One, PlayerNumber.Two, PlayerNumber.Three, PlayerNumber.Four,
-                                                                 PlayerNumber.Four, PlayerNumber.Three, PlayerNumber.Two, PlayerNumber.One,
-                                                                 PlayerNumber.Three, PlayerNumber.Four, PlayerNumber.One, PlayerNumber.Two,
-                                                                 PlayerNumber.Two, PlayerNumber.One, PlayerNumber.Four, PlayerNumber.Three
+    public static readonly Player[] FourPlayerTurnOrder = [Player.One, Player.Two, Player.Three, Player.Four,
+                                                                 Player.Four, Player.Three, Player.Two, Player.One,
+                                                                 Player.Three, Player.Four, Player.One, Player.Two,
+                                                                 Player.Two, Player.One, Player.Four, Player.Three
     ];
 }

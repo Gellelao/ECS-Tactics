@@ -41,12 +41,12 @@ public class UnitDisablingSystem : MoonTools.ECS.System
         if (SomeMessage<SpellWasCastMessage>() || SomeMessage<CancelMessage>())
         {
             var casterEntity = GetSingletonEntity<SelectedFlag>();
-            var playerNumbersControllingCaster = GetPlayerNumbersControllingEntity(casterEntity);
+            var playerControllingCaster = GetPlayerNumbersControllingEntity(casterEntity);
             foreach (var entity in DisabledControlledByPlayerFilter.Entities)
             {
                 // Remove disabled from all units on the caster's team, now that the spell has been cast
-                var playerNumbersControllingEntity = GetPlayerNumbersControllingEntity(entity);
-                if (playerNumbersControllingCaster.Intersect(playerNumbersControllingEntity).Any())
+                var playersControllingEntity = GetPlayerNumbersControllingEntity(entity);
+                if (playerControllingCaster.Intersect(playersControllingEntity).Any())
                 {
                     Remove<DisabledFlag>(entity);
                 }
@@ -54,15 +54,15 @@ public class UnitDisablingSystem : MoonTools.ECS.System
         }
     }
 
-    private List<PlayerNumber> GetPlayerNumbersControllingEntity(Entity entity)
+    private List<Player> GetPlayerNumbersControllingEntity(Entity entity)
     {
         var entitiesControllingEntity = InRelations<ControlsRelation>(entity);
-        var playerNumbersControllingEntity = new List<PlayerNumber>();
+        var playersControllingEntity = new List<Player>();
         foreach (var controller in entitiesControllingEntity)
         {
-            playerNumbersControllingEntity.Add(Get<PlayerNumberComponent>(controller).PlayerNumber);
+            playersControllingEntity.Add(Get<PlayerNumberComponent>(controller).PlayerNumber);
         }
 
-        return playerNumbersControllingEntity;
+        return playersControllingEntity;
     }
 }

@@ -2,4 +2,4 @@
 
 namespace Enamel.Components;
 
-public readonly record struct PlayerNumberComponent(PlayerNumber PlayerNumber);
+public readonly record struct PlayerNumberComponent(Player PlayerNumber);

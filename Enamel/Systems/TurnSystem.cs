@@ -27,10 +27,10 @@ public class TurnSystem : MoonTools.ECS.System
         var turnIndex = IncrementTurnIndex(numberOfPlayers);
         var nextPlayer = GetTurnOrder(numberOfPlayers)[turnIndex];
 
-        foreach (var player in PlayerFilter.Entities)
+        foreach (var playerEntity in PlayerFilter.Entities)
         {
-            var playerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
-            var playersCharacters = OutRelations<ControlsRelation>(player);
+            var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
+            var playersCharacters = OutRelations<ControlsRelation>(playerEntity);
             if (playerNumber == nextPlayer)
             {
                 // Each unit controlled by the next player becomes selectable
@@ -69,7 +69,7 @@ public class TurnSystem : MoonTools.ECS.System
         return turnIndex;
     }
 
-    private static PlayerNumber[] GetTurnOrder(int numberOfPlayers)
+    private static Player[] GetTurnOrder(int numberOfPlayers)
     {
         return numberOfPlayers switch
         {
