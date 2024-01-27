@@ -14,44 +14,69 @@ public class ToggleFrameSystem : MoonTools.ECS.System
     private readonly AnimationData[] _animations;
 
     private Filter ToggleOnMouseDownFilter { get; }
+    private Filter ToggleOnMouseHoverFilter { get; }
     
     public ToggleFrameSystem(World world, ScreenUtils screenUtils, AnimationData[] animations) : base(world)
     {
         _screenUtils = screenUtils;
         _animations = animations;
         ToggleOnMouseDownFilter = FilterBuilder.Include<ToggleFrameOnMouseDownComponent>().Build();
+        ToggleOnMouseHoverFilter = FilterBuilder.Include<ToggleFrameOnMouseHoverComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
+        foreach (var entity in ToggleOnMouseHoverFilter.Entities)
+        {
+            var dimensions = Get<DimensionsComponent>(entity);
+            var position = Get<ScreenPositionComponent>(entity);
+            var toggleStatus = Get<ToggleFrameOnMouseHoverComponent>(entity);
+            var hovered = _screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height);
+
+            switch (toggleStatus.Toggled)
+            {
+                // Toggle off if currently on and mouse not over the entity
+                case true when !hovered:
+                    SetEntityFrame(entity, 0);
+                    Set(entity, toggleStatus with {Toggled = false});
+                    break;
+                // Toggle on if currently off and mouse is down
+                case false when hovered:
+                    SetEntityFrame(entity, toggleStatus.ToggledFrameIndex);
+                    Set(entity, toggleStatus with {Toggled = true});
+                    break;
+            }
+        }
+
         foreach (var entity in ToggleOnMouseDownFilter.Entities)
         {
-            var entityDimensions = Get<DimensionsComponent>(entity);
-            var entityPosition = Get<ScreenPositionComponent>(entity);
+            var dimensions = Get<DimensionsComponent>(entity);
+            var position = Get<ScreenPositionComponent>(entity);
             var toggleStatus = Get<ToggleFrameOnMouseDownComponent>(entity);
 
             // If mouse is not over the entity, toggle it off
-            if(!_screenUtils.MouseInRectangle(entityPosition.X, entityPosition.Y, entityDimensions.Width, entityDimensions.Height)){
-                if(toggleStatus.Toggled){
-                    SetEntityFrame(entity, 0);
-                    Set(entity, new ToggleFrameOnMouseDownComponent(toggleStatus.ToggledFrameIndex, false));
-                }
-                continue;
+            if(!_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            {
+                if (!toggleStatus.Toggled) continue;
+                SetEntityFrame(entity, 0);
+                Set(entity, toggleStatus with {Toggled = false});
             }
             else{
                 // Mouse is over entity, see if its clicked or not
                 var mouseDown = Mouse.GetState().LeftButton == ButtonState.Pressed;
 
-                // Toggle off if currently on and mouse not down
-                if(toggleStatus.Toggled && !mouseDown){
-                    SetEntityFrame(entity, 0);
-                    Set(entity, new ToggleFrameOnMouseDownComponent(toggleStatus.ToggledFrameIndex, false));
-                }
-
-                // Toggle on if currently off and mouse is down
-                if(!toggleStatus.Toggled && mouseDown){
-                    SetEntityFrame(entity, toggleStatus.ToggledFrameIndex);
-                    Set(entity, new ToggleFrameOnMouseDownComponent(toggleStatus.ToggledFrameIndex, true));
+                switch (toggleStatus.Toggled)
+                {
+                    // Toggle off if currently on and mouse not down
+                    case true when !mouseDown:
+                        SetEntityFrame(entity, 0);
+                        Set(entity, toggleStatus with {Toggled = false});
+                        break;
+                    // Toggle on if currently off and mouse is down
+                    case false when mouseDown:
+                        SetEntityFrame(entity, toggleStatus.ToggledFrameIndex);
+                        Set(entity, toggleStatus with {Toggled = true});
+                        break;
                 }
             }
         }

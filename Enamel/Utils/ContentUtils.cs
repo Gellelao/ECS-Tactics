@@ -79,7 +79,7 @@ public static class ContentUtils
         );
         
         animations[(int) AnimationSet.Smoke] = new AnimationData(15, 18, [[0, 1, 2, 3]]);
-        animations[(int) AnimationSet.CharButton] = new AnimationData(13, 13, [[0, 1]]);
+        animations[(int) AnimationSet.CharButton] = new AnimationData(13, 13, [[0, 1, 2]]);
 
         return animations;
     }
