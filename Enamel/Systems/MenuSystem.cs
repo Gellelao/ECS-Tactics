@@ -134,7 +134,7 @@ public class MenuSystem : MoonTools.ECS.System
         Set(leftButton, new RelativePositionComponent(3, 44));
         Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
-        Set(leftButton, new ToggleFrameOnMouseDownFlag());
+        Set(leftButton, new ToggleFrameOnMouseDownComponent(1, true));
         Relate(characterSheet, leftButton, new IsParentRelation());
 
         if (existingPlayerCount >= 5)

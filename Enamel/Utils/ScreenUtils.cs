@@ -1,10 +1,14 @@
 ﻿using System;
 using Enamel.Components.Messages;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MoonTools.ECS;
 
 namespace Enamel.Utils;
 
+// Idk if this is bad but this system is updated like other systems to receive any screen changes
+// and its passed in to other systems so they can get the current screen details from it.
+// Feels weird like maybe a code smell to have it like that but works for now
 public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.System(world)
 {
     public int ScreenOffsetX { get; private set; }
@@ -20,11 +24,26 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
         ScreenOffsetY = (int)Math.Round(newScreenDetails.OffsetY/Scale);
     }
 
-    public Vector2 ScreenToGridCoords(int mouseX, int mouseY)
+    public Vector2 MouseToGridCoords(){
+        var (mouseX, mouseY) = GetMouseCoords();
+        return ScreenToGridCoords(mouseX, mouseY);
+    }
+
+    public bool MouseInRectangle(int rectX, int rectY, int rectWidth, int rectHeight)
+    {
+        var (mouseX, mouseY) = GetMouseCoords();
+
+        mouseX -= ScreenOffsetX;
+        mouseY -= ScreenOffsetY;
+        return mouseX > rectX && mouseX < rectX + rectWidth &&
+               mouseY > rectY && mouseY < rectY + rectHeight;
+    }
+
+    private Vector2 ScreenToGridCoords(int screenX, int screenY)
     {
         // Camera pos is determined by the game, while the screen offsets are set if the user resizes the window to non-16:9 resolutions 
-        float mouseFloatX = mouseX - (Constants.TILE_WIDTH/2) - cameraX - ScreenOffsetX;
-        float mouseFloatY = mouseY - cameraY - ScreenOffsetY;
+        float mouseFloatX = screenX - (Constants.TILE_WIDTH/2) - cameraX - ScreenOffsetX;
+        float mouseFloatY = screenY - cameraY - ScreenOffsetY;
         const float tileWidthFloat = Constants.TILE_WIDTH;
         const float tileHeightFloat = Constants.TILE_HEIGHT;
 
@@ -34,11 +53,13 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
         return new Vector2((int)Math.Floor(gridX), (int)Math.Floor(gridY));
     }
 
-    public bool MouseInRectangle(int mouseX, int mouseY, int rectX, int rectY, int rectWidth, int rectHeight)
-    {
-        mouseX -= ScreenOffsetX;
-        mouseY -= ScreenOffsetY;
-        return mouseX > rectX && mouseX < rectX + rectWidth &&
-               mouseY > rectY && mouseY < rectY + rectHeight;
+    private (int mouseX, int mouseY) GetMouseCoords(){
+        
+        var mouseCurrent = Mouse.GetState();
+        
+        int mouseX = (int)Math.Round(mouseCurrent.X / Scale);
+        int mouseY = (int)Math.Round(mouseCurrent.Y / Scale);
+
+        return (mouseX, mouseY);
     }
 }

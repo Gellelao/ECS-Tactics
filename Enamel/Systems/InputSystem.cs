@@ -16,10 +16,8 @@ public class InputSystem : MoonTools.ECS.System
     private Filter HighlightedFilter { get; }
     private MouseState _mousePrevious;
     private readonly ScreenUtils _screenUtils;
-    private readonly int _cameraX;
-    private readonly int _cameraY;
 
-    public InputSystem(World world, ScreenUtils screenUtils, int cameraX, int cameraY) : base(world)
+    public InputSystem(World world, ScreenUtils screenUtils) : base(world)
     {
         SelectableGridCoordFilter = FilterBuilder
             .Include<GridCoordComponent>()
@@ -31,8 +29,6 @@ public class InputSystem : MoonTools.ECS.System
             .Build();
         HighlightedFilter = FilterBuilder.Include<HighlightedFlag>().Build();
         _screenUtils = screenUtils;
-        _cameraX = cameraX;
-        _cameraY = cameraY;
     }
 
 
@@ -40,15 +36,9 @@ public class InputSystem : MoonTools.ECS.System
     {
         var mouseCurrent = Mouse.GetState();
 
-        var scale = _screenUtils.Scale;
-
-        int mouseX = (int)Math.Round(mouseCurrent.X / scale);
-        int mouseY = (int)Math.Round(mouseCurrent.Y / scale);
-
-        OnUpdate(mouseX, mouseY);
         if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
         {
-            OnLeftButtonRelease(mouseX, mouseY);
+            OnLeftButtonRelease();
         }
         if (mouseCurrent.RightButton == ButtonState.Released && _mousePrevious.RightButton == ButtonState.Pressed)
         {
@@ -57,43 +47,44 @@ public class InputSystem : MoonTools.ECS.System
         _mousePrevious = mouseCurrent;
     }
 
-    private void OnUpdate(int mouseX, int mouseY)
-    {
-        // Clear existing hovers
-        foreach (var selectedEntity in HighlightedFilter.Entities){
-            Remove<HighlightedFlag>(selectedEntity);
-        }
+// Put all this in another system
+    // private void OnUpdate(int mouseX, int mouseY)
+    // {
+    //     // Clear existing hovers
+    //     foreach (var selectedEntity in HighlightedFilter.Entities){
+    //         Remove<HighlightedFlag>(selectedEntity);
+    //     }
         
-        // Button hovers
-        foreach (var button in ClickableUiFilter.Entities)
-        {
-            var dimensions = Get<DimensionsComponent>(button);
-            var position = Get<ScreenPositionComponent>(button);
-            if (_screenUtils.MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
-            {
-                Set(button, new HighlightedFlag());
-            }
-        }
+    //     // Button hovers
+    //     foreach (var button in ClickableUiFilter.Entities)
+    //     {
+    //         var dimensions = Get<DimensionsComponent>(button);
+    //         var position = Get<ScreenPositionComponent>(button);
+    //         if (_screenUtils.MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
+    //         {
+    //             Set(button, new HighlightedFlag());
+    //         }
+    //     }
 
-        // Unit hovers
-        var gridCoords = _screenUtils.ScreenToGridCoords(mouseX, mouseY);
-        foreach (var entity in SelectableGridCoordFilter.Entities)
-        {
-            var (x, y) = Get<GridCoordComponent>(entity);
-            if((int)gridCoords.X == x && (int)gridCoords.Y == y)
-            {
-                Set(entity, new HighlightedFlag());
-            }
-        }
-    }
+    //     // Unit hovers
+    //     var gridCoords = _screenUtils.ScreenToGridCoords(mouseX, mouseY);
+    //     foreach (var entity in SelectableGridCoordFilter.Entities)
+    //     {
+    //         var (x, y) = Get<GridCoordComponent>(entity);
+    //         if((int)gridCoords.X == x && (int)gridCoords.Y == y)
+    //         {
+    //             Set(entity, new HighlightedFlag());
+    //         }
+    //     }
+    // }
 
-    private void OnLeftButtonRelease(int mouseX, int mouseY){
+    private void OnLeftButtonRelease(){
         // Button clicks
         foreach (var button in ClickableUiFilter.Entities)
         {
             var dimensions = Get<DimensionsComponent>(button);
             var position = Get<ScreenPositionComponent>(button);
-            if (_screenUtils.MouseInRectangle(mouseX, mouseY, position.X, position.Y, dimensions.Width, dimensions.Height))
+            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
             {
                 // May be better to have "buttonClickMessage" and a dedicated ButtonSystem, but for now this works
                 var onClick = Get<OnClickComponent>(button);
@@ -144,7 +135,7 @@ public class InputSystem : MoonTools.ECS.System
         }
 
         // Unit clicks
-        var clickedCoords = _screenUtils.ScreenToGridCoords(mouseX, mouseY);
+        var clickedCoords = _screenUtils.MouseToGridCoords();
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);

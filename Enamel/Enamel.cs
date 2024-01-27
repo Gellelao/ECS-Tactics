@@ -26,7 +26,7 @@ public class Enamel : Game
     the World is the place where all our entities go.
     */
     private static World World { get; } = new();
-    private static ScreenUtils _screenUtils;
+    private static ScreenUtils? _screenUtils;
     private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
     private static InputSystem? _inputSystem;
     private static UnitSelectionSystem? _unitSelectionSystem;
@@ -46,6 +46,7 @@ public class Enamel : Game
     private static MenuSystem? _menuSystem;
     private static CenterChildrenSystem? _centerChildrenSystem;
     private static RelativePositionSystem? _relativePositionSystem;
+    private static ToggleFrameSystem? _toggleFrameSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -55,8 +56,6 @@ public class Enamel : Game
 
     private RenderTarget2D _renderTarget;
     private Rectangle _finalRenderRectangle;
-
-    private Entity _screenDetailsEntity;
 
 
     [STAThread]
@@ -111,7 +110,7 @@ public class Enamel : Game
         var menuUtils = new MenuUtils(World);
         
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
-        _inputSystem = new InputSystem(World, _screenUtils, cameraX, cameraY);
+        _inputSystem = new InputSystem(World, _screenUtils);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World, spellUtils);
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
@@ -133,6 +132,7 @@ public class Enamel : Game
         _menuSystem = new MenuSystem(World, menuUtils);
         _centerChildrenSystem = new CenterChildrenSystem(World);
         _relativePositionSystem = new RelativePositionSystem(World);
+        _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
 
         /*
         RENDERERS
@@ -211,7 +211,8 @@ public class Enamel : Game
     protected override void Update(GameTime gameTime)
     {
         var elapsedTime = gameTime.ElapsedGameTime;
-        _screenUtils.Update(elapsedTime);
+        _screenUtils?.Update(elapsedTime);
+        _toggleFrameSystem?.Update(elapsedTime);
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
