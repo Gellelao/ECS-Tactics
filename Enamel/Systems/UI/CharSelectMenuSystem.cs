@@ -101,28 +101,37 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Relate(player, characterSheet, new PlayerSheetRelation());
 
         // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
-        var leftButton = _menuUtils.CreateUiEntity(0, 0, 13, 13);
-        Set(leftButton, new RelativePositionComponent(3, 44));
+        var leftButton = _menuUtils.CreateRelativeUiEntity(3, 44, 13, 13);
         Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(leftButton, new ToggleFrameOnMouseHoverComponent(1, true));
         Set(leftButton, new ToggleFrameOnMouseDownComponent(2, true));
         Relate(characterSheet, leftButton, new IsParentRelation());
         
-        // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
-        var rightButton = _menuUtils.CreateUiEntity(0, 0, 13, 13);
-        Set(rightButton, new RelativePositionComponent(24, 44));
+        var rightButton = _menuUtils.CreateRelativeUiEntity(24, 44, 13, 13);
         Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
         Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(rightButton, new ToggleFrameOnMouseHoverComponent(1, true));
         Set(rightButton, new ToggleFrameOnMouseDownComponent(2, true));
         Relate(characterSheet, rightButton, new IsParentRelation());
+        
+        var characterPreview = _menuUtils.CreateRelativeUiEntity(10, 0, 13, 13);
+        Set(characterPreview, new TextureIndexComponent(Sprite.BlueWizard));
+        Set(characterPreview, new AnimationSetComponent(AnimationSet.BlueWiz));
+        Set(characterPreview, new FacingDirectionComponent(GridDirection.South));
+        Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
+        Relate(characterSheet, characterPreview, new IsParentRelation());
 
         if (existingPlayerCount >= 5)
         {
             Set(_addPlayerButton, new DisabledFlag());
         }
         Remove<DisabledFlag>(_deletePlayerButton);
+    }
+
+    private void CreateCharacterSheetUI()
+    {
+        
     }
 
     private void DeletePlayer(){

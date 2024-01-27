@@ -30,6 +30,7 @@ public class Enamel : Game
     private static ScreenUtils? _screenUtils;
     private static GridToScreenCoordSystem? _gridToScreenCoordSystem;
     private static InputSystem? _inputSystem;
+    private static HighlightSystem? _highlightSystem;
     private static UnitSelectionSystem? _unitSelectionSystem;
     private static SelectionPreviewSystem? _selectionPreviewSystem;
     private static GridMoveSystem? _gridMoveSystem;
@@ -113,6 +114,7 @@ public class Enamel : Game
         
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
         _inputSystem = new InputSystem(World, _screenUtils);
+        _highlightSystem = new HighlightSystem(World, _screenUtils);
         _unitSelectionSystem = new UnitSelectionSystem(World);
         _selectionPreviewSystem = new SelectionPreviewSystem(World, spellUtils);
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
@@ -215,10 +217,10 @@ public class Enamel : Game
     {
         var elapsedTime = gameTime.ElapsedGameTime;
         _screenUtils?.Update(elapsedTime);
-        _toggleFrameSystem?.Update(elapsedTime);
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
+        _highlightSystem?.Update(elapsedTime);
         _mainMenuSystem?.Update(elapsedTime);
         _charSelectMenuSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
@@ -235,6 +237,7 @@ public class Enamel : Game
         _playerButtonsSystem?.Update(elapsedTime);
         _unitDisablingSystem?.Update(elapsedTime);
         _animationSystem?.Update(elapsedTime);
+        _toggleFrameSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // Must run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // Must run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.

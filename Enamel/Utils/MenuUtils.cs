@@ -33,6 +33,13 @@ public class MenuUtils : Manipulator
         }
     }
 
+    public Entity CreateRelativeUiEntity(int relativeX, int relativeY, int width, int height){
+        var entity = CreateUiEntity(0, 0);
+        Set(entity, new DimensionsComponent(width, height));
+        Set(entity, new RelativePositionComponent(relativeX, relativeY));
+        return entity;
+    }
+
     public Entity CreateUiEntity(int x, int y, int width, int height){
         var entity = CreateUiEntity(x, y);
         Set(entity, new DimensionsComponent(width, height));
