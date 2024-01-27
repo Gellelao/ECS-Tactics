@@ -7,7 +7,7 @@ using Enamel.Enums;
 using Enamel.Utils;
 using MoonTools.ECS;
 
-namespace Enamel.Systems;
+namespace Enamel.Systems.UI;
 
 public class MenuSystem : MoonTools.ECS.System
 {

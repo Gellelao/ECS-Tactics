@@ -5,7 +5,7 @@ using Enamel.Utils;
 using Microsoft.Xna.Framework.Input;
 using MoonTools.ECS;
 
-namespace Enamel.Systems;
+namespace Enamel.Systems.UI;
 
 public class ToggleFrameSystem : MoonTools.ECS.System
 {

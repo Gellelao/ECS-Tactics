@@ -6,7 +6,7 @@ using Enamel.Components.Relations;
 using Enamel.Components.UI;
 using MoonTools.ECS;
 
-namespace Enamel.Systems;
+namespace Enamel.Systems.UI;
 
 public class CenterChildrenSystem : MoonTools.ECS.System
 {
