@@ -71,6 +71,11 @@ public class ToggleFrameSystem : MoonTools.ECS.System
                     case true when !mouseDown:
                         SetEntityFrame(entity, 0);
                         Set(entity, toggleStatus with {Toggled = false});
+                        // Little extra check to correctly show hover status when un-clicking button
+                        if (Has<ToggleFrameOnMouseHoverComponent>(entity))
+                        {
+                            Set(entity, Get<ToggleFrameOnMouseHoverComponent>(entity) with {Toggled = false});
+                        }
                         break;
                     // Toggle on if currently off and mouse is down
                     case false when mouseDown:
