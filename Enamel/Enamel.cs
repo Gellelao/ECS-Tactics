@@ -44,7 +44,8 @@ public class Enamel : Game
     private static AnimationSystem? _animationSystem;
     private static DestroyAfterDurationSystem? _destroyAfterDurationSystem;
     private static ScreenMoveSystem? _screenMoveSystem;
-    private static MenuSystem? _menuSystem;
+    private static MainMenuSystem? _mainMenuSystem;
+    private static CharSelectMenuSystem? _charSelectMenuSystem;
     private static CenterChildrenSystem? _centerChildrenSystem;
     private static RelativePositionSystem? _relativePositionSystem;
     private static ToggleFrameSystem? _toggleFrameSystem;
@@ -130,7 +131,8 @@ public class Enamel : Game
         _animationSystem = new AnimationSystem(World, animations);
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
         _screenMoveSystem = new ScreenMoveSystem(World);
-        _menuSystem = new MenuSystem(World, menuUtils);
+        _mainMenuSystem = new MainMenuSystem(World, menuUtils);
+        _charSelectMenuSystem = new CharSelectMenuSystem(World, menuUtils);
         _centerChildrenSystem = new CenterChildrenSystem(World);
         _relativePositionSystem = new RelativePositionSystem(World);
         _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
@@ -217,7 +219,8 @@ public class Enamel : Game
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
-        _menuSystem?.Update(elapsedTime);
+        _mainMenuSystem?.Update(elapsedTime);
+        _charSelectMenuSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
         _relativePositionSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
