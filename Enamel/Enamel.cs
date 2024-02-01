@@ -50,6 +50,7 @@ public class Enamel : Game
     private static CenterChildrenSystem? _centerChildrenSystem;
     private static RelativePositionSystem? _relativePositionSystem;
     private static ToggleFrameSystem? _toggleFrameSystem;
+    private static DeploymentSystem? _deploymentSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -139,6 +140,9 @@ public class Enamel : Game
         _relativePositionSystem = new RelativePositionSystem(World);
         _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
 
+        var characterSpawner = new CharacterSpawner(World);
+        _deploymentSystem = new DeploymentSystem(World, characterSpawner);
+
         /*
         RENDERERS
         */
@@ -204,9 +208,6 @@ public class Enamel : Game
 
         //World.Send(new EndTurnMessage());
         // Set up player 1 for dev
-        //World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        //World.Send(new LearnSpellMessage(SpellId.Fireball));
-        //World.Send(new LearnSpellMessage(SpellId.RockCharge));
         
         World.Send(new GoToMainMenuMessage());
 
@@ -225,6 +226,7 @@ public class Enamel : Game
         _charSelectMenuSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
         _relativePositionSystem?.Update(elapsedTime);
+        _deploymentSystem?.Update(elapsedTime); // Must run before spellManagement system so spawned characters can learn their spells.
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
@@ -300,28 +302,6 @@ public class Enamel : Game
         World.Send(new ScreenDetailsChangedMessage(scale, offsetX, offsetY));
 
         return new Rectangle(offsetX, offsetY, (int)(Constants.PIXEL_SCREEN_WIDTH * scale), (int)(Constants.PIXEL_SCREEN_HEIGHT * scale));
-    }
-
-    private Entity CreatePlayer(Player player, Sprite sprite, int x, int y)
-    {
-        var playerEntity = World.CreateEntity();
-        World.Set(playerEntity, new PlayerNumberComponent(player));
-        
-        var playerCharacter = World.CreateEntity();
-        World.Relate(playerEntity, playerCharacter, new ControlsRelation());
-        
-        World.Set(playerCharacter, new TextureIndexComponent(sprite));
-        World.Set(playerCharacter, new AnimationSetComponent(AnimationSet.Wizard));
-        World.Set(playerCharacter, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        World.Set(playerCharacter, new FacingDirectionComponent(GridDirection.South));
-        World.Set(playerCharacter, new SpriteOriginComponent(-4, 18));
-        World.Set(playerCharacter, new DrawLayerComponent(DrawLayer.Units));
-        World.Set(playerCharacter, new GridCoordComponent(x, y));
-        World.Set(playerCharacter, new ImpassableFlag());
-        World.Set(playerCharacter, new HealthComponent(1));
-        // Just for testing, I think players would normally only get this flag if they've had some effect applied to them by another player
-        World.Set(playerCharacter, new PushableFlag());
-        return playerCharacter;
     }
 
     private void CreateSpells()
