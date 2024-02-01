@@ -79,7 +79,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         
         if (SomeMessage<NextCharacterMessage>())
         {
-            var player = ReadMessage<PreviousCharacterMessage>().Player;
+            var player = ReadMessage<NextCharacterMessage>().Player;
             CycleCharacterForPlayer(player, 1);
         }
     }
