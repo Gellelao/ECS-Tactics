@@ -1,6 +1,7 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using Enamel.Extensions;
 using MoonTools.ECS;
@@ -25,32 +26,29 @@ public class CharacterSpawner(World world) : Manipulator(world)
     private Entity SpawnLoam(int x, int y)
     {
         var loam = SpawnBaseWizard(x, y);
-        Set(loam, new SelectedFlag());
+        Set(loam, new LearningSpellComponent(SpellId.StepOnce));
+        Set(loam, new LearningSpellComponent(SpellId.RockCharge));
         
-        World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.RockCharge));
         return loam;
     }
 
     private Entity SpawnEmber(int x, int y)
     {
-        var loam = SpawnBaseWizard(x, y);
-        Set(loam, new SelectedFlag());
+        var ember = SpawnBaseWizard(x, y);
+        Set(ember, new LearningSpellComponent(SpellId.StepOnce));
+        Set(ember, new LearningSpellComponent(SpellId.Fireball));
         
-        World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.Fireball));
-        return loam;
+        return ember;
     }
 
     private Entity SpawnBlueWiz(int x, int y)
     {
-        var loam = SpawnBaseWizard(x, y);
-        Set(loam, new SelectedFlag());
+        var blueWiz = SpawnBaseWizard(x, y);
+        Set(blueWiz, new LearningSpellComponent(SpellId.StepOnce));
+        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBubble));
+        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBlock));
         
-        World.Send(new LearnSpellMessage(SpellId.StepOnce));
-        World.Send(new LearnSpellMessage(SpellId.ArcaneBlock));
-        World.Send(new LearnSpellMessage(SpellId.ArcaneBubble));
-        return loam;
+        return blueWiz;
     }
 
     private Entity SpawnBaseWizard(int x, int y)

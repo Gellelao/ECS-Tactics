@@ -2,31 +2,31 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Components.TempComponents;
 using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class SpellManagementSystem(World world, SpellUtils spellUtils) : MoonTools.ECS.System(world)
+public class SpellManagementSystem : MoonTools.ECS.System
 {
+    private readonly SpellUtils _spellUtils;
+    private Filter LearningSpellFilter { get; }
+
+    public SpellManagementSystem(World world, SpellUtils spellUtils) : base(world)
+    {
+        _spellUtils = spellUtils;
+        LearningSpellFilter = FilterBuilder.Include<LearningSpellComponent>().Build();
+    }
+
     public override void Update(TimeSpan delta)
     {
-        if (!SomeMessage<LearnSpellMessage>()) return;
-
-        var spells = ReadMessages<LearnSpellMessage>();
-
-        try
+        foreach (var entity in LearningSpellFilter.Entities)
         {
-            var currentlySelectedPlayer = GetSingletonEntity<SelectedFlag>();
-            foreach (var spell in spells)
-            {
-                var spellEntity = spellUtils.GetSpell(spell.SpellId);
-                Relate(currentlySelectedPlayer, spellEntity, new HasSpellRelation());
-            }
-        }
-        catch (IndexOutOfRangeException)
-        {
-            throw new IndexOutOfRangeException("No selected player to learn spell!!!");
+            var spell = Get<LearningSpellComponent>(entity);
+            var spellEntity = _spellUtils.GetSpell(spell.SpellId);
+            Relate(entity, spellEntity, new HasSpellRelation());
+            Remove<LearningSpellComponent>(entity);
         }
     }
 }

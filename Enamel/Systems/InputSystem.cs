@@ -3,6 +3,7 @@ using MoonTools.ECS;
 using Microsoft.Xna.Framework.Input;
 using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Utils;
@@ -55,18 +56,21 @@ public class InputSystem : MoonTools.ECS.System
             {
                 // May be better to have "buttonClickMessage" and a dedicated ButtonSystem, but for now this works
                 var onClick = Get<OnClickComponent>(button);
+                Entity selectedEntity;
                 switch (onClick.ClickEvent)
                 {
                     case ClickEvent.EndTurn:
                         Send(new EndTurnMessage());
                         break;
                     case ClickEvent.LearnSpell:
+                        // Assume the currently selected entity is learning this spell
+                        selectedEntity = GetSingletonEntity<SelectedFlag>();
                         // We must assume that the Id is a SpellId if passed along with the LearnSpell ClickEvent
-                        Send(new LearnSpellMessage((SpellId)onClick.Id));
+                        Set(selectedEntity, new LearningSpellComponent((SpellId)onClick.Id));
                         break;
                     case ClickEvent.PrepSpell:
                         // There must only be one selected unit and it must the the unit casting this spell
-                        var selectedEntity = GetSingletonEntity<SelectedFlag>();
+                        selectedEntity = GetSingletonEntity<SelectedFlag>();
                         if(!Has<GridCoordComponent>(selectedEntity)) continue;
                         var (originGridX, originGridY) = Get<GridCoordComponent>(selectedEntity);
 
