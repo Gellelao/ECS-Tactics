@@ -72,7 +72,7 @@ public static class ContentUtils
         blueWizAnimations[(int)AnimationType.Hurt] = [3];
         blueWizAnimations[(int)AnimationType.Raise] = [4];
         blueWizAnimations[(int)AnimationType.Throw] = [5];
-        animations[(int) AnimationSet.BlueWiz] = new AnimationData(
+        animations[(int) AnimationSet.Wizard] = new AnimationData(
             Constants.PLAYER_FRAME_WIDTH,
             Constants.PLAYER_FRAME_HEIGHT, 
             blueWizAnimations

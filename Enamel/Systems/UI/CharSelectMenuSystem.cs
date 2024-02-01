@@ -4,6 +4,7 @@ using Enamel.Components.Messages;
 using Enamel.Components.Relations;
 using Enamel.Components.UI;
 using Enamel.Enums;
+using Enamel.Extensions;
 using Enamel.Utils;
 using MoonTools.ECS;
 
@@ -93,34 +94,9 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var playerEntity = World.CreateEntity();
         var playerNumber = (Player)existingPlayerCount;
         Set(playerEntity, new PlayerNumberComponent(playerNumber));
-        
-        var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
-        Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
-        Set(characterSheet, new OrderComponent(existingPlayerCount));
-        Relate(_sheetRow, characterSheet, new IsParentRelation());
-        Relate(playerEntity, characterSheet, new PlayerSheetRelation());
+        Set(playerEntity, new SelectedCharacterComponent(Character.BlueWiz));
 
-        // The initial position for CreateUiEntity doesn't matter since it'll be set by the RelativePositionSystem anyway
-        var leftButton = _menuUtils.CreateRelativeUiEntity(3, 44, 13, 13);
-        Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
-        Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
-        Set(leftButton, new ToggleFrameOnMouseHoverComponent(1, true));
-        Set(leftButton, new ToggleFrameOnMouseDownComponent(2, true));
-        Relate(characterSheet, leftButton, new IsParentRelation());
-        
-        var rightButton = _menuUtils.CreateRelativeUiEntity(24, 44, 13, 13);
-        Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
-        Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
-        Set(rightButton, new ToggleFrameOnMouseHoverComponent(1, true));
-        Set(rightButton, new ToggleFrameOnMouseDownComponent(2, true));
-        Relate(characterSheet, rightButton, new IsParentRelation());
-        
-        var characterPreview = _menuUtils.CreateRelativeUiEntity(10, 0, 13, 13);
-        Set(characterPreview, new TextureIndexComponent(Sprite.BlueWizard));
-        Set(characterPreview, new AnimationSetComponent(AnimationSet.BlueWiz));
-        Set(characterPreview, new FacingDirectionComponent(GridDirection.South));
-        Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
-        Relate(characterSheet, characterPreview, new IsParentRelation());
+        CreateCharacterSheetForPlayer(playerEntity);
 
         if (existingPlayerCount >= 5)
         {
@@ -129,9 +105,36 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Remove<DisabledFlag>(_deletePlayerButton);
     }
 
-    private void CreateCharacterSheetUI()
+    private void CreateCharacterSheetForPlayer(Entity playerEntity)
     {
+        var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
+        Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
+
+        var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
         
+        Set(characterSheet, new OrderComponent((int)playerNumber));
+        Relate(_sheetRow, characterSheet, new IsParentRelation());
+        Relate(playerEntity, characterSheet, new PlayerSheetRelation());
+
+        var leftButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 3, 44, 13, 13);
+        Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
+        Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
+        Set(leftButton, new ToggleFrameOnMouseHoverComponent(1, true));
+        Set(leftButton, new ToggleFrameOnMouseDownComponent(2, true));
+        
+        var rightButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 24, 44, 13, 13);
+        Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
+        Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
+        Set(rightButton, new ToggleFrameOnMouseHoverComponent(1, true));
+        Set(rightButton, new ToggleFrameOnMouseDownComponent(2, true));
+
+        var character = Get<SelectedCharacterComponent>(playerEntity).Character;
+        
+        var characterPreview = _menuUtils.CreateRelativeUiEntity(characterSheet, 10, 0, 13, 13);
+        Set(characterPreview, new TextureIndexComponent(character.ToSprite()));
+        Set(characterPreview, new AnimationSetComponent(AnimationSet.Wizard));
+        Set(characterPreview, new FacingDirectionComponent(GridDirection.South));
+        Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
     }
 
     private void DeletePlayer(){

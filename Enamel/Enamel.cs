@@ -311,7 +311,7 @@ public class Enamel : Game
         World.Relate(playerEntity, playerCharacter, new ControlsRelation());
         
         World.Set(playerCharacter, new TextureIndexComponent(sprite));
-        World.Set(playerCharacter, new AnimationSetComponent(AnimationSet.BlueWiz));
+        World.Set(playerCharacter, new AnimationSetComponent(AnimationSet.Wizard));
         World.Set(playerCharacter, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
         World.Set(playerCharacter, new FacingDirectionComponent(GridDirection.South));
         World.Set(playerCharacter, new SpriteOriginComponent(-4, 18));
