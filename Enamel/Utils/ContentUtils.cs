@@ -42,6 +42,8 @@ public static class ContentUtils
         textures[(int)Sprite.Tile] = content.Load<Texture2D>("GroundTile");
         textures[(int)Sprite.GreenCube] = content.Load<Texture2D>("greenCube");
         textures[(int)Sprite.BlueWizard] = content.Load<Texture2D>("blueWiz");
+        textures[(int)Sprite.EmberWizard] = content.Load<Texture2D>("emberWiz");
+        textures[(int)Sprite.LoamWizard] = content.Load<Texture2D>("loamWiz");
         textures[(int)Sprite.YellowCube] = content.Load<Texture2D>("yellowCube");
         textures[(int)Sprite.SelectedTile] = content.Load<Texture2D>("Selected");
         textures[(int)Sprite.TileSelectPreview] = content.Load<Texture2D>("TilePreview");

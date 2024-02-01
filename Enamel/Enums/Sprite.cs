@@ -6,6 +6,7 @@ public enum Sprite
     Tile,
     GreenCube,
     BlueWizard,
+    EmberWizard,
     YellowCube,
     SelectedTile,
     TileSelectPreview,
@@ -21,5 +22,6 @@ public enum Sprite
     CloseButton,
     DeletePlayer,
     LeftCharButton,
-    RightCharButton
+    RightCharButton,
+    LoamWizard
 }

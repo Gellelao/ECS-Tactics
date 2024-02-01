@@ -11,6 +11,8 @@ public static class CharacterExtensions
         return character switch
         {
             Character.BlueWiz => Sprite.BlueWizard,
+            Character.Ember => Sprite.EmberWizard,
+            Character.Loam => Sprite.LoamWizard,
             _ => throw new ArgumentOutOfRangeException(nameof(character), character, null)
         };
     }

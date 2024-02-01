@@ -2,5 +2,7 @@
 
 public enum Character
 {
-    BlueWiz
+    BlueWiz,
+    Ember,
+    Loam
 }
