@@ -13,6 +13,7 @@ namespace Enamel.Systems.UI;
 public class CharSelectMenuSystem : MoonTools.ECS.System
 {
     private readonly MenuUtils _menuUtils;
+    private readonly int _numberOfCharacters;
     private Entity _sheetRow;
     private Entity _addPlayerButton;
     private Entity _deletePlayerButton;
@@ -22,6 +23,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
     public CharSelectMenuSystem(World world, MenuUtils menuUtils) : base(world)
     {
         _menuUtils = menuUtils;
+        _numberOfCharacters = Enum.GetNames(typeof(Character)).Length;
         PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
     }
     
@@ -68,6 +70,18 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         {
             DeletePlayer();
         }
+
+        if (SomeMessage<PreviousCharacterMessage>())
+        {
+            var player = ReadMessage<PreviousCharacterMessage>().Player;
+            CycleCharacterForPlayer(player, -1);
+        }
+        
+        if (SomeMessage<NextCharacterMessage>())
+        {
+            var player = ReadMessage<PreviousCharacterMessage>().Player;
+            CycleCharacterForPlayer(player, 1);
+        }
     }
 
     private void CreateAddPlayerButton()
@@ -105,6 +119,28 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Remove<DisabledFlag>(_deletePlayerButton);
     }
 
+    private void CycleCharacterForPlayer(Player player, int increment)
+    {
+        foreach (var playerEntity in PlayerFilter.Entities)
+        {
+            if (Get<PlayerNumberComponent>(playerEntity).PlayerNumber != player) continue;
+            DeleteCharacterSheetForPlayer(playerEntity);
+            var selectedCharacter = (int) Get<SelectedCharacterComponent>(playerEntity).Character;
+            var newCharacter = (selectedCharacter + increment + _numberOfCharacters) % _numberOfCharacters;
+            Set(playerEntity, new SelectedCharacterComponent((Character)newCharacter));
+            CreateCharacterSheetForPlayer(playerEntity);
+        }
+    }
+
+    private void DeleteCharacterSheetForPlayer(Entity playerEntity)
+    {
+        var children = OutRelations<IsParentRelation>(playerEntity);
+        foreach (var child in children)
+        {
+            _menuUtils.RecursivelyDestroy(child);
+        }
+    }
+
     private void CreateCharacterSheetForPlayer(Entity playerEntity)
     {
         var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
@@ -121,12 +157,14 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(leftButton, new ToggleFrameOnMouseHoverComponent(1, true));
         Set(leftButton, new ToggleFrameOnMouseDownComponent(2, true));
+        Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int)playerNumber));
         
         var rightButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 24, 44, 13, 13);
         Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
         Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(rightButton, new ToggleFrameOnMouseHoverComponent(1, true));
         Set(rightButton, new ToggleFrameOnMouseDownComponent(2, true));
+        Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int)playerNumber));
 
         var character = Get<SelectedCharacterComponent>(playerEntity).Character;
         

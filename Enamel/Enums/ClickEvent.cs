@@ -11,5 +11,7 @@ public enum ClickEvent
     GoToMainMenu,
     DeployWizards,
     AddPlayer,
-    DeletePlayer
+    DeletePlayer,
+    PreviousCharacter,
+    NextCharacter
 }

@@ -95,6 +95,12 @@ public class InputSystem : MoonTools.ECS.System
                     case ClickEvent.DeletePlayer:
                         Send(new DeletePlayerMessage());
                         break;
+                    case ClickEvent.PreviousCharacter:
+                        Send(new PreviousCharacterMessage((Player)onClick.Id));
+                        break;
+                    case ClickEvent.NextCharacter:
+                        Send(new NextCharacterMessage((Player)onClick.Id));
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
