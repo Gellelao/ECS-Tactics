@@ -34,7 +34,12 @@ public class DeploymentSystem : MoonTools.ECS.System
         Remove<CurrentlyDeployingFlag>(deployingPlayer);
         Remove<SelectedCharacterComponent>(deployingPlayer);
 
-        if (!PlayersWaitingToDeploy.Empty)
+        if (PlayersWaitingToDeploy.Empty)
+        {
+            // This kicks off the turn system
+            Send(new EndTurnMessage());
+        }
+        else
         {
             Set(PlayersWaitingToDeploy.RandomEntity, new CurrentlyDeployingFlag());
             Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));

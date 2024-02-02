@@ -37,7 +37,7 @@ public class AnimationSystem : MoonTools.ECS.System
             var animationStatusComponent = Get<AnimationStatusComponent>(entity);
             var direction = Has<FacingDirectionComponent>(entity)
                 ? Get<FacingDirectionComponent>(entity).GridDirection
-                : GridDirection.North;
+                : GridDirection.South;
             
             var timeSinceLastFrame = animationStatusComponent.MillisSinceLastFrame;
             timeSinceLastFrame += delta.TotalMilliseconds;

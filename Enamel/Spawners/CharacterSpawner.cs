@@ -56,7 +56,6 @@ public class CharacterSpawner(World world) : Manipulator(world)
         
         Set(character, new AnimationSetComponent(AnimationSet.Wizard));
         Set(character, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
-        Set(character, new FacingDirectionComponent(GridDirection.South));
         Set(character, new SpriteOriginComponent(-4, 18));
         Set(character, new DrawLayerComponent(DrawLayer.Units));
         Set(character, new GridCoordComponent(x, y));

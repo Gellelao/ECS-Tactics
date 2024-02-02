@@ -174,7 +174,6 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var characterPreview = _menuUtils.CreateRelativeUiEntity(characterSheet, 10, 0, 13, 13);
         Set(characterPreview, new TextureIndexComponent(character.ToSprite()));
         Set(characterPreview, new AnimationSetComponent(AnimationSet.Wizard));
-        Set(characterPreview, new FacingDirectionComponent(GridDirection.South));
         Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
     }
 

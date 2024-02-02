@@ -51,7 +51,12 @@ public class SpellCastingSystem : MoonTools.ECS.System
         var (originX, originY) = Get<GridCoordComponent>(casterEntity);
         var direction = GetDirection(originX, originY, targetX, targetY);
         
-        Set(casterEntity, new FacingDirectionComponent(direction));
+        // If targeting self we get None back, so just leave them facing as they are
+        if (direction != GridDirection.None)
+        {
+            Set(casterEntity, new FacingDirectionComponent(direction));
+        }
+        
         // Force the animation to update now that we've (possibly) changed direction
         var animationStatus = Get<AnimationStatusComponent>(casterEntity);
         Set(casterEntity, animationStatus with {MillisSinceLastFrame = animationStatus.MillisBetweenFrames});
