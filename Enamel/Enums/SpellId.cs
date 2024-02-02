@@ -2,6 +2,7 @@
 
 public enum SpellId
 {
+    DeployWizard,
     StepOnce,
     Fireball,
     ArcaneBlock,

@@ -64,7 +64,7 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
                 var distance = Math.Abs(x - originX) + Math.Abs(y - originY);
                 if (distance <= spellRange)
                 {
-                    CreatePreview(x, y, spellToPrepMessage.SpellId);
+                    CreateSpellPreview(x, y, spellToPrepMessage.SpellId);
                 }
             }
         }
@@ -102,7 +102,7 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         return x != originX && y != originY;
     }
 
-    private void CreatePreview(int x, int y, SpellId spellId)
+    private void CreateSpellPreview(int x, int y, SpellId spellId)
     {
         var preview = _world.CreateEntity();
         Set(preview, new GridCoordComponent(x, y));

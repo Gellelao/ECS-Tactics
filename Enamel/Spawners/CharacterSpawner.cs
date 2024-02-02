@@ -1,6 +1,5 @@
 ﻿using System;
 using Enamel.Components;
-using Enamel.Components.Messages;
 using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using Enamel.Extensions;

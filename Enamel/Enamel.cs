@@ -306,6 +306,11 @@ public class Enamel : Game
 
     private void CreateSpells()
     {
+        var deployWizard = World.CreateEntity();
+        World.Set(deployWizard, new SpellIdComponent(SpellId.DeployWizard));
+        World.Set(deployWizard, new CastRangeComponent(100));
+        World.Set(deployWizard, new CanTargetSelfFlag());
+        
         var stepOnceSpell = World.CreateEntity();
         World.Set(stepOnceSpell, new SpellIdComponent(SpellId.StepOnce));
         World.Set(stepOnceSpell, new CastRangeComponent(1));

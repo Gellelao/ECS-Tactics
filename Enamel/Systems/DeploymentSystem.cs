@@ -2,6 +2,7 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Enums;
 using Enamel.Spawners;
 using MoonTools.ECS;
 
@@ -36,6 +37,7 @@ public class DeploymentSystem : MoonTools.ECS.System
         if (!PlayersWaitingToDeploy.Empty)
         {
             Set(PlayersWaitingToDeploy.RandomEntity, new CurrentlyDeployingFlag());
+            Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
         }
     }
 }

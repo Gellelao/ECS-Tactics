@@ -58,6 +58,9 @@ public class SpellCastingSystem : MoonTools.ECS.System
 
         switch (spellId)
         {
+            case SpellId.DeployWizard:
+                // Resolving this is handled in the DeploymentSystem
+                break;
             case SpellId.StepOnce:
                 Set(casterEntity, new MovingToGridCoordComponent(targetX, targetY));
                 Set(casterEntity, new TempAnimationComponent(AnimationType.Walk, AnimationType.Idle));
