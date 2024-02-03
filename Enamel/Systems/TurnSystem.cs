@@ -73,6 +73,7 @@ public class TurnSystem : MoonTools.ECS.System
     {
         return numberOfPlayers switch
         {
+            1 => new [] {Player.One},
             2 => Constants.TwoPlayerTurnOrder,
             3 => Constants.ThreePlayerTurnOrder,
             4 => Constants.FourPlayerTurnOrder,

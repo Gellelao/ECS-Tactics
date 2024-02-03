@@ -59,7 +59,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         if (SomeMessage<DeployWizardsMessage>())
         {
             _menuUtils.DestroyExistingUiEntities();
-            var startingPlayer = PlayerFilter.EntitiesInRandomOrder.Current;
+            var startingPlayer = PlayerFilter.RandomEntity;
             Set(startingPlayer, new CurrentlyDeployingFlag());
             Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
         }
