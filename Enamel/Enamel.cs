@@ -152,9 +152,8 @@ public class Enamel : Game
         /*
         ENTITIES
         */
-        
         // Had a weird issue where the first entity would cause errors, so create a throwaway entity here for now
-        var zeroEntity = World.CreateEntity();
+        //var zeroEntity = World.CreateEntity();
         
         // Global state entities
         var turnTracker = World.CreateEntity();
@@ -166,35 +165,6 @@ public class Enamel : Game
         // So just putting spells first until I decide to figure out why that happens
         CreateSpells();
 
-        //var player1 = CreatePlayer(PlayerNumber.One, Sprite.BlueWizard, 1, 1);
-        //World.Set(player1, new SelectedFlag()); // Just do this for dev, so this player can start with learned spells
-        
-        //CreatePlayer(PlayerNumber.Two, Sprite.BlueWizard, 1, 6);
-
-        var endTurnButton = World.CreateEntity();
-        World.Set(endTurnButton, new ScreenPositionComponent(400, 300));
-        World.Set(endTurnButton, new DimensionsComponent(40, 20));
-        World.Set(endTurnButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
-
-        var learnFireballButton = World.CreateEntity();
-        World.Set(learnFireballButton, new ScreenPositionComponent(50, 200));
-        World.Set(learnFireballButton, new DimensionsComponent(40, 20));
-        World.Set(learnFireballButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnFireballButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.Fireball));
-
-        var learnArcaneBlockButton = World.CreateEntity();
-        World.Set(learnArcaneBlockButton, new ScreenPositionComponent(50, 230));
-        World.Set(learnArcaneBlockButton, new DimensionsComponent(40, 20));
-        World.Set(learnArcaneBlockButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnArcaneBlockButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.ArcaneBlock));
-
-        var learnArcaneBubbleButton = World.CreateEntity();
-        World.Set(learnArcaneBubbleButton, new ScreenPositionComponent(50, 260));
-        World.Set(learnArcaneBubbleButton, new DimensionsComponent(40, 20));
-        World.Set(learnArcaneBubbleButton, new TextureIndexComponent(Sprite.GreenRectangle));
-        World.Set(learnArcaneBubbleButton, new OnClickComponent(ClickEvent.LearnSpell, (int)SpellId.ArcaneBubble));
-
         for(var x = 7; x >= 0; x--){
             for(var y = 7;  y >= 0; y--){
                 var tile = World.CreateEntity();
@@ -205,9 +175,6 @@ public class Enamel : Game
                 World.Set(tile, new DrawLayerComponent(DrawLayer.Tiles));
             }
         }
-
-        //World.Send(new EndTurnMessage());
-        // Set up player 1 for dev
         
         World.Send(new GoToMainMenuMessage());
 
