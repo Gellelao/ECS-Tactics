@@ -26,16 +26,4 @@ public static class Constants
     
     public static readonly Color CurrentTurnTextColour = Color.White;
     public static readonly Color SpellCardTextColour = Color.Black;
-    
-    public static readonly Player[] TwoPlayerTurnOrder = [Player.One, Player.Two, Player.Two, Player.One];
-
-    public static readonly Player[] ThreePlayerTurnOrder = [Player.One, Player.Two, Player.Three,
-                                                                  Player.Two, Player.Three, Player.One,
-                                                                  Player.Three, Player.One, Player.Two
-    ];
-    public static readonly Player[] FourPlayerTurnOrder = [Player.One, Player.Two, Player.Three, Player.Four,
-                                                                 Player.Four, Player.Three, Player.Two, Player.One,
-                                                                 Player.Three, Player.Four, Player.One, Player.Two,
-                                                                 Player.Two, Player.One, Player.Four, Player.Three
-    ];
 }

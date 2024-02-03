@@ -155,11 +155,6 @@ public class Enamel : Game
         // Had a weird issue where the first entity would cause errors, so create a throwaway entity here for now
         //var zeroEntity = World.CreateEntity();
         
-        // Global state entities
-        var turnTracker = World.CreateEntity();
-        World.Set(turnTracker, new TurnIndexComponent(-1));
-        World.Set(turnTracker, new ScreenPositionComponent(100, 10));
-        
         // Spells
         // For whatever reason, putting the spell template creation after the ground tiles caused an exception when drawing.
         // So just putting spells first until I decide to figure out why that happens
@@ -193,7 +188,7 @@ public class Enamel : Game
         _charSelectMenuSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
         _relativePositionSystem?.Update(elapsedTime);
-        _deploymentSystem?.Update(elapsedTime); // Must run before spellManagement system so spawned characters can learn their spells.
+        _deploymentSystem?.Update(elapsedTime); // Must run before TurnSystem to the currentPlayer can have their SelectedCharacterComponent removed before the TurnSystem changes the current player. Should run before spellManagement system to spells can be learned on the frame characters are spawned.
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _turnSystem?.Update(elapsedTime);
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed

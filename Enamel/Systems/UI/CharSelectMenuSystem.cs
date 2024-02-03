@@ -60,8 +60,15 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         {
             _menuUtils.DestroyExistingUiEntities();
             var startingPlayer = PlayerFilter.RandomEntity;
-            Set(startingPlayer, new CurrentlyDeployingFlag());
-            Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
+            Set(startingPlayer, new CurrentPlayerFlag());
+            
+            // TODO Move this to a dedicated in-game UI system
+            var endTurnButton = World.CreateEntity();
+            World.Set(endTurnButton, new ScreenPositionComponent(280, 160));
+            World.Set(endTurnButton, new DimensionsComponent(40, 20));
+            World.Set(endTurnButton, new TextureIndexComponent(Sprite.GreenRectangle));
+            World.Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
+            World.Set(endTurnButton, new DrawLayerComponent(DrawLayer.UserInterface));
         }
 
         if (SomeMessage<AddPlayerMessage>())
