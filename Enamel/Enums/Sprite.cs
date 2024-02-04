@@ -23,5 +23,6 @@ public enum Sprite
     DeletePlayer,
     LeftCharButton,
     RightCharButton,
-    LoamWizard
+    LoamWizard,
+    EndTurnButton
 }

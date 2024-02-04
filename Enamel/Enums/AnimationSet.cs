@@ -4,5 +4,6 @@ public enum AnimationSet
 {
     Wizard,
     Smoke,
-    CharButton
+    CharButton,
+    EndTurnButton
 }
