@@ -33,13 +33,19 @@ public class SpellCastingSystem : MoonTools.ECS.System
         {
             var (targetX, targetY) = Get<GridCoordComponent>(spellPreview);
             if (clickX != targetX || clickY != targetY) continue;
-            
-            var casterEntity = GetSingletonEntity<SelectedFlag>();
 
             var spellToCastComponent = Get<SpellToCastOnSelectComponent>(spellPreview);
-            var spell = _spellUtils.GetSpell(spellToCastComponent.SpellId);
+            
+            // For spells that require a caster, resolve them here
+            // For other cases (such as DeployWizard, resolve in a dedicated system and skip this section
+            if (Some<SelectedFlag>())
+            {
+                var casterEntity = GetSingletonEntity<SelectedFlag>();
 
-            ResolveSpell(spell, casterEntity, targetX, targetY);
+                var spell = _spellUtils.GetSpell(spellToCastComponent.SpellId);
+
+                ResolveSpell(spell, casterEntity, targetX, targetY);
+            }
 
             Send(new SpellWasCastMessage(spellToCastComponent.SpellId));
         }

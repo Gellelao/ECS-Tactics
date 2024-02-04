@@ -40,13 +40,14 @@ public class UnitDisablingSystem : MoonTools.ECS.System
         }
         if (SomeMessage<SpellWasCastMessage>() || SomeMessage<CancelMessage>())
         {
-            var casterEntity = GetSingletonEntity<SelectedFlag>();
-            var playerControllingCaster = GetPlayerNumbersControllingEntity(casterEntity);
+            // Assume the spell was cast by the current player
+            var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
+            var playerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
             foreach (var entity in DisabledControlledByPlayerFilter.Entities)
             {
                 // Remove disabled from all units on the caster's team, now that the spell has been cast
                 var playersControllingEntity = GetPlayerNumbersControllingEntity(entity);
-                if (playerControllingCaster.Intersect(playersControllingEntity).Any())
+                if (playersControllingEntity.Contains(playerNumber))
                 {
                     Remove<DisabledFlag>(entity);
                 }
