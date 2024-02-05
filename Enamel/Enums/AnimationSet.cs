@@ -5,5 +5,6 @@ public enum AnimationSet
     Wizard,
     Smoke,
     CharButton,
-    EndTurnButton
+    EndTurnButton,
+    RedeployWizardButton
 }

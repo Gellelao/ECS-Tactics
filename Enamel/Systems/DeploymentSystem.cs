@@ -5,6 +5,7 @@ using Enamel.Components.Relations;
 using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Spawners;
+using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -12,33 +13,47 @@ namespace Enamel.Systems;
 public class DeploymentSystem : MoonTools.ECS.System
 {
     private readonly CharacterSpawner _characterSpawner;
+    private readonly MenuUtils _menuUtils;
+    private Entity _redeployButton;
     private Entity _deployingPlayer;
     private Filter PlayersWaitingToDeploy { get; }
     
-    public DeploymentSystem(World world, CharacterSpawner characterSpawner) : base(world)
+    public DeploymentSystem(World world, CharacterSpawner characterSpawner, MenuUtils menuUtils) : base(world)
     {
         _characterSpawner = characterSpawner;
+        _menuUtils = menuUtils;
         PlayersWaitingToDeploy = FilterBuilder.Include<SelectedCharacterComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
     {
+        if (SomeMessage<DeployWizardsMessage>())
+        {
+            Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
+            
+            _redeployButton = _menuUtils.CreateUiEntity(255, 160, 20, 20);
+            Set(_redeployButton, new TextureIndexComponent(Sprite.RedeployWizardButton));
+            Set(_redeployButton, new AnimationSetComponent(AnimationSet.RedeployWizardButton));
+            Set(_redeployButton, new ToggleFrameOnMouseHoverComponent(1));
+            Set(_redeployButton, new ToggleFrameOnMouseDownComponent(2));
+            Set(_redeployButton, new OnClickComponent(ClickEvent.PrepSpell, (int)SpellId.DeployWizard));
+        }
+        
         if (PlayersWaitingToDeploy.Empty) return;
 
         if(SomeMessage<EndTurnMessage>())
         {
             _deployingPlayer = GetSingletonEntity<CurrentPlayerFlag>();
             Remove<SelectedCharacterComponent>(_deployingPlayer);
+            if (PlayersWaitingToDeploy.Count > 0)
+            {
+                Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
+            }
+            else
+            {
+                Destroy(_redeployButton);
+            }
             return;
-        }
-
-        // Kind jank but we need to display the previews for deploying the wizard in 3 situations:
-        // 1. When deployment first starts
-        // 2. After a character is placed, in case they want to replace the character somewhere else
-        // 3. After the end turn button is clicked if there are more wizards to place
-        if (Some<CurrentPlayerFlag>() && !Some<SpellToCastOnSelectComponent>())
-        {
-            Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
         }
         
         if (!SomeMessage<GridCoordSelectedMessage>()) return;

@@ -69,13 +69,21 @@ public class InputSystem : MoonTools.ECS.System
                         Set(selectedEntity, new LearningSpellComponent((SpellId)onClick.Id));
                         break;
                     case ClickEvent.PrepSpell:
-                        // There must only be one selected unit and it must the the unit casting this spell
-                        selectedEntity = GetSingletonEntity<SelectedFlag>();
-                        if(!Has<GridCoordComponent>(selectedEntity)) continue;
-                        var (originGridX, originGridY) = Get<GridCoordComponent>(selectedEntity);
+                        // Allow for "casterless spells" (just deploying wizards atm)
+                        var originX = 0;
+                        var originY = 0;
+                        if (Some<SelectedFlag>())
+                        {
+                            // There must only be one selected unit and it must the the unit casting this spell
+                            selectedEntity = GetSingletonEntity<SelectedFlag>();
+                            if(!Has<GridCoordComponent>(selectedEntity)) continue;
+                            var casterCoords = Get<GridCoordComponent>(selectedEntity);
+                            originX = casterCoords.X;
+                            originY = casterCoords.Y;
+                        }
 
                         // Again we must assume that the Id is a SpellId if passed along with the PrepSpell ClickEvent
-                        Send(new PrepSpellMessage((SpellId)onClick.Id, originGridX, originGridY));
+                        Send(new PrepSpellMessage((SpellId)onClick.Id, originX, originY));
 
                         break;
                     case ClickEvent.GoToMainMenu:

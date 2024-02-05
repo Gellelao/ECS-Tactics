@@ -20,8 +20,12 @@ public class ToggleFrameSystem : MoonTools.ECS.System
     {
         _screenUtils = screenUtils;
         _animations = animations;
-        ToggleOnMouseDownFilter = FilterBuilder.Include<ToggleFrameOnMouseDownComponent>().Build();
-        ToggleOnMouseHoverFilter = FilterBuilder.Include<ToggleFrameOnMouseHoverComponent>().Build();
+        ToggleOnMouseDownFilter = FilterBuilder
+            .Include<ToggleFrameOnMouseDownComponent>()
+            .Exclude<DisabledFlag>().Build();
+        ToggleOnMouseHoverFilter = FilterBuilder
+            .Include<ToggleFrameOnMouseHoverComponent>()
+            .Exclude<DisabledFlag>().Build();
     }
 
     public override void Update(TimeSpan delta)

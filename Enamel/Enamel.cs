@@ -36,7 +36,7 @@ public class Enamel : Game
     private static SpellCastingSystem? _spellCastingSystem;
     private static ProjectileSystem? _projectileSystem;
     private static DamageSystem? _damageSystem;
-    private static UnitDisablingSystem? _unitDisablingSystem;
+    private static DisablingSystem? _disablingSystem;
     private static PushSystem? _pushSystem;
     private static AnimationSystem? _animationSystem;
     private static DestroyAfterDurationSystem? _destroyAfterDurationSystem;
@@ -126,7 +126,7 @@ public class Enamel : Game
 
         var particleSpawner = new ParticleSpawner(World, animations);
         _damageSystem = new DamageSystem(World, particleSpawner);
-        _unitDisablingSystem = new UnitDisablingSystem(World);
+        _disablingSystem = new DisablingSystem(World);
         _pushSystem = new PushSystem(World);
         _animationSystem = new AnimationSystem(World, animations);
         _destroyAfterDurationSystem = new DestroyAfterDurationSystem(World);
@@ -138,7 +138,7 @@ public class Enamel : Game
         _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
 
         var characterSpawner = new CharacterSpawner(World);
-        _deploymentSystem = new DeploymentSystem(World, characterSpawner);
+        _deploymentSystem = new DeploymentSystem(World, characterSpawner, menuUtils);
         _inGameUiSystem = new InGameUiSystem(World, menuUtils);
 
         /*
@@ -198,7 +198,7 @@ public class Enamel : Game
         _damageSystem?.Update(elapsedTime); // Should run after pushSystem because the pushSystem sends DamageMessages
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
-        _unitDisablingSystem?.Update(elapsedTime);
+        _disablingSystem?.Update(elapsedTime);
         _animationSystem?.Update(elapsedTime);
         _toggleFrameSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // Must run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them

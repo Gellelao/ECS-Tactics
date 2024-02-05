@@ -13,6 +13,7 @@ namespace Enamel.Systems.UI;
 public class InGameUiSystem : MoonTools.ECS.System
 {
     private const int PORTRAIT_X = 296;
+    private const int PORTRAIT_HEIGHT = 23;
     private readonly MenuUtils _menuUtils;
     private readonly Dictionary<Player, Entity> _portraitsByPlayer;
     private int _numberOfPlayers;
@@ -34,8 +35,8 @@ public class InGameUiSystem : MoonTools.ECS.System
             var endTurnButton = _menuUtils.CreateUiEntity(280, 160, 40, 20);
             Set(endTurnButton, new TextureIndexComponent(Sprite.EndTurnButton));
             Set(endTurnButton, new AnimationSetComponent(AnimationSet.EndTurnButton));
-            Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1, true));
-            Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2, true));
+            Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
+            Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
 
             _portraitsByPlayer.Clear();
@@ -45,7 +46,7 @@ public class InGameUiSystem : MoonTools.ECS.System
                 var characterNumber = Get<SelectedCharacterComponent>(playerEntity).Character;
                 var portraitSprite = characterNumber.ToPortraitSprite();
 
-                var portrait = _menuUtils.CreateUiEntity(PORTRAIT_X, (int) playerNumber * 23 + 1 + (int)playerNumber);
+                var portrait = _menuUtils.CreateUiEntity(PORTRAIT_X, (int) playerNumber * PORTRAIT_HEIGHT + 1 + (int)playerNumber);
                 Set(portrait, new TextureIndexComponent(portraitSprite));
                 
                 _portraitsByPlayer.Add(playerNumber, portrait);
@@ -71,7 +72,7 @@ public class InGameUiSystem : MoonTools.ECS.System
         {
             var portrait = _portraitsByPlayer[currentPlayerNumber];
             var speed = i == _numberOfPlayers-1 ? 200 : 80;
-            Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * 23 + 1 + i, speed));
+            Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * PORTRAIT_HEIGHT + 1 + i, speed));
             currentPlayerNumber = Utils.Utils.GetNextPlayer(currentPlayerNumber, _numberOfPlayers);
         }
     }

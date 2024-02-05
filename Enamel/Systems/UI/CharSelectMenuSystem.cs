@@ -157,15 +157,15 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var leftButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 3, 44, 13, 13);
         Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
-        Set(leftButton, new ToggleFrameOnMouseHoverComponent(1, true));
-        Set(leftButton, new ToggleFrameOnMouseDownComponent(2, true));
+        Set(leftButton, new ToggleFrameOnMouseHoverComponent(1));
+        Set(leftButton, new ToggleFrameOnMouseDownComponent(2));
         Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int)playerNumber));
         
         var rightButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 24, 44, 13, 13);
         Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
         Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
-        Set(rightButton, new ToggleFrameOnMouseHoverComponent(1, true));
-        Set(rightButton, new ToggleFrameOnMouseDownComponent(2, true));
+        Set(rightButton, new ToggleFrameOnMouseHoverComponent(1));
+        Set(rightButton, new ToggleFrameOnMouseDownComponent(2));
         Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int)playerNumber));
 
         var character = Get<SelectedCharacterComponent>(playerEntity).Character;
