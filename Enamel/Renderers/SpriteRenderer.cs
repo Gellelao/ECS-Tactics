@@ -205,17 +205,17 @@ public class SpriteRenderer : Renderer
 
             // Draw red origin pixel if in debug mode
 #if DEBUG
-            SpriteBatch.Draw(
-                _textures[(int)Sprite.RedPixel],
-                new Vector2(positionComponent.X, positionComponent.Y),
-                null,
-                Color.White,
-                0, // rotation,
-                Vector2.Zero, // origin
-                Vector2.One, // scaling
-                SpriteEffects.None,
-                0
-            );
+            // SpriteBatch.Draw(
+            //     _textures[(int)Sprite.RedPixel],
+            //     new Vector2(positionComponent.X, positionComponent.Y),
+            //     null,
+            //     Color.White,
+            //     0, // rotation,
+            //     Vector2.Zero, // origin
+            //     Vector2.One, // scaling
+            //     SpriteEffects.None,
+            //     0
+            // );
 #endif
     }
 }

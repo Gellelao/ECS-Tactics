@@ -8,7 +8,7 @@ namespace Enamel.Spawners;
 
 public class ParticleSpawner(World world, AnimationData[] animations) : Manipulator(world)
 {
-    public void SpawnSmokePuff(float screenX, float screenY, ScreenDirection moveDirection, int moveSpeed, int lifeTimeMillis)
+    public void SpawnSmokePuff(float screenX, float screenY, ScreenDirection moveDirection, int moveSpeed)
     {
         const AnimationSet animationId = AnimationSet.Smoke;
         const int millisBetweenFrames = Constants.DEFAULT_MILLIS_BETWEEN_FRAMES;

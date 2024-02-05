@@ -2,9 +2,9 @@
 
 public enum GridDirection
 {
-    North, // Y decreasing
     South, // Y increasing
+    North, // Y decreasing
+    East, // X increasing
     West, // X decreasing
-    East,  // X increasing
     None
 }

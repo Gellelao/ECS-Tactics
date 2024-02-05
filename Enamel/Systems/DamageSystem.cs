@@ -37,7 +37,7 @@ public class DamageSystem : MoonTools.ECS.System
                 if (Has<ScreenPositionComponent>(entity))
                 {
                     var screenPos = Get<ScreenPositionComponent>(entity).ToVector;
-                    _particleSpawner.SpawnSmokePuff(screenPos.X, screenPos.Y, ScreenDirection.Up, 20, 1000);
+                    _particleSpawner.SpawnSmokePuff(screenPos.X, screenPos.Y, ScreenDirection.Up, 20);
                 }
                 Destroy(entity);
             }
