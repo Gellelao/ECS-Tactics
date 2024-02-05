@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
@@ -7,13 +6,10 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
-using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
 using Enamel.Spawners;
-using System.Net.Mail;
-using Enamel.Components.Relations;
 using Enamel.Systems.UI;
 using Enamel.Utils;
 
@@ -51,6 +47,7 @@ public class Enamel : Game
     private static RelativePositionSystem? _relativePositionSystem;
     private static ToggleFrameSystem? _toggleFrameSystem;
     private static DeploymentSystem? _deploymentSystem;
+    private static InGameUiSystem? _inGameUiSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -142,6 +139,7 @@ public class Enamel : Game
 
         var characterSpawner = new CharacterSpawner(World);
         _deploymentSystem = new DeploymentSystem(World, characterSpawner);
+        _inGameUiSystem = new InGameUiSystem(World, menuUtils);
 
         /*
         RENDERERS
@@ -186,6 +184,7 @@ public class Enamel : Game
         _highlightSystem?.Update(elapsedTime);
         _mainMenuSystem?.Update(elapsedTime);
         _charSelectMenuSystem?.Update(elapsedTime);
+        _inGameUiSystem?.Update(elapsedTime);
         _centerChildrenSystem?.Update(elapsedTime);
         _relativePositionSystem?.Update(elapsedTime);
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem

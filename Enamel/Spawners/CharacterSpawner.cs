@@ -18,7 +18,7 @@ public class CharacterSpawner(World world) : Manipulator(world)
             Character.Loam => SpawnLoam(x, y),
             _ => throw new ArgumentOutOfRangeException(nameof(character), character, null)
         };
-        Set(spawnedCharacter, new TextureIndexComponent(character.ToSprite()));
+        Set(spawnedCharacter, new TextureIndexComponent(character.ToCharacterSprite()));
         return spawnedCharacter;
     }
 

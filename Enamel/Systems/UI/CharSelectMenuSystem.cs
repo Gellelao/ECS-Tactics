@@ -61,14 +61,6 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
             _menuUtils.DestroyExistingUiEntities();
             var startingPlayer = PlayerFilter.RandomEntity;
             Set(startingPlayer, new CurrentPlayerFlag());
-            
-            // TODO Move this to a dedicated in-game UI system
-            var endTurnButton = _menuUtils.CreateUiEntity(280, 160, 40, 20);
-            Set(endTurnButton, new TextureIndexComponent(Sprite.EndTurnButton));
-            Set(endTurnButton, new AnimationSetComponent(AnimationSet.EndTurnButton));
-            Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1, true));
-            Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2, true));
-            Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
         }
 
         if (SomeMessage<AddPlayerMessage>())
@@ -179,7 +171,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var character = Get<SelectedCharacterComponent>(playerEntity).Character;
         
         var characterPreview = _menuUtils.CreateRelativeUiEntity(characterSheet, 10, 0, 13, 13);
-        Set(characterPreview, new TextureIndexComponent(character.ToSprite()));
+        Set(characterPreview, new TextureIndexComponent(character.ToCharacterSprite()));
         Set(characterPreview, new AnimationSetComponent(AnimationSet.Wizard));
         Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
     }
