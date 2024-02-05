@@ -34,8 +34,8 @@ public class DeploymentSystem : MoonTools.ECS.System
 
         // Kind jank but we need to display the previews for deploying the wizard in 3 situations:
         // 1. When deployment first starts
-        // 2. After a character is place, in case they change their mind
-        // 3. After the end turn button is clicked
+        // 2. After a character is placed, in case they want to replace the character somewhere else
+        // 3. After the end turn button is clicked if there are more wizards to place
         if (Some<CurrentPlayerFlag>() && !Some<SpellToCastOnSelectComponent>())
         {
             Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
@@ -51,9 +51,6 @@ public class DeploymentSystem : MoonTools.ECS.System
         var coords = ReadMessage<GridCoordSelectedMessage>();
         Entity character = _characterSpawner.SpawnCharacter(characterToDeploy, coords.X, coords.Y);
         Relate(_deployingPlayer, character, new ControlsRelation());
-        
-        // Resend this in case they want to click again later to place the character somewhere else
-        Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
     }
 
     private void DestroyCharactersOfPlayer(Entity deployingPlayer)

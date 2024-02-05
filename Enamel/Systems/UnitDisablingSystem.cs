@@ -12,58 +12,32 @@ namespace Enamel.Systems;
 /*
  * NOTE : Currently some unit disabling also goes on in the TurnSystem, it just fits well there too but would be nice to consolidate it all to here at some point
  */
-public class UnitDisablingSystem : MoonTools.ECS.System
+public class UnitDisablingSystem(World world) : MoonTools.ECS.System(world)
 {
-    private Filter ControlledByPlayerFilter { get; }
-    private Filter DisabledControlledByPlayerFilter { get; }
-    public UnitDisablingSystem(World world) : base(world)
-    {
-        ControlledByPlayerFilter = FilterBuilder
-            .Include<ControlsRelation>()
-            .Exclude<DisabledFlag>()
-            .Build();
-        DisabledControlledByPlayerFilter = FilterBuilder
-            .Include<ControlsRelation>()
-            .Include<DisabledFlag>()
-            .Build();
-    }
-
     public override void Update(TimeSpan delta)
     {
         // You shouldn't be able to select units when casting a spell
         if (SomeMessage<PrepSpellMessage>())
         {
-            foreach (var entity in ControlledByPlayerFilter.Entities)
+            foreach (var (_,  character) in Relations<ControlsRelation>())
             {
-                Set(entity, new DisabledFlag());
+                Set(character, new DisabledFlag());
             }
         }
         if (SomeMessage<SpellWasCastMessage>() || SomeMessage<CancelMessage>())
         {
             // Assume the spell was cast by the current player
             var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
-            var playerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
-            foreach (var entity in DisabledControlledByPlayerFilter.Entities)
+            var currentPlayerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
+            foreach (var (player, character) in Relations<ControlsRelation>())
             {
                 // Remove disabled from all units on the caster's team, now that the spell has been cast
-                var playersControllingEntity = GetPlayerNumbersControllingEntity(entity);
-                if (playersControllingEntity.Contains(playerNumber))
+                var controllerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
+                if (controllerNumber == currentPlayerNumber)
                 {
-                    Remove<DisabledFlag>(entity);
+                    Remove<DisabledFlag>(character);
                 }
             }
         }
-    }
-
-    private List<Player> GetPlayerNumbersControllingEntity(Entity entity)
-    {
-        var entitiesControllingEntity = InRelations<ControlsRelation>(entity);
-        var playersControllingEntity = new List<Player>();
-        foreach (var controller in entitiesControllingEntity)
-        {
-            playersControllingEntity.Add(Get<PlayerNumberComponent>(controller).PlayerNumber);
-        }
-
-        return playersControllingEntity;
     }
 }
