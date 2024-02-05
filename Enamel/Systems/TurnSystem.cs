@@ -2,8 +2,8 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
-using Enamel.Enums;
 using MoonTools.ECS;
+using static Enamel.Utils.Utils;
 
 namespace Enamel.Systems;
 
@@ -50,12 +50,5 @@ public class TurnSystem : MoonTools.ECS.System
                 }
             }
         }
-    }
-
-    private static Player GetNextPlayer(Player playerNumber, int numberOfPlayers)
-    {
-        var currentInt = (int) playerNumber;
-        var nextPlayerNumber = (currentInt + 1 + numberOfPlayers) % numberOfPlayers;
-        return (Player) nextPlayerNumber;
     }
 }
