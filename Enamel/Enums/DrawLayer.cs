@@ -7,5 +7,6 @@ public enum DrawLayer
     Signage,
     Units,
     Overgrowth,
-    UserInterface
+    UserInterface,
+    UserInterfaceOverlay // Terrible, I know
 }

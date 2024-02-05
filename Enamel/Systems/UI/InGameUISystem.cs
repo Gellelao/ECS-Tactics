@@ -12,7 +12,7 @@ namespace Enamel.Systems.UI;
 
 public class InGameUiSystem : MoonTools.ECS.System
 {
-    private const int PORTRAIT_X = 297;
+    private const int PORTRAIT_X = 296;
     private readonly MenuUtils _menuUtils;
     private readonly Dictionary<Player, Entity> _portraitsByPlayer;
     private int _numberOfPlayers;
@@ -45,11 +45,15 @@ public class InGameUiSystem : MoonTools.ECS.System
                 var characterNumber = Get<SelectedCharacterComponent>(playerEntity).Character;
                 var portraitSprite = characterNumber.ToPortraitSprite();
 
-                var portrait = _menuUtils.CreateUiEntity(PORTRAIT_X, (int) playerNumber * 23);
+                var portrait = _menuUtils.CreateUiEntity(PORTRAIT_X, (int) playerNumber * 23 + 1 + (int)playerNumber);
                 Set(portrait, new TextureIndexComponent(portraitSprite));
                 
                 _portraitsByPlayer.Add(playerNumber, portrait);
             }
+            
+            var selectedPortraitFrame = _menuUtils.CreateUiEntity(295, 0);
+            Set(selectedPortraitFrame, new TextureIndexComponent(Sprite.SelectedPortrait));
+            Set(selectedPortraitFrame, new DrawLayerComponent(DrawLayer.UserInterfaceOverlay));
 
             OrderPortraits();
         }
@@ -67,7 +71,7 @@ public class InGameUiSystem : MoonTools.ECS.System
         {
             var portrait = _portraitsByPlayer[currentPlayerNumber];
             var speed = i == _numberOfPlayers-1 ? 200 : 80;
-            Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * 23, speed));
+            Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * 23 + 1 + i, speed));
             currentPlayerNumber = Utils.Utils.GetNextPlayer(currentPlayerNumber, _numberOfPlayers);
         }
     }

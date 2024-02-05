@@ -62,6 +62,7 @@ public static class ContentUtils
         textures[(int)Sprite.BlueWizPortrait] = content.Load<Texture2D>("BlueWizPortrait");
         textures[(int)Sprite.EmberWizPortrait] = content.Load<Texture2D>("EmberWizPortrait");
         textures[(int)Sprite.LoamWizPortrait] = content.Load<Texture2D>("LoamWizPortrait");
+        textures[(int)Sprite.SelectedPortrait] = content.Load<Texture2D>("SelectedPortrait");
 
         return textures;
     }

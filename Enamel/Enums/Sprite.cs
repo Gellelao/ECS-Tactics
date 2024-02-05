@@ -27,5 +27,6 @@ public enum Sprite
     EndTurnButton,
     BlueWizPortrait,
     EmberWizPortrait,
-    LoamWizPortrait
+    LoamWizPortrait,
+    SelectedPortrait
 }

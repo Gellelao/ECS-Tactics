@@ -189,7 +189,7 @@ public class Enamel : Game
         _unitSelectionSystem?.Update(elapsedTime); // Must run before the selectionPreview system so that the PlayerUnitSelectedMessage can be received in the selectionPreviewSystem
         _deploymentSystem?.Update(elapsedTime); // Must run before TurnSystem so the currentPlayer can have their SelectedCharacterComponent removed before the TurnSystem changes the current player. Should run before spellManagement system to spells can be learned on the frame characters are spawned.
         _turnSystem?.Update(elapsedTime);
-        _inGameUiSystem?.Update(elapsedTime);
+        _inGameUiSystem?.Update(elapsedTime); // Must run after turnSystem so that the currentPlayer has been updated when the portraits are reordered
         _spellCastingSystem?.Update(elapsedTime); // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed
         _gridToScreenCoordSystem?.Update(elapsedTime); // Yikes, running a system twice... this is needed because the entity spawned by the spell needs a position for the _gridMoveSystem to update it, and we can't wait for the _gridToScreenCoordSystem. Nor can we replicate the behaviour in that system, because its the only thing with access to the _offsets...
         _gridMoveSystem?.Update(elapsedTime); // Must run after the unitSelectionSystem so the unit has the SelectedFlag by the time the _gridMoveSystem runs  (is this true?)
