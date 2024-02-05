@@ -24,5 +24,8 @@ public enum Sprite
     LeftCharButton,
     RightCharButton,
     LoamWizard,
-    EndTurnButton
+    EndTurnButton,
+    BlueWizPortrait,
+    EmberWizPortrait,
+    LoamWizPortrait
 }

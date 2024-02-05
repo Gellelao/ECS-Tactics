@@ -59,6 +59,9 @@ public static class ContentUtils
         textures[(int)Sprite.LeftCharButton] = content.Load<Texture2D>("LeftCharButton");
         textures[(int)Sprite.RightCharButton] = content.Load<Texture2D>("RightCharButton");
         textures[(int)Sprite.EndTurnButton] = content.Load<Texture2D>("EndTurnButton");
+        textures[(int)Sprite.BlueWizPortrait] = content.Load<Texture2D>("BlueWizPortrait");
+        textures[(int)Sprite.EmberWizPortrait] = content.Load<Texture2D>("EmberWizPortrait");
+        textures[(int)Sprite.LoamWizPortrait] = content.Load<Texture2D>("LoamWizPortrait");
 
         return textures;
     }
