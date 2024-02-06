@@ -53,8 +53,11 @@ public class Enamel : Game
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
-    
+
+#if DEBUG
     private ImGuiRenderer _imGuiRenderer;
+    private ImGuiHelper _imGuiHelper;
+#endif
 
     private SpriteBatch _spriteBatch;
     private FontSystem _fontSystem;
@@ -87,13 +90,16 @@ public class Enamel : Game
         IsMouseVisible = true;
     }
     
+#if DEBUG
     protected override void Initialize()
     {
         _imGuiRenderer = new ImGuiRenderer(this);
         _imGuiRenderer.RebuildFontAtlas();
+        _imGuiHelper = new ImGuiHelper();
         
         base.Initialize();
     }
+#endif
 
     //you'll want to do most setup in LoadContent() rather than your constructor.
     protected override void LoadContent()
@@ -240,56 +246,14 @@ public class Enamel : Game
             Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
         _spriteBatch.Draw(_renderTarget, _finalRenderRectangle, Color.White);
         _spriteBatch.End();
-        
-        // Call BeforeLayout first to set things up
+
+#if DEBUG
         _imGuiRenderer.BeforeLayout(gameTime);
-
-        // Draw our UI
-        ImGuiLayout();
-
-        // Call AfterLayout now to finish up and draw all the things
+        _imGuiHelper.ImGuiLayout();
         _imGuiRenderer.AfterLayout();
+#endif
 
         base.Draw(gameTime);
-    }
-    
-    private float f = 0.0f;
-
-    private bool show_test_window = false;
-    private bool show_another_window = false;
-    private System.Numerics.Vector3 clear_color = new(114f / 255f, 144f / 255f, 154f / 255f);
-    private byte[] _textBuffer = new byte[100];
-    
-    protected virtual void ImGuiLayout()
-    {
-        // 1. Show a simple window
-        // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
-        {
-            ImGui.Text("Hello, world!");
-            ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
-            ImGui.ColorEdit3("clear color", ref clear_color);
-            if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
-            if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
-            ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
-
-            ImGui.InputText("Text input", _textBuffer, 100);
-        }
-
-        // 2. Show another simple window, this time using an explicit Begin/End pair
-        if (show_another_window)
-        {
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(200, 100), ImGuiCond.FirstUseEver);
-            ImGui.Begin("Another Window", ref show_another_window);
-            ImGui.Text("Hello");
-            ImGui.End();
-        }
-
-        // 3. Show the ImGui test window. Most of the sample code is in ImGui.ShowTestWindow()
-        if (show_test_window)
-        {
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(650, 20), ImGuiCond.FirstUseEver);
-            ImGui.ShowDemoWindow(ref show_test_window);
-        }
     }
 
     private void OnWindowClientSizeChanged(object? sender, EventArgs e)
