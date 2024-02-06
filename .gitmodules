@@ -7,3 +7,6 @@
 [submodule "FontStashSharp"]
 	path = FontStashSharp
 	url = https://github.com/FontStashSharp/FontStashSharp
+[submodule "ImGui.NET"]
+	path = ImGui.NET
+	url = https://github.com/ImGuiNET/ImGui.NET.git
