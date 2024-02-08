@@ -14,6 +14,7 @@ using Enamel.Spawners;
 using Enamel.Systems.UI;
 using Enamel.Utils;
 using ImGuiNET;
+using DebugSystem = Enamel.Utils.DebugSystem;
 
 namespace Enamel;
 
@@ -56,7 +57,7 @@ public class Enamel : Game
 
 #if DEBUG
     private ImGuiRenderer _imGuiRenderer;
-    private ImGuiHelper _imGuiHelper;
+    private DebugSystem _debugSystem;
 #endif
 
     private SpriteBatch _spriteBatch;
@@ -95,7 +96,7 @@ public class Enamel : Game
     {
         _imGuiRenderer = new ImGuiRenderer(this);
         _imGuiRenderer.RebuildFontAtlas();
-        _imGuiHelper = new ImGuiHelper();
+        _debugSystem = new DebugSystem(World);
         
         base.Initialize();
     }
@@ -249,7 +250,7 @@ public class Enamel : Game
 
 #if DEBUG
         _imGuiRenderer.BeforeLayout(gameTime);
-        _imGuiHelper.ImGuiLayout();
+        _debugSystem.ImGuiLayout();
         _imGuiRenderer.AfterLayout();
 #endif
 
