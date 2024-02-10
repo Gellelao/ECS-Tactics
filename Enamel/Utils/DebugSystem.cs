@@ -11,6 +11,7 @@ namespace Enamel.Utils;
 public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Framework.Vector2)> textures) : MoonTools.ECS.DebugSystem(world)
 {
     private bool _showTestWindow;
+    private readonly Dictionary<uint, bool> _selectionStatus = new();
     
     public override void Update(TimeSpan delta)
     {
@@ -21,20 +22,41 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
     {
         if (ImGui.TreeNode("Entities"))
         {
-            foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
+            if (ImGui.BeginTable("split1", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.SizingStretchProp))
             {
-                DrawSpriteForEntity(entity); ImGui.SameLine();
-                if (ImGui.CollapsingHeader(entity.ID.ToString()))
+                foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
                 {
-                    ShowComponentsForEntity(entity);
+                    var selected = _selectionStatus.TryGetValue(entity.ID, out var status) ? status : false;
+
+                    if (ImGui.Selectable(entity.ID.ToString(), selected))
+                    {
+                        selected = true;
+                    }
+                    
+                    if (selected)
+                    {
+                        ImGui.SetNextWindowSize(new Vector2(250, 250), ImGuiCond.FirstUseEver);
+                        ImGui.Begin(entity.ID.ToString(), ref selected);
+                        DrawSpriteForEntity(entity);
+                        ShowComponentsForEntity(entity);
+                        ImGui.End();
+                    }
+
+                    _selectionStatus.TryAdd(entity.ID, selected);
+                    _selectionStatus[entity.ID] = selected;
+                    
+                    DrawSpriteForEntity(entity);
+                    
+                    ImGui.TableNextColumn();
                 }
+                ImGui.EndTable();
             }
             ImGui.TreePop();
         }
 
         if (ImGui.Button("Test Window")) _showTestWindow = !_showTestWindow;
-        ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate,
-            ImGui.GetIO().Framerate));
+        ImGui.Text(
+            $"Application average {1000f / ImGui.GetIO().Framerate:F3} ms/frame ({ImGui.GetIO().Framerate:F1} FPS)");
 
         if (_showTestWindow)
         {

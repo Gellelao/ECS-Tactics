@@ -220,9 +220,9 @@ public class Enamel : Game
         _damageSystem?.Update(elapsedTime); // Should run after pushSystem because the pushSystem sends DamageMessages
         _spellManagementSystem?.Update(elapsedTime);
         _playerButtonsSystem?.Update(elapsedTime);
+        _toggleFrameSystem?.Update(elapsedTime); // Put before the disablingSystem so the buttons can "untoggle" before they get disabled
         _disablingSystem?.Update(elapsedTime);
         _animationSystem?.Update(elapsedTime);
-        _toggleFrameSystem?.Update(elapsedTime);
         _selectionPreviewSystem?.Update(elapsedTime); // Must run after the move system so that it doesn't delete the MovementPreviews before the Move system has a chance to get them
         _gridToScreenCoordSystem?.Update(elapsedTime); // Must run near the end so entities can have their PositionComponent attached before the renderer tries to access it
         World.FinishUpdate(); //always call this at the end of your update function.
