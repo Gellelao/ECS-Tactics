@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
@@ -90,17 +91,6 @@ public class Enamel : Game
         IsFixedTimeStep = false;
         IsMouseVisible = true;
     }
-    
-#if DEBUG
-    protected override void Initialize()
-    {
-        _imGuiRenderer = new ImGuiRenderer(this);
-        _imGuiRenderer.RebuildFontAtlas();
-        _debugSystem = new DebugSystem(World);
-        
-        base.Initialize();
-    }
-#endif
 
     //you'll want to do most setup in LoadContent() rather than your constructor.
     protected override void LoadContent()
@@ -117,6 +107,19 @@ public class Enamel : Game
         var textures = ContentUtils.LoadTextures(Content, GraphicsDevice, _spriteBatch);
         var animations = ContentUtils.LoadAnimations();
         var fonts = ContentUtils.LoadFonts(Content, GraphicsDevice);
+
+#if DEBUG
+        _imGuiRenderer = new ImGuiRenderer(this);
+        _imGuiRenderer.RebuildFontAtlas();
+        var imGuiTextures = new Dictionary<int, (IntPtr, Vector2)>();
+        for (var i = 0; i < textures.Length; i++)
+        {
+            var texture = textures[i];
+            if (texture == null) continue;
+            imGuiTextures.Add(i, (_imGuiRenderer.BindTexture(texture), new Vector2(texture.Width, texture.Height)));
+        }
+        _debugSystem = new DebugSystem(World, imGuiTextures);
+#endif
 
         /*
         SYSTEMS

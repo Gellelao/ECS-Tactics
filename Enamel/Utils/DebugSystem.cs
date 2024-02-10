@@ -1,66 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Enamel.Components;
-using Enamel.Enums;
 using ImGuiNET;
 using MoonTools.ECS;
 
 namespace Enamel.Utils;
 
-public class DebugSystem(World world) : MoonTools.ECS.DebugSystem(world)
+public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Framework.Vector2)> textures) : MoonTools.ECS.DebugSystem(world)
 {
+    private bool _showTestWindow;
+    
     public override void Update(TimeSpan delta)
     {
         throw new NotImplementedException();
     }
-    
-    private float f = 0.0f;
-
-    private bool show_test_window = false;
-    private bool show_another_window = false;
-    private System.Numerics.Vector3 clear_color = new(114f / 255f, 144f / 255f, 154f / 255f);
-    private byte[] _textBuffer = new byte[100];
 
     public void ImGuiLayout()
     {
-        ImGui.Text("All entities with component:");
-        ImGui.InputText("Text input", _textBuffer, 100);
-        ImGui.SeparatorText("ECS");
         if (ImGui.TreeNode("Entities"))
         {
-            foreach (var entity in Debug_GetEntities(typeof(HealthComponent)))
+            foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
             {
-                // TODO Somehow show the sprite here
+                DrawSpriteForEntity(entity); ImGui.SameLine();
                 if (ImGui.CollapsingHeader(entity.ID.ToString()))
                 {
-                    foreach (var component in Debug_GetAllComponentTypes(entity))
-                    {
-                        // TODO Reflection crimes to show the actual component???
-                        ImGui.BulletText(component.Name);
-                    }
+                    ShowComponentsForEntity(entity);
                 }
             }
             ImGui.TreePop();
         }
 
-        if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
-        if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
+        if (ImGui.Button("Test Window")) _showTestWindow = !_showTestWindow;
         ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate,
             ImGui.GetIO().Framerate));
 
-        // 2. Show another simple window, this time using an explicit Begin/End pair
-        if (show_another_window)
+        if (_showTestWindow)
         {
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(200, 100), ImGuiCond.FirstUseEver);
-            ImGui.Begin("Another Window", ref show_another_window);
-            ImGui.Text("Hello");
-            ImGui.End();
+            ImGui.SetNextWindowPos(new Vector2(650, 20), ImGuiCond.FirstUseEver);
+            ImGui.ShowDemoWindow(ref _showTestWindow);
+        }
+    }
+
+    private void DrawSpriteForEntity(Entity entity)
+    {
+        if (!Has<TextureIndexComponent>(entity)) return;
+        var textureIndex = (int)Get<TextureIndexComponent>(entity).Index;
+        var originalTextureWidth = textures[textureIndex].Item2.X;
+        var originalTextureHeight = textures[textureIndex].Item2.Y;
+        if (Has<SpriteRegionComponent>(entity))
+        {
+            var subregion = Get<SpriteRegionComponent>(entity);
+            var subregionX = subregion.X * subregion.Width; // Have to multiply these because of the way animations are stored with each frame being an index in an array
+            var subregionY = subregion.Y * subregion.Height;
+            Vector2 uv0 = new Vector2(subregionX / originalTextureWidth, subregionY / originalTextureHeight);
+            Vector2 uv1 = new Vector2((subregionX+subregion.Width) / originalTextureWidth, (subregionY+subregion.Height) / originalTextureHeight);
+            ImGui.Image(textures[textureIndex].Item1, new Vector2(subregion.Width, subregion.Height), uv0, uv1);
+        }
+        else
+        {
+            ImGui.Image(textures[textureIndex].Item1, new Vector2(originalTextureWidth, originalTextureHeight));
         }
 
-        // 3. Show the ImGui test window. Most of the sample code is in ImGui.ShowTestWindow()
-        if (show_test_window)
+    }
+
+    private void ShowComponentsForEntity(Entity? entity)
+    {
+        if (entity == null) return;
+        foreach (var component in Debug_GetAllComponentTypes((Entity) entity))
         {
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(650, 20), ImGuiCond.FirstUseEver);
-            ImGui.ShowDemoWindow(ref show_test_window);
+            // TODO Reflection crimes to show the actual component???
+            ImGui.BulletText(component.Name);
         }
     }
 }
