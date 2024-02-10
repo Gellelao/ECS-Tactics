@@ -80,8 +80,8 @@ public class Enamel : Game
         GraphicsDeviceManager = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
 
-        GraphicsDeviceManager.PreferredBackBufferWidth = Constants.PIXEL_SCREEN_WIDTH*2;
-        GraphicsDeviceManager.PreferredBackBufferHeight = Constants.PIXEL_SCREEN_HEIGHT*2;
+        GraphicsDeviceManager.PreferredBackBufferWidth = Constants.PIXEL_SCREEN_WIDTH*5;
+        GraphicsDeviceManager.PreferredBackBufferHeight = Constants.PIXEL_SCREEN_HEIGHT*5;
         GraphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
         GraphicsDeviceManager.PreferMultiSampling = false;
         GraphicsDeviceManager.IsFullScreen = false;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Enamel.Components;
+using Enamel.Enums;
 using ImGuiNET;
 using MoonTools.ECS;
 
@@ -24,8 +25,10 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
         {
             if (ImGui.BeginTable("split1", 2, ImGuiTableFlags.Borders | ImGuiTableFlags.SizingStretchProp))
             {
-                foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
+                foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)))
                 {
+                    if (Get<TextureIndexComponent>(entity).Index == Sprite.Tile || Get<TextureIndexComponent>(entity).Index == Sprite.TileSelectPreview) continue; // Just skip the ground tiles and previews for now
+                    
                     var selected = _selectionStatus.TryGetValue(entity.ID, out var status) ? status : false;
 
                     if (ImGui.Selectable(entity.ID.ToString(), selected))
