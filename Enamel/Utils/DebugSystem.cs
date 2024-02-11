@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Enamel.Components;
+using Enamel.Components.Relations;
 using Enamel.Enums;
 using ImGuiNET;
 using MoonTools.ECS;
@@ -43,10 +44,9 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
                     
                 if (selected)
                 {
-                    ImGui.SetNextWindowSize(new Vector2(250, 250), ImGuiCond.FirstUseEver);
-                    ImGui.Begin(entity.ID.ToString(), ref selected);
-                    DrawSpriteForEntity(entity);
-                    ShowComponentsForEntity(entity);
+                    ImGui.SetNextWindowSize(new Vector2(300, 400), ImGuiCond.FirstUseEver);
+                    ImGui.Begin(entity.ID.ToString(), ref selected, ImGuiWindowFlags.AlwaysAutoResize);
+                    ShowEntityDetails(entity);
                     ImGui.End();
                 }
 
@@ -67,6 +67,13 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
             ImGui.SetNextWindowPos(new Vector2(650, 20), ImGuiCond.FirstUseEver);
             ImGui.ShowDemoWindow(ref _showTestWindow);
         }
+    }
+
+    private void ShowEntityDetails(Entity entity)
+    {
+        DrawSpriteForEntity(entity);
+        ShowComponentsForEntity(entity);
+        ShowRelationsOfEntity(entity);
     }
 
     private bool DrawButtonForEntity(Entity entity)
@@ -112,10 +119,30 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
     private void ShowComponentsForEntity(Entity? entity)
     {
         if (entity == null) return;
-        foreach (var component in Debug_GetAllComponentTypes((Entity) entity))
+        ImGui.SetNextItemOpen(true, ImGuiCond.FirstUseEver);
+        if (ImGui.TreeNode($"Components for entity {entity.Value.ID.ToString()}"))
         {
-            // TODO Reflection crimes to show the actual component???
-            ImGui.BulletText(component.Name);
+            foreach (var component in Debug_GetAllComponentTypes((Entity) entity))
+            {
+                // TODO Reflection crimes to show the actual component???
+                ImGui.BulletText(component.Name);
+            }
+            ImGui.TreePop();
+        }
+    }
+
+    private void ShowRelationsOfEntity(Entity entity)
+    {
+        if (HasOutRelation<IsParentRelation>(entity))
+        {
+            if (ImGui.TreeNode("Children"))
+            {
+                foreach (var child in OutRelations<IsParentRelation>(entity))
+                {
+                    ShowEntityDetails(child);
+                }
+                ImGui.TreePop();
+            }
         }
     }
 }
