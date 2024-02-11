@@ -7,6 +7,7 @@ using Enamel.Systems;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
+using Enamel.Components.UI;
 using Enamel.Renderers;
 using FontStashSharp;
 using Enamel.Enums;
@@ -52,6 +53,7 @@ public class Enamel : Game
     private static ToggleFrameSystem? _toggleFrameSystem;
     private static DeploymentSystem? _deploymentSystem;
     private static InGameUiSystem? _inGameUiSystem;
+    private static DragSystem? _dragSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -162,6 +164,7 @@ public class Enamel : Game
         var characterSpawner = new CharacterSpawner(World);
         _deploymentSystem = new DeploymentSystem(World, characterSpawner, menuUtils);
         _inGameUiSystem = new InGameUiSystem(World, menuUtils);
+        _dragSystem = new DragSystem(World, _screenUtils);
 
         /*
         RENDERERS
@@ -203,6 +206,7 @@ public class Enamel : Game
         _destroyAfterDurationSystem?.Update(elapsedTime);
         _screenMoveSystem?.Update(elapsedTime);
         _inputSystem?.Update(elapsedTime);
+        _dragSystem?.Update(elapsedTime);
         _highlightSystem?.Update(elapsedTime);
         _mainMenuSystem?.Update(elapsedTime);
         _charSelectMenuSystem?.Update(elapsedTime);

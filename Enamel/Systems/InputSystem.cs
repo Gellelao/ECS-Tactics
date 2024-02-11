@@ -14,9 +14,13 @@ public class InputSystem : MoonTools.ECS.System
 {
     private Filter SelectableGridCoordFilter { get; }
     private Filter ClickableUiFilter { get; }
+    private Filter DraggableFilter { get; }
+    private Filter BeingDraggedFilter { get; }
+    
     private MouseState _mousePrevious;
     private readonly ScreenUtils _screenUtils;
-
+    
+    // Input stuff also happens in ToggleFrameSystem (visual only)
     public InputSystem(World world, ScreenUtils screenUtils) : base(world)
     {
         SelectableGridCoordFilter = FilterBuilder
@@ -27,14 +31,24 @@ public class InputSystem : MoonTools.ECS.System
             .Include<OnClickComponent>()
             .Exclude<DisabledFlag>()
             .Build();
+        DraggableFilter = FilterBuilder
+            .Include<DraggableComponent>()
+            .Exclude<DisabledFlag>()
+            .Build();
+        BeingDraggedFilter = FilterBuilder
+            .Include<BeingDraggedFlag>()
+            .Build();
         _screenUtils = screenUtils;
     }
-
 
     public override void Update(TimeSpan delta)
     {
         var mouseCurrent = Mouse.GetState();
-
+        
+        if (mouseCurrent.LeftButton == ButtonState.Pressed && _mousePrevious.LeftButton == ButtonState.Released)
+        {
+            OnLeftButtonPress();
+        }
         if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
         {
             OnLeftButtonRelease();
@@ -46,7 +60,27 @@ public class InputSystem : MoonTools.ECS.System
         _mousePrevious = mouseCurrent;
     }
 
+    private void OnLeftButtonPress()
+    {
+        foreach (var entity in DraggableFilter.Entities)
+        {
+            var position = Get<ScreenPositionComponent>(entity);
+            var dimensions = Get<DimensionsComponent>(entity);
+            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            {
+                Set(entity, new BeingDraggedFlag());
+            }
+        }
+    }
+
     private void OnLeftButtonRelease(){
+        // Release dragged entities
+        foreach (var entity in BeingDraggedFilter.Entities)
+        {
+            Remove<BeingDraggedFlag>(entity);
+            Set(entity, new DroppedComponent());
+        }
+        
         // Button clicks
         foreach (var button in ClickableUiFilter.Entities)
         {

@@ -53,7 +53,7 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
         return new Vector2((int)Math.Floor(gridX), (int)Math.Floor(gridY));
     }
 
-    private (int mouseX, int mouseY) GetMouseCoords(){
+    public (int mouseX, int mouseY) GetMouseCoords(){
         
         var mouseCurrent = Mouse.GetState();
         

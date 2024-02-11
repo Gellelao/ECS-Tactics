@@ -38,6 +38,20 @@ public class InGameUiSystem : MoonTools.ECS.System
             Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
+            
+            var testOrb = World.CreateEntity();
+            World.Set(testOrb, new TextureIndexComponent(Sprite.ArcaneBubble));
+            World.Set(testOrb, new ScreenPositionComponent(100, 100));
+            World.Set(testOrb, new DimensionsComponent(30, 30));
+            World.Set(testOrb, new DraggableComponent(100, 100));
+            World.Set(testOrb, new DrawLayerComponent(DrawLayer.UserInterface));
+        
+            var testSocket = World.CreateEntity();
+            World.Set(testSocket, new TextureIndexComponent(Sprite.SelectedPortrait));
+            World.Set(testSocket, new ScreenPositionComponent(200, 100));
+            World.Set(testSocket, new DimensionsComponent(25, 25));
+            World.Set(testSocket, new SocketComponent());
+            World.Set(testSocket, new DrawLayerComponent(DrawLayer.UserInterface));
 
             _portraitsByPlayer.Clear();
             foreach (var playerEntity in PlayerFilter.Entities)
