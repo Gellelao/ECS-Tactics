@@ -23,7 +23,8 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
 
     public void ImGuiLayout()
     {
-        if (ImGui.TreeNode("Entities with Sprites"))
+        ImGui.SetNextItemOpen(true, ImGuiCond.FirstUseEver);
+        if (ImGui.TreeNode("Entities"))
         {
             var count = 0;
             ImGui.SliderInt("size", ref _buttonSize, 5, 100);

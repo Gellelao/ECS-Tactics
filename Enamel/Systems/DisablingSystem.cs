@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
 using Enamel.Components.UI;
-using Enamel.Enums;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
@@ -42,14 +39,18 @@ public class DisablingSystem : MoonTools.ECS.System
         {
             // Assume the spell was cast by the current player
             var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
-            var currentPlayerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
-            foreach (var (player, character) in Relations<ControlsRelation>())
+            if (!Has<SelectedCharacterComponent>(currentPlayer))
             {
-                // Remove disabled from all units on the caster's team, now that the spell has been cast
-                var controllerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
-                if (controllerNumber == currentPlayerNumber)
+                // If the player has a "selected character" we know they are deploying, so leave their characters disabled
+                var currentPlayerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
+                foreach (var (player, character) in Relations<ControlsRelation>())
                 {
-                    Remove<DisabledFlag>(character);
+                    // Remove disabled from all units on the caster's team, now that the spell has been cast
+                    var controllerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
+                    if (controllerNumber == currentPlayerNumber)
+                    {
+                        Remove<DisabledFlag>(character);
+                    }
                 }
             }
             

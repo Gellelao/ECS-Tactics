@@ -31,6 +31,8 @@ public class DeploymentSystem : MoonTools.ECS.System
         {
             Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
             
+            // Would be really nice to put all UI stuff for each "screen" in one system but we need a way to delete this button from this system
+            // and simplest way I could think of was store it in a field...
             _redeployButton = _menuUtils.CreateUiEntity(255, 160, 20, 20);
             Set(_redeployButton, new TextureIndexComponent(Sprite.RedeployWizardButton));
             Set(_redeployButton, new AnimationSetComponent(AnimationSet.RedeployWizardButton));
@@ -66,6 +68,7 @@ public class DeploymentSystem : MoonTools.ECS.System
         var coords = ReadMessage<GridCoordSelectedMessage>();
         Entity character = _characterSpawner.SpawnCharacter(characterToDeploy, coords.X, coords.Y);
         Relate(_deployingPlayer, character, new ControlsRelation());
+        Set(character, new DisabledFlag());
     }
 
     private void DestroyCharactersOfPlayer(Entity deployingPlayer)

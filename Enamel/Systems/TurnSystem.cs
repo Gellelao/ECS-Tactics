@@ -39,6 +39,12 @@ public class TurnSystem : MoonTools.ECS.System
                 {
                     Remove<DisabledFlag>(character);
                 }
+
+                // If they just have 1 character then auto-select it
+                if (OutRelationCount<ControlsRelation>(playerEntity) == 1)
+                {
+                    Set(OutRelationSingleton<ControlsRelation>(playerEntity), new SelectedFlag());
+                }
             }
             else
             {
