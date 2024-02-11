@@ -152,7 +152,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         
         Set(characterSheet, new OrderComponent((int)playerNumber));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
-        Relate(playerEntity, characterSheet, new PlayerSheetRelation());
+        Relate(playerEntity, characterSheet, new IsParentRelation());
 
         var leftButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 3, 44, 13, 13);
         Set(leftButton, new TextureIndexComponent(Sprite.LeftCharButton));
@@ -184,10 +184,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         }
 
         var highestNumberedPlayer = GetHighestNumberedPlayer();
-        var sheet = OutRelationSingleton<PlayerSheetRelation>(highestNumberedPlayer);
         
-        Destroy(highestNumberedPlayer);
-        _menuUtils.RecursivelyDestroy(sheet);
+        _menuUtils.RecursivelyDestroy(highestNumberedPlayer);
         
         Remove<DisabledFlag>(_addPlayerButton);
     }

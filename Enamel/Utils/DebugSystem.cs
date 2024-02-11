@@ -23,11 +23,13 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
 
     public void ImGuiLayout()
     {
-        if (ImGui.TreeNode("Entities"))
+        if (ImGui.TreeNode("Entities with Sprites"))
         {
             var count = 0;
             ImGui.SliderInt("size", ref _buttonSize, 5, 100);
-            foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
+            var entitiesToShow = Debug_GetEntities(typeof(PlayerNumberComponent));
+            entitiesToShow = entitiesToShow.Concat(Debug_GetEntities(typeof(TextureIndexComponent)).Reverse());
+            foreach (var entity in entitiesToShow)
             {
                 var selected = _selectionStatus.TryGetValue(entity.ID, out var status) ? status : false;
                 
@@ -78,7 +80,10 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
 
     private bool DrawButtonForEntity(Entity entity)
     {
-        if (!Has<TextureIndexComponent>(entity)) return false;
+        if (!Has<TextureIndexComponent>(entity))
+        {
+            return ImGui.Button(entity.ID.ToString(), new Vector2(_buttonSize, _buttonSize));
+        };
         var textureIndex = (int)Get<TextureIndexComponent>(entity).Index;
         var originalTextureWidth = textures[textureIndex].Item2.X;
         var originalTextureHeight = textures[textureIndex].Item2.Y;
