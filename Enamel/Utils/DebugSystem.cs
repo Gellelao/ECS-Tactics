@@ -13,6 +13,7 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
 {
     private bool _showTestWindow;
     private readonly Dictionary<uint, bool> _selectionStatus = new();
+    private int _buttonSize = 50;
     
     public override void Update(TimeSpan delta)
     {
@@ -23,16 +24,22 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
     {
         if (ImGui.TreeNode("Entities"))
         {
-            foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)))
+            var count = 0;
+            ImGui.SliderInt("size", ref _buttonSize, 5, 100);
+            foreach (var entity in Debug_GetEntities(typeof(TextureIndexComponent)).Reverse())
             {
-                if (Get<TextureIndexComponent>(entity).Index == Sprite.Tile || Get<TextureIndexComponent>(entity).Index == Sprite.TileSelectPreview) continue; // Just skip the ground tiles and previews for now
-                    
                 var selected = _selectionStatus.TryGetValue(entity.ID, out var status) ? status : false;
-
+                
                 if (DrawButtonForEntity(entity))
                 {
                     selected = true;
                 }
+                var window_visible_x2 = ImGui.GetWindowPos().X + ImGui.GetWindowContentRegionMax().X;
+                var style = ImGui.GetStyle();
+                float last_button_x2 = ImGui.GetItemRectMax().X;
+                float next_button_x2 = last_button_x2 + style.ItemSpacing.X + _buttonSize; // Expected position if next button was on same line
+                if (count + 1 < Debug_GetEntities(typeof(TextureIndexComponent)).Count() && next_button_x2 < window_visible_x2)
+                    ImGui.SameLine();
                     
                 if (selected)
                 {
@@ -45,8 +52,8 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
 
                 _selectionStatus.TryAdd(entity.ID, selected);
                 _selectionStatus[entity.ID] = selected;
-                    
-                ImGui.TableNextColumn();
+
+                count++;
             }
             ImGui.TreePop();
         }
@@ -75,10 +82,10 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
             var subregionY = subregion.Y * subregion.Height;
             Vector2 uv0 = new Vector2(subregionX / originalTextureWidth, subregionY / originalTextureHeight);
             Vector2 uv1 = new Vector2((subregionX+subregion.Width) / originalTextureWidth, (subregionY+subregion.Height) / originalTextureHeight);
-            return ImGui.ImageButton(entity.ID.ToString(), textures[textureIndex].Item1, new Vector2(subregion.Width, subregion.Height), uv0, uv1);
+            return ImGui.ImageButton(entity.ID.ToString(), textures[textureIndex].Item1, new Vector2(_buttonSize, _buttonSize), uv0, uv1);
         }
 
-        return ImGui.ImageButton(entity.ID.ToString(),textures[textureIndex].Item1, new Vector2(originalTextureWidth, originalTextureHeight));
+        return ImGui.ImageButton(entity.ID.ToString(), textures[textureIndex].Item1, new Vector2(_buttonSize, _buttonSize));
     }
     
     private void DrawSpriteForEntity(Entity entity)
