@@ -64,9 +64,7 @@ public class InputSystem : MoonTools.ECS.System
     {
         foreach (var entity in DraggableFilter.Entities)
         {
-            var position = Get<ScreenPositionComponent>(entity);
-            var dimensions = Get<DimensionsComponent>(entity);
-            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            if (_screenUtils.MouseOverEntity(entity))
             {
                 Set(entity, new BeingDraggedFlag());
             }
@@ -84,9 +82,7 @@ public class InputSystem : MoonTools.ECS.System
         // Button clicks
         foreach (var button in ClickableUiFilter.Entities)
         {
-            var dimensions = Get<DimensionsComponent>(button);
-            var position = Get<ScreenPositionComponent>(button);
-            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            if (_screenUtils.MouseOverEntity(button))
             {
                 // May be better to have "buttonClickMessage" and a dedicated ButtonSystem, but for now this works
                 var onClick = Get<OnClickComponent>(button);

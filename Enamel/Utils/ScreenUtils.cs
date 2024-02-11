@@ -1,5 +1,7 @@
 ﻿using System;
+using Enamel.Components;
 using Enamel.Components.Messages;
+using Enamel.Components.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MoonTools.ECS;
@@ -27,6 +29,18 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
     public Vector2 MouseToGridCoords(){
         var (mouseX, mouseY) = GetMouseCoords();
         return ScreenToGridCoords(mouseX, mouseY);
+    }
+
+    public bool MouseOverEntity(Entity entity)
+    {
+        if (!Has<ScreenPositionComponent>(entity) || !Has<DimensionsComponent>(entity))
+        {
+            return false;
+        }
+
+        var screenPosition = Get<ScreenPositionComponent>(entity);
+        var dimensions = Get<DimensionsComponent>(entity);
+        return MouseInRectangle(screenPosition.X, screenPosition.Y, dimensions.Width, dimensions.Height);
     }
 
     public bool MouseInRectangle(int rectX, int rectY, int rectWidth, int rectHeight)

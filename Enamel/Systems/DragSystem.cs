@@ -63,9 +63,7 @@ public class DragSystem : MoonTools.ECS.System
     {
         foreach (var entity in SocketFilter.Entities)
         {
-            var position = Get<ScreenPositionComponent>(entity);
-            var dimensions = Get<DimensionsComponent>(entity);
-            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            if (_screenUtils.MouseOverEntity(entity))
             {
                 return entity;
             }

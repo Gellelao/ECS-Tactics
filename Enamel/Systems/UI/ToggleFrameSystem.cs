@@ -32,10 +32,8 @@ public class ToggleFrameSystem : MoonTools.ECS.System
     {
         foreach (var entity in ToggleOnMouseHoverFilter.Entities)
         {
-            var dimensions = Get<DimensionsComponent>(entity);
-            var position = Get<ScreenPositionComponent>(entity);
             var toggleStatus = Get<ToggleFrameOnMouseHoverComponent>(entity);
-            var hovered = _screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height);
+            var hovered = _screenUtils.MouseOverEntity(entity);
 
             switch (toggleStatus.Toggled)
             {
@@ -54,12 +52,10 @@ public class ToggleFrameSystem : MoonTools.ECS.System
 
         foreach (var entity in ToggleOnMouseDownFilter.Entities)
         {
-            var dimensions = Get<DimensionsComponent>(entity);
-            var position = Get<ScreenPositionComponent>(entity);
             var toggleStatus = Get<ToggleFrameOnMouseDownComponent>(entity);
 
             // If mouse is not over the entity, toggle it off
-            if(!_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            if(!_screenUtils.MouseOverEntity(entity))
             {
                 if (!toggleStatus.Toggled) continue;
                 SetEntityFrame(entity, 0);

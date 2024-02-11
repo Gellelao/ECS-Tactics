@@ -42,9 +42,7 @@ public class HighlightSystem : MoonTools.ECS.System
         // Button hovers
         foreach (var button in ClickableUiFilter.Entities)
         {
-            var dimensions = Get<DimensionsComponent>(button);
-            var position = Get<ScreenPositionComponent>(button);
-            if (_screenUtils.MouseInRectangle(position.X, position.Y, dimensions.Width, dimensions.Height))
+            if (_screenUtils.MouseOverEntity(button))
             {
                 Set(button, new HighlightedFlag());
             }
