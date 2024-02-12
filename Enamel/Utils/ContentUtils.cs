@@ -67,6 +67,9 @@ public static class ContentUtils
         textures[(int) Sprite.LoamWizPortrait] = content.Load<Texture2D>("LoamWizPortrait");
         textures[(int) Sprite.SelectedPortrait] = content.Load<Texture2D>("SelectedPortrait");
         textures[(int) Sprite.RedeployWizardButton] = content.Load<Texture2D>("RedeployWizardButton");
+        textures[(int) Sprite.BlueOrb] = content.Load<Texture2D>("BlueOrb");
+        textures[(int) Sprite.Socket] = content.Load<Texture2D>("Socket");
+        textures[(int) Sprite.Tome] = content.Load<Texture2D>("Tome");
 
         return textures;
     }
@@ -93,6 +96,7 @@ public static class ContentUtils
         animations[(int) AnimationSet.CharButton] = new AnimationData(13, 13, [[0, 1, 2]]);
         animations[(int) AnimationSet.EndTurnButton] = new AnimationData(40, 20, [[0, 1, 2]]);
         animations[(int) AnimationSet.RedeployWizardButton] = new AnimationData(20, 20, [[0, 1, 2]]);
+        animations[(int) AnimationSet.Orb] = new AnimationData(12, 12, [[0, 1, 2]]);
 
         return animations;
     }

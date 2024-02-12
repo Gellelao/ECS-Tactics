@@ -1,6 +1,7 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.TempComponents;
+using Enamel.Components.UI;
 using Enamel.Utils;
 using MoonTools.ECS;
 
@@ -37,7 +38,7 @@ public class DragSystem : MoonTools.ECS.System
             else
             {
                 var draggableComponent = Get<DraggableComponent>(entity);
-                Set(entity, new ScreenPositionComponent(draggableComponent.OriginalX, draggableComponent.OriginalY));
+                Set(entity, new MovingToScreenPositionComponent(draggableComponent.OriginalX, draggableComponent.OriginalY, 1000));
             }
         }
 
@@ -47,12 +48,16 @@ public class DragSystem : MoonTools.ECS.System
             if (socket != null)
             {
                 var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
-                Set(entity, socketCoords);
+                Set(entity, new MovingToScreenPositionComponent(socketCoords.X, socketCoords.Y, 100));
             }
             else
             {
                 var (mouseX, mouseY) = _screenUtils.GetMouseCoords();
+                var dimensions = Get<DimensionsComponent>(entity);
+                mouseX -= dimensions.Width / 2;
+                mouseY -= dimensions.Height / 2;
                 Set(entity, new ScreenPositionComponent(mouseX, mouseY));
+                Remove<MovingToScreenPositionComponent>(entity);
             }
         }
     }

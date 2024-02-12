@@ -38,18 +38,26 @@ public class InGameUiSystem : MoonTools.ECS.System
             Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
+            
+            var tome = World.CreateEntity();
+            World.Set(tome, new TextureIndexComponent(Sprite.Tome));
+            World.Set(tome, new ScreenPositionComponent(30, 120));
+            World.Set(tome, new DrawLayerComponent(DrawLayer.UserInterface));
 
             var testOrb = World.CreateEntity();
-            World.Set(testOrb, new TextureIndexComponent(Sprite.ArcaneBubble));
+            World.Set(testOrb, new TextureIndexComponent(Sprite.BlueOrb));
             World.Set(testOrb, new ScreenPositionComponent(100, 100));
-            World.Set(testOrb, new DimensionsComponent(30, 30));
-            World.Set(testOrb, new DraggableComponent(100, 100));
-            World.Set(testOrb, new DrawLayerComponent(DrawLayer.UserInterface));
+            World.Set(testOrb, new DimensionsComponent(12, 12));
+            World.Set(testOrb, new DraggableComponent(30, 80));
+            World.Set(testOrb, new DrawLayerComponent(DrawLayer.UserInterfaceOverlay)); // Uargh!
+            World.Set(testOrb, new ToggleFrameOnMouseHoverComponent(1));
+            World.Set(testOrb, new ToggleFrameOnMouseDownComponent(2));
+            World.Set(testOrb, new AnimationSetComponent(AnimationSet.Orb));
 
             var testSocket = World.CreateEntity();
-            World.Set(testSocket, new TextureIndexComponent(Sprite.SelectedPortrait));
-            World.Set(testSocket, new ScreenPositionComponent(200, 100));
-            World.Set(testSocket, new DimensionsComponent(25, 25));
+            World.Set(testSocket, new TextureIndexComponent(Sprite.Socket));
+            World.Set(testSocket, new ScreenPositionComponent(70, 130));
+            World.Set(testSocket, new DimensionsComponent(12, 12));
             World.Set(testSocket, new SocketComponent());
             World.Set(testSocket, new DrawLayerComponent(DrawLayer.UserInterface));
 

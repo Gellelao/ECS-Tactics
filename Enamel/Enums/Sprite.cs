@@ -29,5 +29,8 @@ public enum Sprite
     EmberWizPortrait,
     LoamWizPortrait,
     SelectedPortrait,
-    RedeployWizardButton
+    RedeployWizardButton,
+    BlueOrb,
+    Socket,
+    Tome
 }
