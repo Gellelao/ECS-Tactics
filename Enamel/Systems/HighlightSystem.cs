@@ -16,7 +16,7 @@ public class HighlightSystem : MoonTools.ECS.System
     private Filter HighlightedFilter { get; }
     private Filter ClickableUiFilter { get; }
     private Filter SelectableGridCoordFilter { get; }
-    
+
     public HighlightSystem(World world, ScreenUtils screenUtils) : base(world)
     {
         _screenUtils = screenUtils;
@@ -35,10 +35,11 @@ public class HighlightSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         // Clear existing hovers
-        foreach (var selectedEntity in HighlightedFilter.Entities){
+        foreach (var selectedEntity in HighlightedFilter.Entities)
+        {
             Remove<HighlightedFlag>(selectedEntity);
         }
-        
+
         // Button hovers
         foreach (var button in ClickableUiFilter.Entities)
         {
@@ -53,7 +54,7 @@ public class HighlightSystem : MoonTools.ECS.System
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
-            if((int)gridCoords.X == x && (int)gridCoords.Y == y)
+            if ((int) gridCoords.X == x && (int) gridCoords.Y == y)
             {
                 Set(entity, new HighlightedFlag());
             }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Enamel.Components;
-using Enamel.Components.Messages;
 using Enamel.Components.Spells.SpawnedEntities;
 using Enamel.Components.TempComponents;
 using Enamel.Enums;
@@ -71,7 +70,12 @@ public class PushSystem : MoonTools.ECS.System
         Remove<GridCoordComponent>(entity);
     }
 
-    private bool HandleCollisionAndOutOfBounds(Entity movingEntity, GridDirection gridDirection, int candidateX, int candidateY)
+    private bool HandleCollisionAndOutOfBounds(
+        Entity movingEntity,
+        GridDirection gridDirection,
+        int candidateX,
+        int candidateY
+    )
     {
         var entitiesAtLocation = GetEntitiesAtCoords(candidateX, candidateY);
 
@@ -82,10 +86,14 @@ public class PushSystem : MoonTools.ECS.System
             {
                 // A collision has occurred
                 var collidee = impassableEntities.First(); // Not sure if just getting first here will work forever...
-                var damage = Has<ProjectileDamageComponent>(movingEntity) ? Get<ProjectileDamageComponent>(movingEntity).Damage : 0;
+                var damage = Has<ProjectileDamageComponent>(movingEntity)
+                    ? Get<ProjectileDamageComponent>(movingEntity).Damage
+                    : 0;
                 Set(collidee, new TakingDamageComponent(damage));
 
-                var collisionBehaviour = Has<OnCollisionComponent>(movingEntity) ? Get<OnCollisionComponent>(movingEntity).Behaviour : CollisionBehaviour.Stop;
+                var collisionBehaviour = Has<OnCollisionComponent>(movingEntity)
+                    ? Get<OnCollisionComponent>(movingEntity).Behaviour
+                    : CollisionBehaviour.Stop;
                 switch (collisionBehaviour)
                 {
                     case CollisionBehaviour.Stop:
@@ -103,6 +111,7 @@ public class PushSystem : MoonTools.ECS.System
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 return false;
             }
         }
@@ -133,7 +142,7 @@ public class PushSystem : MoonTools.ECS.System
             var (gridCoordEntityX, gridCoordEntityY) = Get<GridCoordComponent>(entity);
             if (gridCoordEntityX == x && gridCoordEntityY == y)
             {
-                  entities.Add(entity);
+                entities.Add(entity);
             }
         }
 

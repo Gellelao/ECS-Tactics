@@ -10,7 +10,10 @@ namespace ImGuiNET.SampleProgram.XNA
 
         static DrawVertDeclaration()
         {
-            unsafe { Size = sizeof(ImDrawVert); }
+            unsafe
+            {
+                Size = sizeof(ImDrawVert);
+            }
 
             Declaration = new VertexDeclaration(
                 Size,

@@ -10,7 +10,18 @@ public readonly record struct AnimationStatusComponent(
     int CurrentFrame = 0
 )
 {
-    public AnimationStatusComponent(AnimationType CurrentAnimation, double MillisBetweenFrames, double MillisSinceLastFrame = 0, int CurrentFrame = 0) : this(CurrentAnimation, CurrentAnimation, MillisBetweenFrames, MillisSinceLastFrame, CurrentFrame)
+    public AnimationStatusComponent(
+        AnimationType CurrentAnimation,
+        double MillisBetweenFrames,
+        double MillisSinceLastFrame = 0,
+        int CurrentFrame = 0
+    ) : this(
+        CurrentAnimation,
+        CurrentAnimation,
+        MillisBetweenFrames,
+        MillisSinceLastFrame,
+        CurrentFrame
+    )
     {
     }
 }

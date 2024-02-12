@@ -27,7 +27,7 @@ public class CharacterSpawner(World world) : Manipulator(world)
         var loam = SpawnBaseWizard(x, y);
         Set(loam, new LearningSpellComponent(SpellId.StepOnce));
         Set(loam, new LearningSpellComponent(SpellId.RockCharge));
-        
+
         return loam;
     }
 
@@ -36,7 +36,7 @@ public class CharacterSpawner(World world) : Manipulator(world)
         var ember = SpawnBaseWizard(x, y);
         Set(ember, new LearningSpellComponent(SpellId.StepOnce));
         Set(ember, new LearningSpellComponent(SpellId.Fireball));
-        
+
         return ember;
     }
 
@@ -44,14 +44,14 @@ public class CharacterSpawner(World world) : Manipulator(world)
     {
         var blueWiz = SpawnBaseWizard(x, y);
         Set(blueWiz, new LearningSpellComponent(SpellId.StepOnce));
-        
+
         return blueWiz;
     }
 
     private Entity SpawnBaseWizard(int x, int y)
     {
         var character = World.CreateEntity();
-        
+
         Set(character, new AnimationSetComponent(AnimationSet.Wizard));
         Set(character, new AnimationStatusComponent(AnimationType.Idle, Constants.DEFAULT_MILLIS_BETWEEN_FRAMES));
         Set(character, new SpriteOriginComponent(-4, 18));

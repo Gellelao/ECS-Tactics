@@ -6,7 +6,8 @@ namespace Enamel.Utils;
 
 public static class Utils
 {
-    public static Vector2 GridToScreenCoords(int gridX, int gridY){
+    public static Vector2 GridToScreenCoords(int gridX, int gridY)
+    {
         float screenX = Constants.TILE_WIDTH * gridX / 2 -
                         Constants.TILE_WIDTH * gridY / 2;
         float screenY = Constants.TILE_HEIGHT * gridX / 2 +

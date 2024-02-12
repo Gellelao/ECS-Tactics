@@ -38,14 +38,14 @@ public class InGameUiSystem : MoonTools.ECS.System
             Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
-            
+
             var testOrb = World.CreateEntity();
             World.Set(testOrb, new TextureIndexComponent(Sprite.ArcaneBubble));
             World.Set(testOrb, new ScreenPositionComponent(100, 100));
             World.Set(testOrb, new DimensionsComponent(30, 30));
             World.Set(testOrb, new DraggableComponent(100, 100));
             World.Set(testOrb, new DrawLayerComponent(DrawLayer.UserInterface));
-        
+
             var testSocket = World.CreateEntity();
             World.Set(testSocket, new TextureIndexComponent(Sprite.SelectedPortrait));
             World.Set(testSocket, new ScreenPositionComponent(200, 100));
@@ -60,12 +60,15 @@ public class InGameUiSystem : MoonTools.ECS.System
                 var characterNumber = Get<SelectedCharacterComponent>(playerEntity).Character;
                 var portraitSprite = characterNumber.ToPortraitSprite();
 
-                var portrait = _menuUtils.CreateUiEntity(PORTRAIT_X, (int) playerNumber * PORTRAIT_HEIGHT + 1 + (int)playerNumber);
+                var portrait = _menuUtils.CreateUiEntity(
+                    PORTRAIT_X,
+                    (int) playerNumber * PORTRAIT_HEIGHT + 1 + (int) playerNumber
+                );
                 Set(portrait, new TextureIndexComponent(portraitSprite));
-                
+
                 _portraitsByPlayer.Add(playerNumber, portrait);
             }
-            
+
             var selectedPortraitFrame = _menuUtils.CreateUiEntity(295, 0);
             Set(selectedPortraitFrame, new TextureIndexComponent(Sprite.SelectedPortrait));
             Set(selectedPortraitFrame, new DrawLayerComponent(DrawLayer.UserInterfaceOverlay));
@@ -85,7 +88,7 @@ public class InGameUiSystem : MoonTools.ECS.System
         for (var i = 0; i < _numberOfPlayers; i++)
         {
             var portrait = _portraitsByPlayer[currentPlayerNumber];
-            var speed = i == _numberOfPlayers-1 ? 200 : 80;
+            var speed = i == _numberOfPlayers - 1 ? 200 : 80;
             Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * PORTRAIT_HEIGHT + 1 + i, speed));
             currentPlayerNumber = Utils.Utils.GetNextPlayer(currentPlayerNumber, _numberOfPlayers);
         }

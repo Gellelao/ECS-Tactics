@@ -15,7 +15,7 @@ public class ToggleFrameSystem : MoonTools.ECS.System
 
     private Filter ToggleOnMouseDownFilter { get; }
     private Filter ToggleOnMouseHoverFilter { get; }
-    
+
     public ToggleFrameSystem(World world, ScreenUtils screenUtils, AnimationData[] animations) : base(world)
     {
         _screenUtils = screenUtils;
@@ -55,13 +55,14 @@ public class ToggleFrameSystem : MoonTools.ECS.System
             var toggleStatus = Get<ToggleFrameOnMouseDownComponent>(entity);
 
             // If mouse is not over the entity, toggle it off
-            if(!_screenUtils.MouseOverEntity(entity))
+            if (!_screenUtils.MouseOverEntity(entity))
             {
                 if (!toggleStatus.Toggled) continue;
                 SetEntityFrame(entity, 0);
                 Set(entity, toggleStatus with {Toggled = false});
             }
-            else{
+            else
+            {
                 // Mouse is over entity, see if its clicked or not
                 var mouseDown = Mouse.GetState().LeftButton == ButtonState.Pressed;
 
@@ -76,6 +77,7 @@ public class ToggleFrameSystem : MoonTools.ECS.System
                         {
                             Set(entity, Get<ToggleFrameOnMouseHoverComponent>(entity) with {Toggled = false});
                         }
+
                         break;
                     // Toggle on if currently off and mouse is down
                     case false when mouseDown:
@@ -87,14 +89,18 @@ public class ToggleFrameSystem : MoonTools.ECS.System
         }
     }
 
-    private void SetEntityFrame(Entity entity, int newFrame){
+    private void SetEntityFrame(Entity entity, int newFrame)
+    {
         var animationSetId = Get<AnimationSetComponent>(entity).AnimationSetId;
-        var animationData = _animations[(int)animationSetId];
-        Set(entity, new SpriteRegionComponent(
-            0, // Assume animations using this system don't have a "facing direction" concept
-            newFrame,
-            animationData.SpriteWidth,
-            animationData.SpriteHeight)
+        var animationData = _animations[(int) animationSetId];
+        Set(
+            entity,
+            new SpriteRegionComponent(
+                0, // Assume animations using this system don't have a "facing direction" concept
+                newFrame,
+                animationData.SpriteWidth,
+                animationData.SpriteHeight
+            )
         );
     }
 }

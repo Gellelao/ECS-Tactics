@@ -28,12 +28,13 @@ public class ProjectileSystem : MoonTools.ECS.System
                     case ProjectileMoveRate.Immediate:
                         MoveOnce(movingEntity);
                         break;
-                   case ProjectileMoveRate.PerStep:
-                       if (SomeMessage<SpellWasCastMessage>())
-                       {
-                           MoveOnce(movingEntity);
-                       }
-                       break;
+                    case ProjectileMoveRate.PerStep:
+                        if (SomeMessage<SpellWasCastMessage>())
+                        {
+                            MoveOnce(movingEntity);
+                        }
+
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

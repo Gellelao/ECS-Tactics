@@ -5,9 +5,10 @@ namespace Enamel.Components;
 
 public readonly struct ScreenPositionComponent(float x, float y)
 {
-    private Position2D Position { get;} = new(x, y);
+    private Position2D Position { get; } = new(x, y);
     public int X => Position.X;
     public int Y => Position.Y;
+
     public Vector2 ToVector
     {
         get

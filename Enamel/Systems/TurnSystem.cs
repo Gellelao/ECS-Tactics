@@ -25,7 +25,7 @@ public class TurnSystem : MoonTools.ECS.System
         Remove<CurrentPlayerFlag>(currentPlayer);
 
         var nextPlayerNumber = GetNextPlayer(Get<PlayerNumberComponent>(currentPlayer).PlayerNumber, numberOfPlayers);
-        
+
         foreach (var playerEntity in PlayerFilter.Entities)
         {
             var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
@@ -33,7 +33,7 @@ public class TurnSystem : MoonTools.ECS.System
             if (playerNumber == nextPlayerNumber)
             {
                 Set(playerEntity, new CurrentPlayerFlag());
-                
+
                 // Each unit controlled by the next player becomes selectable
                 foreach (var character in playersCharacters)
                 {

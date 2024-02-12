@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Spells;
@@ -53,7 +52,7 @@ public class SelectionPreviewSystem : MoonTools.ECS.System
         var canTargetImpassable = Has<CanTargetImpassableFlag>(spellToPrep);
         var canTargetSelf = Has<CanTargetSelfFlag>(spellToPrep);
         var cardinalOnly = Has<CardinalCastRestrictionFlag>(spellToPrep);
-        
+
         for (var x = 0; x < Constants.MAP_WIDTH; x++)
         {
             for (var y = 0; y < Constants.MAP_HEIGHT; y++)

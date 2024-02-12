@@ -26,7 +26,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         _numberOfCharacters = Enum.GetNames(typeof(Character)).Length;
         PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
     }
-    
+
     public override void Update(TimeSpan delta)
     {
         if (SomeMessage<GoToCharacterSelectMessage>())
@@ -35,27 +35,33 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
 
             var mainMenu = _menuUtils.CreateUiEntity(0, 0);
             Set(mainMenu, new TextureIndexComponent(Sprite.TitleScreen));
-            
+
             _sheetRow = _menuUtils.CreateUiEntity(0, 40);
             Set(_sheetRow, new CenterChildrenComponent(2));
 
             CreateAddPlayerButton();
             CreateDeletePlayerButton();
-            
+
             // Start with 1 player
             AddPlayer();
 
             Set(_deletePlayerButton, new DisabledFlag());
 
             var backButton = _menuUtils.CreateUiEntity(80, 110, 50, 15);
-            Set(backButton, new TextComponent(TextStorage.GetId("Back"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
+            Set(
+                backButton,
+                new TextComponent(TextStorage.GetId("Back"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke)
+            );
             Set(backButton, new OnClickComponent(ClickEvent.GoToMainMenu));
 
             var deployButton = _menuUtils.CreateUiEntity(150, 110, 50, 15);
-            Set(deployButton, new TextComponent(TextStorage.GetId("Play"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke));
+            Set(
+                deployButton,
+                new TextComponent(TextStorage.GetId("Play"), Font.Absolute, Microsoft.Xna.Framework.Color.WhiteSmoke)
+            );
             Set(deployButton, new OnClickComponent(ClickEvent.DeployWizards));
         }
-        
+
         if (SomeMessage<DeployWizardsMessage>())
         {
             _menuUtils.DestroyExistingUiEntities();
@@ -78,7 +84,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
             var player = ReadMessage<PreviousCharacterMessage>().Player;
             CycleCharacterForPlayer(player, -1);
         }
-        
+
         if (SomeMessage<NextCharacterMessage>())
         {
             var player = ReadMessage<NextCharacterMessage>().Player;
@@ -91,7 +97,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         _addPlayerButton = _menuUtils.CreateUiEntity(80, 40, 40, 30);
         Set(_addPlayerButton, new TextureIndexComponent(Sprite.AddPlayer));
         Set(_addPlayerButton, new OnClickComponent(ClickEvent.AddPlayer));
-        Set(_addPlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
+        // This button should always come last in the row, and there shouldn't be more than 10 items, so an order of 10 is fine
+        Set(_addPlayerButton, new OrderComponent(10));
         Relate(_sheetRow, _addPlayerButton, new IsParentRelation());
     }
 
@@ -100,7 +107,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         _deletePlayerButton = _menuUtils.CreateUiEntity(80, 70, 40, 30);
         Set(_deletePlayerButton, new TextureIndexComponent(Sprite.DeletePlayer));
         Set(_deletePlayerButton, new OnClickComponent(ClickEvent.DeletePlayer));
-        Set(_deletePlayerButton, new OrderComponent(10)); // This button should always come last in the row, and there shouldn't be more than 10 items
+        // This button should always come last in the row, and there shouldn't be more than 10 items, so an order of 10 is fine
+        Set(_deletePlayerButton, new OrderComponent(10));
         Relate(_sheetRow, _deletePlayerButton, new IsParentRelation());
     }
 
@@ -108,7 +116,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
     {
         var existingPlayerCount = PlayerFilter.Count;
         var playerEntity = World.CreateEntity();
-        var playerNumber = (Player)existingPlayerCount;
+        var playerNumber = (Player) existingPlayerCount;
         Set(playerEntity, new PlayerNumberComponent(playerNumber));
         Set(playerEntity, new SelectedCharacterComponent(Character.BlueWiz));
 
@@ -118,6 +126,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         {
             Set(_addPlayerButton, new DisabledFlag());
         }
+
         Remove<DisabledFlag>(_deletePlayerButton);
     }
 
@@ -129,7 +138,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
             DeleteCharacterSheetForPlayer(playerEntity);
             var selectedCharacter = (int) Get<SelectedCharacterComponent>(playerEntity).Character;
             var newCharacter = (selectedCharacter + increment + _numberOfCharacters) % _numberOfCharacters;
-            Set(playerEntity, new SelectedCharacterComponent((Character)newCharacter));
+            Set(playerEntity, new SelectedCharacterComponent((Character) newCharacter));
             CreateCharacterSheetForPlayer(playerEntity);
         }
     }
@@ -149,8 +158,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
 
         var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
-        
-        Set(characterSheet, new OrderComponent((int)playerNumber));
+
+        Set(characterSheet, new OrderComponent((int) playerNumber));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
         Relate(playerEntity, characterSheet, new IsParentRelation());
 
@@ -159,34 +168,36 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(leftButton, new ToggleFrameOnMouseHoverComponent(1));
         Set(leftButton, new ToggleFrameOnMouseDownComponent(2));
-        Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int)playerNumber));
-        
+        Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int) playerNumber));
+
         var rightButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 24, 44, 13, 13);
         Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
         Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(rightButton, new ToggleFrameOnMouseHoverComponent(1));
         Set(rightButton, new ToggleFrameOnMouseDownComponent(2));
-        Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int)playerNumber));
+        Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int) playerNumber));
 
         var character = Get<SelectedCharacterComponent>(playerEntity).Character;
-        
+
         var characterPreview = _menuUtils.CreateRelativeUiEntity(characterSheet, 10, 0, 13, 13);
         Set(characterPreview, new TextureIndexComponent(character.ToCharacterSprite()));
         Set(characterPreview, new AnimationSetComponent(AnimationSet.Wizard));
         Set(characterPreview, new AnimationStatusComponent(AnimationType.Idle, AnimationType.Idle, double.MaxValue));
     }
 
-    private void DeletePlayer(){
+    private void DeletePlayer()
+    {
         var existingPlayerCount = PlayerFilter.Count;
-        
-        if(existingPlayerCount <= 2){
+
+        if (existingPlayerCount <= 2)
+        {
             Set(_deletePlayerButton, new DisabledFlag());
         }
 
         var highestNumberedPlayer = GetHighestNumberedPlayer();
-        
+
         _menuUtils.RecursivelyDestroy(highestNumberedPlayer);
-        
+
         Remove<DisabledFlag>(_addPlayerButton);
     }
 
@@ -195,21 +206,21 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var highest = 0;
         Entity? highestPlayer = null;
 
-        foreach(var player in PlayerFilter.Entities)
+        foreach (var player in PlayerFilter.Entities)
         {
             var playerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
-            if((int)playerNumber > highest)
+            if ((int) playerNumber > highest)
             {
-                highest = (int)playerNumber;
+                highest = (int) playerNumber;
                 highestPlayer = player;
             }
         }
 
-        if(highestPlayer == null)
+        if (highestPlayer == null)
         {
             throw new InvalidOperationException("There should be at least one player");
         }
 
-        return (Entity)highestPlayer;
+        return (Entity) highestPlayer;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Enamel.Components;
-using Enamel.Components.TempComponents;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;

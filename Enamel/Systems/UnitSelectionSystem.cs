@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using MoonTools.ECS;
 using Enamel.Components;
 using Enamel.Components.Messages;
@@ -31,8 +30,9 @@ public class UnitSelectionSystem : MoonTools.ECS.System
         {
             var (entityX, entityY) = Get<GridCoordComponent>(entity);
             if (entityX != selectingX || entityY != selectingY) continue;
-            
-            foreach (var selectedEntity in SelectedFilter.Entities){
+
+            foreach (var selectedEntity in SelectedFilter.Entities)
+            {
                 Remove<SelectedFlag>(selectedEntity);
             }
 

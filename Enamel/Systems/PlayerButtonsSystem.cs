@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MoonTools.ECS;
 using Enamel.Components;
-using Enamel.Components.Messages;
 using Enamel.Components.Relations;
 using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
@@ -37,6 +36,7 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             {
                 Destroy(spellCard);
             }
+
             _spellCards.Clear();
 
             CreateSpellCardsForEntity(entity);
@@ -57,10 +57,11 @@ public class PlayerButtonsSystem : MoonTools.ECS.System
             Set(spellCard, new DimensionsComponent(30, 30));
             Set(spellCard, new TextureIndexComponent(Sprite.YellowSquare));
             Set(spellCard, new DrawLayerComponent(DrawLayer.UserInterface));
-            Set(spellCard, new TextComponent(TextStorage.GetId(spellIdComponent.SpellId.ToName()), Font.Absolute, Constants.SpellCardTextColour));
-            Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell, (int)spellIdComponent.SpellId));
+            var textIndex = TextStorage.GetId(spellIdComponent.SpellId.ToName());
+            Set(spellCard, new TextComponent(textIndex, Font.Absolute, Constants.SpellCardTextColour));
+            Set(spellCard, new OnClickComponent(ClickEvent.PrepSpell, (int) spellIdComponent.SpellId));
             _spellCards.Add(spellCard);
-            
+
             screenX += 40;
         }
     }

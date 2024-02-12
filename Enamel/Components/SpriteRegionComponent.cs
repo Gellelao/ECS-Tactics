@@ -13,6 +13,6 @@ public readonly record struct SpriteRegionComponent(int X, int Y, int Width, int
 {
     public Rectangle ToRectangle()
     {
-        return new Rectangle(X*Width, Y*Height, Width, Height);
+        return new Rectangle(X * Width, Y * Height, Width, Height);
     }
 }

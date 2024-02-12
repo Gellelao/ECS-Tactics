@@ -17,7 +17,7 @@ public class DeploymentSystem : MoonTools.ECS.System
     private Entity _redeployButton;
     private Entity _deployingPlayer;
     private Filter PlayersWaitingToDeploy { get; }
-    
+
     public DeploymentSystem(World world, CharacterSpawner characterSpawner, MenuUtils menuUtils) : base(world)
     {
         _characterSpawner = characterSpawner;
@@ -30,7 +30,7 @@ public class DeploymentSystem : MoonTools.ECS.System
         if (SomeMessage<DeployWizardsMessage>())
         {
             Send(new PrepSpellMessage(SpellId.DeployWizard, 0, 0));
-            
+
             // Would be really nice to put all UI stuff for each "screen" in one system but we need a way to delete this button from this system
             // and simplest way I could think of was store it in a field...
             _redeployButton = _menuUtils.CreateUiEntity(255, 160, 20, 20);
@@ -38,12 +38,12 @@ public class DeploymentSystem : MoonTools.ECS.System
             Set(_redeployButton, new AnimationSetComponent(AnimationSet.RedeployWizardButton));
             Set(_redeployButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(_redeployButton, new ToggleFrameOnMouseDownComponent(2));
-            Set(_redeployButton, new OnClickComponent(ClickEvent.PrepSpell, (int)SpellId.DeployWizard));
+            Set(_redeployButton, new OnClickComponent(ClickEvent.PrepSpell, (int) SpellId.DeployWizard));
         }
-        
+
         if (PlayersWaitingToDeploy.Empty) return;
 
-        if(SomeMessage<EndTurnMessage>())
+        if (SomeMessage<EndTurnMessage>())
         {
             _deployingPlayer = GetSingletonEntity<CurrentPlayerFlag>();
             Remove<SelectedCharacterComponent>(_deployingPlayer);
@@ -55,11 +55,12 @@ public class DeploymentSystem : MoonTools.ECS.System
             {
                 Destroy(_redeployButton);
             }
+
             return;
         }
-        
+
         if (!SomeMessage<GridCoordSelectedMessage>()) return;
-        
+
         // If the current player clicks, delete any existing characters and place their selected char
         _deployingPlayer = GetSingletonEntity<CurrentPlayerFlag>();
         DestroyCharactersOfPlayer(_deployingPlayer);

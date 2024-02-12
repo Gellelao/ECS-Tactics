@@ -10,7 +10,7 @@ namespace Enamel.Systems;
 public class AnimationSystem : MoonTools.ECS.System
 {
     private readonly AnimationData[] _animations;
-    
+
     private Filter AnimationFilter { get; }
 
     public Filter TempAnimationFilter { get; }
@@ -38,17 +38,17 @@ public class AnimationSystem : MoonTools.ECS.System
             var direction = Has<FacingDirectionComponent>(entity)
                 ? Get<FacingDirectionComponent>(entity).GridDirection
                 : GridDirection.South;
-            
+
             var timeSinceLastFrame = animationStatusComponent.MillisSinceLastFrame;
             timeSinceLastFrame += delta.TotalMilliseconds;
 
             var currentAnimation = animationStatusComponent.CurrentAnimation;
-                
+
             // get the information about all the animations for this entity
-            var animationData = _animations[(int)animationSetId];
+            var animationData = _animations[(int) animationSetId];
             // get the information about the specific type (e.g idle, walk, etc) that we want to play here
-            var animationFrames = animationData.Frames[(int)currentAnimation];
-                
+            var animationFrames = animationData.Frames[(int) currentAnimation];
+
             // get the frame to display
             var currentFrame = animationStatusComponent.CurrentFrame;
             if (currentFrame >= animationFrames.Length)
@@ -56,51 +56,64 @@ public class AnimationSystem : MoonTools.ECS.System
                 currentFrame = 0;
                 // If we've reached the end of the current animation switch to the next one (it may well be the same as the existing one though!)
                 var nextAnimation = animationStatusComponent.AnimationOnceFinished;
-                animationFrames = animationData.Frames[(int)nextAnimation];
+                animationFrames = animationData.Frames[(int) nextAnimation];
                 currentAnimation = nextAnimation;
             }
-                
+
             var nextSpriteY = animationFrames[currentFrame];
-            
+
             // check if we need to update to the next frame and/or animation
             if (timeSinceLastFrame > animationStatusComponent.MillisBetweenFrames)
             {
                 currentFrame++;
-                Set(entity, animationStatusComponent with {CurrentAnimation = currentAnimation, CurrentFrame = currentFrame, MillisSinceLastFrame = 0});
+                Set(
+                    entity,
+                    animationStatusComponent with
+                    {
+                        CurrentAnimation = currentAnimation, CurrentFrame = currentFrame, MillisSinceLastFrame = 0
+                    }
+                );
             }
             else
             {
                 Set(entity, animationStatusComponent with {MillisSinceLastFrame = timeSinceLastFrame});
             }
-                            
+
             // the direction enum identifies the x column in the spritesheet
             // the y value is determined by the animation frame
-            Set(entity, new SpriteRegionComponent(
-                (int)direction,
-                nextSpriteY,
-                animationData.SpriteWidth,
-                animationData.SpriteHeight)
+            Set(
+                entity,
+                new SpriteRegionComponent(
+                    (int) direction,
+                    nextSpriteY,
+                    animationData.SpriteWidth,
+                    animationData.SpriteHeight
+                )
             );
         }
     }
 
     private void HandleMessages()
     {
-        if(!Some<SelectedFlag>()) return;
+        if (!Some<SelectedFlag>()) return;
         var selectedEntity = GetSingletonEntity<SelectedFlag>();
         if (SomeMessage<PrepSpellMessage>())
         {
             var spell = ReadMessage<PrepSpellMessage>().SpellId;
             if (spell != SpellId.StepOnce)
             {
-                Set(selectedEntity, Get<AnimationStatusComponent>(selectedEntity) with
-                {
-                    // We want to hold this animation until the player makes an input
-                    CurrentAnimation = AnimationType.Raise,
-                    AnimationOnceFinished = AnimationType.Raise
-                });
+                Set(
+                    selectedEntity,
+                    Get<AnimationStatusComponent>(selectedEntity) with
+                    {
+                        // We want to hold this animation until the player makes an input
+                        CurrentAnimation = AnimationType.Raise,
+                        AnimationOnceFinished = AnimationType.Raise
+                    }
+                );
             }
         }
+
         if (SomeMessage<SpellWasCastMessage>())
         {
             var spell = ReadMessage<PrepSpellMessage>().SpellId;
@@ -109,9 +122,13 @@ public class AnimationSystem : MoonTools.ECS.System
                 Set(selectedEntity, new TempAnimationComponent(AnimationType.Throw, AnimationType.Idle));
             }
         }
+
         if (SomeMessage<CancelMessage>())
         {
-            Set(selectedEntity, Get<AnimationStatusComponent>(selectedEntity) with {AnimationOnceFinished = AnimationType.Idle});
+            Set(
+                selectedEntity,
+                Get<AnimationStatusComponent>(selectedEntity) with {AnimationOnceFinished = AnimationType.Idle}
+            );
         }
     }
 
@@ -121,13 +138,16 @@ public class AnimationSystem : MoonTools.ECS.System
         {
             var tempAnimation = Get<TempAnimationComponent>(entity);
             var animationStatus = Get<AnimationStatusComponent>(entity);
-            Set(entity, animationStatus with
-            {
-                CurrentAnimation = tempAnimation.NewAnimation,
-                AnimationOnceFinished = tempAnimation.AnimationOnceFinished,
-                MillisSinceLastFrame = 0,
-                CurrentFrame = 0
-            });
+            Set(
+                entity,
+                animationStatus with
+                {
+                    CurrentAnimation = tempAnimation.NewAnimation,
+                    AnimationOnceFinished = tempAnimation.AnimationOnceFinished,
+                    MillisSinceLastFrame = 0,
+                    CurrentFrame = 0
+                }
+            );
             Remove<TempAnimationComponent>(entity);
         }
     }

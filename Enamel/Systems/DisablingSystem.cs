@@ -13,7 +13,7 @@ namespace Enamel.Systems;
 public class DisablingSystem : MoonTools.ECS.System
 {
     public Filter OnClickFilter { get; }
-    
+
     public DisablingSystem(World world) : base(world)
     {
         OnClickFilter = FilterBuilder.Include<OnClickComponent>().Build();
@@ -24,17 +24,18 @@ public class DisablingSystem : MoonTools.ECS.System
         if (SomeMessage<PrepSpellMessage>())
         {
             // You shouldn't be able to select units when casting a spell
-            foreach (var (_,  character) in Relations<ControlsRelation>())
+            foreach (var (_, character) in Relations<ControlsRelation>())
             {
                 Set(character, new DisabledFlag());
             }
+
             // Also can't click buttons while a spell is ready to cast
             foreach (var button in OnClickFilter.Entities)
             {
-                Set(button, new  DisabledFlag());
+                Set(button, new DisabledFlag());
             }
-            
         }
+
         if (SomeMessage<SpellWasCastMessage>() || SomeMessage<CancelMessage>())
         {
             // Assume the spell was cast by the current player
@@ -53,7 +54,7 @@ public class DisablingSystem : MoonTools.ECS.System
                     }
                 }
             }
-            
+
             // Do buttons too
             // Has the potential to be bad if there are buttons that should stay disabled for other reasons
             foreach (var button in OnClickFilter.Entities)

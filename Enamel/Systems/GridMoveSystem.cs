@@ -12,7 +12,7 @@ public class GridMoveSystem : MoonTools.ECS.System
     private Filter MovingUnitsFilter { get; }
     private readonly int _xOffset;
     private readonly int _yOffset;
-    
+
     public GridMoveSystem(World world, int xOffset, int yOffset) : base(world)
     {
         MovingUnitsFilter = FilterBuilder
@@ -48,7 +48,8 @@ public class GridMoveSystem : MoonTools.ECS.System
 
                 // Little bit of jank here to exclude player characters currently travelling as projectiles...
                 // and playerControlled units who are pushed...
-                if (Has<RemainingMovesComponent>(entity) && !Has<MovingInDirectionComponent>(entity) && Has<SelectedFlag>(entity))
+                if (Has<RemainingMovesComponent>(entity) && !Has<MovingInDirectionComponent>(entity) &&
+                    Has<SelectedFlag>(entity))
                 {
                     UpdateRemainingMoves(entity);
                 }
@@ -68,15 +69,20 @@ public class GridMoveSystem : MoonTools.ECS.System
     }
 
     // Replace this with a util that uses the code from the ScreenMoveSystem?????
-    private ScreenPositionComponent MoveTowards(ScreenPositionComponent current, Vector2 target, int moveSpeed, TimeSpan deltaTime)
+    private ScreenPositionComponent MoveTowards(
+        ScreenPositionComponent current,
+        Vector2 target,
+        int moveSpeed,
+        TimeSpan deltaTime
+    )
     {
         var currentVector = current.ToVector;
         var x = currentVector.X;
         var y = currentVector.Y;
-        if (x < target.X) x += (float)(2 * moveSpeed*deltaTime.TotalSeconds);
-        if (x > target.X) x -= (float)(2 * moveSpeed*deltaTime.TotalSeconds);
-        if (y < target.Y) y += (float)(moveSpeed*deltaTime.TotalSeconds);
-        if (y > target.Y) y -= (float)(moveSpeed*deltaTime.TotalSeconds);
+        if (x < target.X) x += (float) (2 * moveSpeed * deltaTime.TotalSeconds);
+        if (x > target.X) x -= (float) (2 * moveSpeed * deltaTime.TotalSeconds);
+        if (y < target.Y) y += (float) (moveSpeed * deltaTime.TotalSeconds);
+        if (y > target.Y) y -= (float) (moveSpeed * deltaTime.TotalSeconds);
         return new ScreenPositionComponent(x, y);
     }
 }

@@ -33,13 +33,15 @@ public class SpriteRenderer : Renderer
     {
         var renderOrder = GetRenderOrder(TextureIndexFilter.Entities);
 
-        SpriteBatch.Begin(SpriteSortMode.Deferred,
+        SpriteBatch.Begin(
+            SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
             SamplerState.PointClamp,
             DepthStencilState.None,
             RasterizerState.CullCounterClockwise,
             null,
-            Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
+            Matrix.Identity
+        ); // Only have to set all these here so I can change the default SamplerState
 
         foreach (var entityList in renderOrder)
         {
@@ -48,9 +50,10 @@ public class SpriteRenderer : Renderer
                 DrawEntity(entity);
             }
         }
+
         SpriteBatch.End();
     }
-    
+
     /// <summary>
     /// Given a list of entities with PostitionCompnents and DrawLayerComponents, return them ordered such that:
     /// * All entities in lower layers are drawn before entities in higher layers
@@ -79,7 +82,7 @@ public class SpriteRenderer : Renderer
 
             layerList.Add(GetRenderOrderForLayer(entitiesForLayer));
         }
-        
+
         // Combine the draw layer lists into one big list. This results in the first item being all the entities to
         // draw first, the second item being all the entities to draw second, etc. Taking into account both draw layer
         // and Y value.
@@ -92,7 +95,6 @@ public class SpriteRenderer : Renderer
         var renderOrderDict = new Dictionary<int, List<Entity>>();
         foreach (var entity in entities)
         {
-            
             var yPos = Get<ScreenPositionComponent>(entity).Y;
             if (renderOrderDict.TryGetValue(yPos, out var list))
             {
@@ -100,7 +102,7 @@ public class SpriteRenderer : Renderer
             }
             else
             {
-                renderOrderDict.Add(yPos, new List<Entity>{ entity });
+                renderOrderDict.Add(yPos, new List<Entity> {entity});
             }
         }
 
@@ -152,70 +154,71 @@ public class SpriteRenderer : Renderer
 
     private void DrawEntity(Entity entity)
     {
-            var indexComponent = Get<TextureIndexComponent>(entity);
-            var positionComponent = Get<ScreenPositionComponent>(entity);
+        var indexComponent = Get<TextureIndexComponent>(entity);
+        var positionComponent = Get<ScreenPositionComponent>(entity);
 
-            var origin = Vector2.Zero;
-            if(Has<SpriteOriginComponent>(entity))
-            {
-                var originComponent = Get<SpriteOriginComponent>(entity);
-                origin = new Vector2(originComponent.X, originComponent.Y);
-            }
+        var origin = Vector2.Zero;
+        if (Has<SpriteOriginComponent>(entity))
+        {
+            var originComponent = Get<SpriteOriginComponent>(entity);
+            origin = new Vector2(originComponent.X, originComponent.Y);
+        }
 
-            Rectangle? sourceRect = null;
-            if (Has<SpriteRegionComponent>(entity))
-            {
-                var rect = Get<SpriteRegionComponent>(entity);
-                sourceRect = rect.ToRectangle();
-            }
+        Rectangle? sourceRect = null;
+        if (Has<SpriteRegionComponent>(entity))
+        {
+            var rect = Get<SpriteRegionComponent>(entity);
+            sourceRect = rect.ToRectangle();
+        }
 
-            var tint = Color.White;
-            if(Has<HighlightedFlag>(entity))
-            {
-                tint = Constants.HighlightColour;
-            }
+        var tint = Color.White;
+        if (Has<HighlightedFlag>(entity))
+        {
+            tint = Constants.HighlightColour;
+        }
 
-            // Draw the selection square under the unit if selected
-            if(Has<SelectedFlag>(entity)){
-                SpriteBatch.Draw(
-                    _textures[(int)Sprite.SelectedTile],
-                    positionComponent.ToVector,
-                    null,
-                    Color.White,
-                    0, // rotation,
-                    Vector2.Zero, // origin
-                    Vector2.One, // scaling
-                    SpriteEffects.None,
-                    0
-                );
-            }
-
-            // Draw the unit itself
+        // Draw the selection square under the unit if selected
+        if (Has<SelectedFlag>(entity))
+        {
             SpriteBatch.Draw(
-                _textures[(int)indexComponent.Index],
+                _textures[(int) Sprite.SelectedTile],
                 positionComponent.ToVector,
-                sourceRect,
-                tint,
+                null,
+                Color.White,
                 0, // rotation,
-                origin, // origin
+                Vector2.Zero, // origin
                 Vector2.One, // scaling
                 SpriteEffects.None,
                 0
             );
+        }
 
-            // Draw red origin pixel if in debug mode
+        // Draw the unit itself
+        SpriteBatch.Draw(
+            _textures[(int) indexComponent.Index],
+            positionComponent.ToVector,
+            sourceRect,
+            tint,
+            0, // rotation,
+            origin, // origin
+            Vector2.One, // scaling
+            SpriteEffects.None,
+            0
+        );
+
+        // Draw red origin pixel if in debug mode
 #if DEBUG
-            // SpriteBatch.Draw(
-            //     _textures[(int)Sprite.RedPixel],
-            //     new Vector2(positionComponent.X, positionComponent.Y),
-            //     null,
-            //     Color.White,
-            //     0, // rotation,
-            //     Vector2.Zero, // origin
-            //     Vector2.One, // scaling
-            //     SpriteEffects.None,
-            //     0
-            // );
+        // SpriteBatch.Draw(
+        //     _textures[(int)Sprite.RedPixel],
+        //     new Vector2(positionComponent.X, positionComponent.Y),
+        //     null,
+        //     Color.White,
+        //     0, // rotation,
+        //     Vector2.Zero, // origin
+        //     Vector2.One, // scaling
+        //     SpriteEffects.None,
+        //     0
+        // );
 #endif
     }
 }

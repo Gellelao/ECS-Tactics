@@ -35,7 +35,7 @@ public class SpellCastingSystem : MoonTools.ECS.System
             if (clickX != targetX || clickY != targetY) continue;
 
             var spellToCastComponent = Get<SpellToCastOnSelectComponent>(spellPreview);
-            
+
             // For spells that require a caster, resolve them here
             // For other cases (such as DeployWizard, resolve in a dedicated system and skip this section
             if (Some<SelectedFlag>())
@@ -56,13 +56,13 @@ public class SpellCastingSystem : MoonTools.ECS.System
         var spellId = Get<SpellIdComponent>(spell).SpellId;
         var (originX, originY) = Get<GridCoordComponent>(casterEntity);
         var direction = GetDirection(originX, originY, targetX, targetY);
-        
+
         // If targeting self we get None back, so just leave them facing as they are
         if (direction != GridDirection.None)
         {
             Set(casterEntity, new FacingDirectionComponent(direction));
         }
-        
+
         // Force the animation to update now that we've (possibly) changed direction
         var animationStatus = Get<AnimationStatusComponent>(casterEntity);
         Set(casterEntity, animationStatus with {MillisSinceLastFrame = animationStatus.MillisBetweenFrames});

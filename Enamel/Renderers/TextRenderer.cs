@@ -27,13 +27,15 @@ public class TextRenderer : Renderer
 
     public void Draw()
     {
-        _spriteBatch.Begin(SpriteSortMode.Deferred,
+        _spriteBatch.Begin(
+            SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
             SamplerState.PointClamp,
             DepthStencilState.None,
             RasterizerState.CullCounterClockwise,
             null,
-            Matrix.Identity); // Only have to set all these here so I can change the default SamplerState
+            Matrix.Identity
+        ); // Only have to set all these here so I can change the default SamplerState
 
         // Draw regular text
         foreach (var entity in TextFilter.Entities)
@@ -43,7 +45,7 @@ public class TextRenderer : Renderer
             var positionComponent = Get<ScreenPositionComponent>(entity);
 
             _spriteBatch.DrawString(
-                _fonts[(int)fontId],
+                _fonts[(int) fontId],
                 text,
                 new Vector2(positionComponent.X, positionComponent.Y),
                 colour

@@ -22,11 +22,12 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
         if (!SomeMessage<ScreenDetailsChangedMessage>()) return;
         var newScreenDetails = ReadMessage<ScreenDetailsChangedMessage>();
         Scale = newScreenDetails.Scale;
-        ScreenOffsetX = (int)Math.Round(newScreenDetails.OffsetX/Scale);
-        ScreenOffsetY = (int)Math.Round(newScreenDetails.OffsetY/Scale);
+        ScreenOffsetX = (int) Math.Round(newScreenDetails.OffsetX / Scale);
+        ScreenOffsetY = (int) Math.Round(newScreenDetails.OffsetY / Scale);
     }
 
-    public Vector2 MouseToGridCoords(){
+    public Vector2 MouseToGridCoords()
+    {
         var (mouseX, mouseY) = GetMouseCoords();
         return ScreenToGridCoords(mouseX, mouseY);
     }
@@ -56,23 +57,23 @@ public class ScreenUtils(World world, int cameraX, int cameraY) : MoonTools.ECS.
     private Vector2 ScreenToGridCoords(int screenX, int screenY)
     {
         // Camera pos is determined by the game, while the screen offsets are set if the user resizes the window to non-16:9 resolutions 
-        float mouseFloatX = screenX - (Constants.TILE_WIDTH/2) - cameraX - ScreenOffsetX;
+        float mouseFloatX = screenX - (Constants.TILE_WIDTH / 2) - cameraX - ScreenOffsetX;
         float mouseFloatY = screenY - cameraY - ScreenOffsetY;
         const float tileWidthFloat = Constants.TILE_WIDTH;
         const float tileHeightFloat = Constants.TILE_HEIGHT;
 
         var gridX = mouseFloatY / tileHeightFloat + mouseFloatX / tileWidthFloat;
         var gridY = mouseFloatY / tileHeightFloat - mouseFloatX / tileWidthFloat;
-            
-        return new Vector2((int)Math.Floor(gridX), (int)Math.Floor(gridY));
+
+        return new Vector2((int) Math.Floor(gridX), (int) Math.Floor(gridY));
     }
 
-    public (int mouseX, int mouseY) GetMouseCoords(){
-        
+    public (int mouseX, int mouseY) GetMouseCoords()
+    {
         var mouseCurrent = Mouse.GetState();
-        
-        int mouseX = (int)Math.Round(mouseCurrent.X / Scale);
-        int mouseY = (int)Math.Round(mouseCurrent.Y / Scale);
+
+        int mouseX = (int) Math.Round(mouseCurrent.X / Scale);
+        int mouseY = (int) Math.Round(mouseCurrent.Y / Scale);
 
         return (mouseX, mouseY);
     }

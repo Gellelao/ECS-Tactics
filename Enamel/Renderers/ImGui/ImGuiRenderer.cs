@@ -22,15 +22,15 @@ namespace Enamel.Renderers.ImGui
         // Graphics
         private GraphicsDevice _graphicsDevice;
 
-        private BasicEffect _effect;
+        private BasicEffect _effect = null!;
         private RasterizerState _rasterizerState;
 
-        private byte[] _vertexData;
-        private VertexBuffer _vertexBuffer;
+        private byte[] _vertexData = null!;
+        private VertexBuffer _vertexBuffer = null!;
         private int _vertexBufferSize;
 
-        private byte[] _indexData;
-        private IndexBuffer _indexBuffer;
+        private byte[] _indexData = null!;
+        private IndexBuffer _indexBuffer = null!;
         private int _indexBufferSize;
 
         // Textures
@@ -41,7 +41,6 @@ namespace Enamel.Renderers.ImGui
 
         // Input
         private int _scrollWheelValue;
-        private int _horizontalScrollWheelValue;
         private readonly float WHEEL_DELTA = 120;
         private Keys[] _allKeys = Enum.GetValues<Keys>();
 
@@ -81,7 +80,10 @@ namespace Enamel.Renderers.ImGui
 
             // Copy the data to a managed array
             var pixels = new byte[width * height * bytesPerPixel];
-            unsafe { Marshal.Copy(new IntPtr(pixelData), pixels, 0, pixels.Length); }
+            unsafe
+            {
+                Marshal.Copy(new IntPtr(pixelData), pixels, 0, pixels.Length);
+            }
 
             // Create and register the texture as an XNA texture
             var tex2d = new Texture2D(_graphicsDevice, width, height, false, SurfaceFormat.Color);
@@ -123,7 +125,7 @@ namespace Enamel.Renderers.ImGui
         /// </summary>
         public virtual void BeforeLayout(GameTime gameTime)
         {
-            GetIO().DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            GetIO().DeltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
             UpdateInput();
 
@@ -137,7 +139,10 @@ namespace Enamel.Renderers.ImGui
         {
             Render();
 
-            unsafe { RenderDrawData(GetDrawData()); }
+            unsafe
+            {
+                RenderDrawData(GetDrawData());
+            }
         }
 
         #endregion ImGuiRenderer
@@ -150,7 +155,7 @@ namespace Enamel.Renderers.ImGui
         protected virtual void SetupInput()
         {
             var io = GetIO();
-            
+
             TextInputEXT.TextInput += c =>
             {
                 if (c == '\t') return;
@@ -170,7 +175,8 @@ namespace Enamel.Renderers.ImGui
 
             _effect.World = Matrix.Identity;
             _effect.View = Matrix.Identity;
-            _effect.Projection = Matrix.CreateOrthographicOffCenter(0f, io.DisplaySize.X, io.DisplaySize.Y, 0f, -1f, 1f);
+            _effect.Projection =
+                Matrix.CreateOrthographicOffCenter(0f, io.DisplaySize.X, io.DisplaySize.Y, 0f, -1f, 1f);
             _effect.TextureEnabled = true;
             _effect.Texture = texture;
             _effect.VertexColorEnabled = true;
@@ -184,7 +190,7 @@ namespace Enamel.Renderers.ImGui
         protected virtual void UpdateInput()
         {
             if (!_game.IsActive) return;
-            
+
             var io = GetIO();
 
             var mouse = Mouse.GetState();
@@ -198,9 +204,9 @@ namespace Enamel.Renderers.ImGui
 
             io.AddMouseWheelEvent(
                 0,
-                (mouse.ScrollWheelValue - _scrollWheelValue) / WHEEL_DELTA);
+                (mouse.ScrollWheelValue - _scrollWheelValue) / WHEEL_DELTA
+            );
             _scrollWheelValue = mouse.ScrollWheelValue;
-            _horizontalScrollWheelValue = 0;
 
             foreach (var key in _allKeys)
             {
@@ -210,7 +216,10 @@ namespace Enamel.Renderers.ImGui
                 }
             }
 
-            io.DisplaySize = new System.Numerics.Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+            io.DisplaySize = new System.Numerics.Vector2(
+                _graphicsDevice.PresentationParameters.BackBufferWidth,
+                _graphicsDevice.PresentationParameters.BackBufferHeight
+            );
             io.DisplayFramebufferScale = new System.Numerics.Vector2(1f, 1f);
         }
 
@@ -299,7 +308,12 @@ namespace Enamel.Renderers.ImGui
             drawData.ScaleClipRects(GetIO().DisplayFramebufferScale);
 
             // Setup projection
-            _graphicsDevice.Viewport = new Viewport(0, 0, _graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+            _graphicsDevice.Viewport = new Viewport(
+                0,
+                0,
+                _graphicsDevice.PresentationParameters.BackBufferWidth,
+                _graphicsDevice.PresentationParameters.BackBufferHeight
+            );
 
             UpdateBuffers(drawData);
 
@@ -322,8 +336,13 @@ namespace Enamel.Renderers.ImGui
             {
                 _vertexBuffer?.Dispose();
 
-                _vertexBufferSize = (int)(drawData.TotalVtxCount * 1.5f);
-                _vertexBuffer = new VertexBuffer(_graphicsDevice, DrawVertDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
+                _vertexBufferSize = (int) (drawData.TotalVtxCount * 1.5f);
+                _vertexBuffer = new VertexBuffer(
+                    _graphicsDevice,
+                    DrawVertDeclaration.Declaration,
+                    _vertexBufferSize,
+                    BufferUsage.None
+                );
                 _vertexData = new byte[_vertexBufferSize * DrawVertDeclaration.Size];
             }
 
@@ -331,8 +350,13 @@ namespace Enamel.Renderers.ImGui
             {
                 _indexBuffer?.Dispose();
 
-                _indexBufferSize = (int)(drawData.TotalIdxCount * 1.5f);
-                _indexBuffer = new IndexBuffer(_graphicsDevice, IndexElementSize.SixteenBits, _indexBufferSize, BufferUsage.None);
+                _indexBufferSize = (int) (drawData.TotalIdxCount * 1.5f);
+                _indexBuffer = new IndexBuffer(
+                    _graphicsDevice,
+                    IndexElementSize.SixteenBits,
+                    _indexBufferSize,
+                    BufferUsage.None
+                );
                 _indexData = new byte[_indexBufferSize * sizeof(ushort)];
             }
 
@@ -347,8 +371,18 @@ namespace Enamel.Renderers.ImGui
                 fixed (void* vtxDstPtr = &_vertexData[vtxOffset * DrawVertDeclaration.Size])
                 fixed (void* idxDstPtr = &_indexData[idxOffset * sizeof(ushort)])
                 {
-                    Buffer.MemoryCopy((void*)cmdList.VtxBuffer.Data, vtxDstPtr, _vertexData.Length, cmdList.VtxBuffer.Size * DrawVertDeclaration.Size);
-                    Buffer.MemoryCopy((void*)cmdList.IdxBuffer.Data, idxDstPtr, _indexData.Length, cmdList.IdxBuffer.Size * sizeof(ushort));
+                    Buffer.MemoryCopy(
+                        (void*) cmdList.VtxBuffer.Data,
+                        vtxDstPtr,
+                        _vertexData.Length,
+                        cmdList.VtxBuffer.Size * DrawVertDeclaration.Size
+                    );
+                    Buffer.MemoryCopy(
+                        (void*) cmdList.IdxBuffer.Data,
+                        idxDstPtr,
+                        _indexData.Length,
+                        cmdList.IdxBuffer.Size * sizeof(ushort)
+                    );
                 }
 
                 vtxOffset += cmdList.VtxBuffer.Size;
@@ -376,21 +410,23 @@ namespace Enamel.Renderers.ImGui
                 {
                     ImDrawCmdPtr drawCmd = cmdList.CmdBuffer[cmdi];
 
-                    if (drawCmd.ElemCount == 0) 
+                    if (drawCmd.ElemCount == 0)
                     {
                         continue;
                     }
 
                     if (!_loadedTextures.ContainsKey(drawCmd.TextureId))
                     {
-                        throw new InvalidOperationException($"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings");
+                        throw new InvalidOperationException(
+                            $"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings"
+                        );
                     }
 
                     _graphicsDevice.ScissorRectangle = new Rectangle(
-                        (int)drawCmd.ClipRect.X,
-                        (int)drawCmd.ClipRect.Y,
-                        (int)(drawCmd.ClipRect.Z - drawCmd.ClipRect.X),
-                        (int)(drawCmd.ClipRect.W - drawCmd.ClipRect.Y)
+                        (int) drawCmd.ClipRect.X,
+                        (int) drawCmd.ClipRect.Y,
+                        (int) (drawCmd.ClipRect.Z - drawCmd.ClipRect.X),
+                        (int) (drawCmd.ClipRect.W - drawCmd.ClipRect.Y)
                     );
 
                     var effect = UpdateEffect(_loadedTextures[drawCmd.TextureId]);
@@ -402,11 +438,11 @@ namespace Enamel.Renderers.ImGui
 #pragma warning disable CS0618 // // FNA does not expose an alternative method.
                         _graphicsDevice.DrawIndexedPrimitives(
                             primitiveType: PrimitiveType.TriangleList,
-                            baseVertex: (int)drawCmd.VtxOffset + vtxOffset,
+                            baseVertex: (int) drawCmd.VtxOffset + vtxOffset,
                             minVertexIndex: 0,
                             numVertices: cmdList.VtxBuffer.Size,
-                            startIndex: (int)drawCmd.IdxOffset + idxOffset,
-                            primitiveCount: (int)drawCmd.ElemCount / 3
+                            startIndex: (int) drawCmd.IdxOffset + idxOffset,
+                            primitiveCount: (int) drawCmd.ElemCount / 3
                         );
 #pragma warning restore CS0618
                     }

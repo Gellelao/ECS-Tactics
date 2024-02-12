@@ -1,8 +1,6 @@
 ﻿using System;
 using Enamel.Components;
 using Enamel.Components.TempComponents;
-using Enamel.Components.UI;
-using Enamel.Enums;
 using Enamel.Utils;
 using MoonTools.ECS;
 
@@ -11,11 +9,11 @@ namespace Enamel.Systems;
 public class DragSystem : MoonTools.ECS.System
 {
     private readonly ScreenUtils _screenUtils;
-    
+
     private Filter BeingDraggedFilter { get; }
     private Filter DroppedFilter { get; }
     private Filter SocketFilter { get; }
-    
+
     public DragSystem(World world, ScreenUtils screenUtils) : base(world)
     {
         _screenUtils = screenUtils;
@@ -42,7 +40,7 @@ public class DragSystem : MoonTools.ECS.System
                 Set(entity, new ScreenPositionComponent(draggableComponent.OriginalX, draggableComponent.OriginalY));
             }
         }
-        
+
         foreach (var entity in BeingDraggedFilter.Entities)
         {
             var socket = GetSocketUnderMouse();

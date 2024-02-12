@@ -16,10 +16,10 @@ public class InputSystem : MoonTools.ECS.System
     private Filter ClickableUiFilter { get; }
     private Filter DraggableFilter { get; }
     private Filter BeingDraggedFilter { get; }
-    
+
     private MouseState _mousePrevious;
     private readonly ScreenUtils _screenUtils;
-    
+
     // Input stuff also happens in ToggleFrameSystem (visual only)
     public InputSystem(World world, ScreenUtils screenUtils) : base(world)
     {
@@ -44,19 +44,22 @@ public class InputSystem : MoonTools.ECS.System
     public override void Update(TimeSpan delta)
     {
         var mouseCurrent = Mouse.GetState();
-        
+
         if (mouseCurrent.LeftButton == ButtonState.Pressed && _mousePrevious.LeftButton == ButtonState.Released)
         {
             OnLeftButtonPress();
         }
+
         if (mouseCurrent.LeftButton == ButtonState.Released && _mousePrevious.LeftButton == ButtonState.Pressed)
         {
             OnLeftButtonRelease();
         }
+
         if (mouseCurrent.RightButton == ButtonState.Released && _mousePrevious.RightButton == ButtonState.Pressed)
         {
             Send(new CancelMessage());
         }
+
         _mousePrevious = mouseCurrent;
     }
 
@@ -71,14 +74,15 @@ public class InputSystem : MoonTools.ECS.System
         }
     }
 
-    private void OnLeftButtonRelease(){
+    private void OnLeftButtonRelease()
+    {
         // Release dragged entities
         foreach (var entity in BeingDraggedFilter.Entities)
         {
             Remove<BeingDraggedFlag>(entity);
             Set(entity, new DroppedComponent());
         }
-        
+
         // Button clicks
         foreach (var button in ClickableUiFilter.Entities)
         {
@@ -96,7 +100,7 @@ public class InputSystem : MoonTools.ECS.System
                         // Assume the currently selected entity is learning this spell
                         selectedEntity = GetSingletonEntity<SelectedFlag>();
                         // We must assume that the Id is a SpellId if passed along with the LearnSpell ClickEvent
-                        Set(selectedEntity, new LearningSpellComponent((SpellId)onClick.Id));
+                        Set(selectedEntity, new LearningSpellComponent((SpellId) onClick.Id));
                         break;
                     case ClickEvent.PrepSpell:
                         // Allow for "casterless spells" (just deploying wizards atm)
@@ -106,14 +110,14 @@ public class InputSystem : MoonTools.ECS.System
                         {
                             // There must only be one selected unit and it must the the unit casting this spell
                             selectedEntity = GetSingletonEntity<SelectedFlag>();
-                            if(!Has<GridCoordComponent>(selectedEntity)) continue;
+                            if (!Has<GridCoordComponent>(selectedEntity)) continue;
                             var casterCoords = Get<GridCoordComponent>(selectedEntity);
                             originX = casterCoords.X;
                             originY = casterCoords.Y;
                         }
 
                         // Again we must assume that the Id is a SpellId if passed along with the PrepSpell ClickEvent
-                        Send(new PrepSpellMessage((SpellId)onClick.Id, originX, originY));
+                        Send(new PrepSpellMessage((SpellId) onClick.Id, originX, originY));
 
                         break;
                     case ClickEvent.GoToMainMenu:
@@ -138,10 +142,10 @@ public class InputSystem : MoonTools.ECS.System
                         Send(new DeletePlayerMessage());
                         break;
                     case ClickEvent.PreviousCharacter:
-                        Send(new PreviousCharacterMessage((Player)onClick.Id));
+                        Send(new PreviousCharacterMessage((Player) onClick.Id));
                         break;
                     case ClickEvent.NextCharacter:
-                        Send(new NextCharacterMessage((Player)onClick.Id));
+                        Send(new NextCharacterMessage((Player) onClick.Id));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -154,7 +158,7 @@ public class InputSystem : MoonTools.ECS.System
         foreach (var entity in SelectableGridCoordFilter.Entities)
         {
             var (x, y) = Get<GridCoordComponent>(entity);
-            if((int)clickedCoords.X == x && (int)clickedCoords.Y == y)
+            if ((int) clickedCoords.X == x && (int) clickedCoords.Y == y)
             {
                 Send(new GridCoordSelectedMessage(x, y));
             }

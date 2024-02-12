@@ -8,7 +8,7 @@ namespace Enamel.Systems;
 public class ScreenMoveSystem : MoonTools.ECS.System
 {
     private Filter MovingFilter { get; }
-    
+
     public ScreenMoveSystem(World world) : base(world)
     {
         MovingFilter = FilterBuilder
@@ -23,18 +23,30 @@ public class ScreenMoveSystem : MoonTools.ECS.System
         {
             var currentPosition = Get<ScreenPositionComponent>(entity);
             var targetPosition = Get<MovingToScreenPositionComponent>(entity);
-            var updatedPosition = UpdatePosition(currentPosition.ToVector, targetPosition.X, targetPosition.Y, targetPosition.MoveSpeed, delta);
+            var updatedPosition = UpdatePosition(
+                currentPosition.ToVector,
+                targetPosition.X,
+                targetPosition.Y,
+                targetPosition.MoveSpeed,
+                delta
+            );
 
             Set(entity, new ScreenPositionComponent(updatedPosition.X, updatedPosition.Y));
         }
     }
-    
-    private (float X, float Y) UpdatePosition(Vector2 currentPosition, float targetX, float targetY, float moveSpeed, TimeSpan delta)
+
+    private (float X, float Y) UpdatePosition(
+        Vector2 currentPosition,
+        float targetX,
+        float targetY,
+        float moveSpeed,
+        TimeSpan delta
+    )
     {
         // Calculate the direction vector
         float directionX = targetX - currentPosition.X;
         float directionY = targetY - currentPosition.Y;
-        float distance = (float)Math.Sqrt(directionX * directionX + directionY * directionY);
+        float distance = (float) Math.Sqrt(directionX * directionX + directionY * directionY);
 
         // Normalize the direction
         if (distance > 0)
@@ -44,7 +56,7 @@ public class ScreenMoveSystem : MoonTools.ECS.System
         }
 
         // Calculate the distance to move based on speed and time delta
-        float moveDistance = moveSpeed * (float)delta.TotalSeconds;
+        float moveDistance = moveSpeed * (float) delta.TotalSeconds;
 
         // Calculate the new position
         float newX, newY;

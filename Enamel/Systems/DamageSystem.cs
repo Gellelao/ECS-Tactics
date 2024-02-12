@@ -1,6 +1,5 @@
 ﻿using System;
 using Enamel.Components;
-using Enamel.Components.Messages;
 using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using Enamel.Spawners;
@@ -29,7 +28,7 @@ public class DamageSystem : MoonTools.ECS.System
             var amountOfDamage = Get<TakingDamageComponent>(entity).AmountOfDamage;
             var currentHealth = Get<HealthComponent>(entity).RemainingHealth;
             var newHealth = currentHealth;
-            
+
             newHealth -= amountOfDamage;
 
             if (newHealth <= 0)
@@ -39,6 +38,7 @@ public class DamageSystem : MoonTools.ECS.System
                     var screenPos = Get<ScreenPositionComponent>(entity).ToVector;
                     _particleSpawner.SpawnSmokePuff(screenPos.X, screenPos.Y, ScreenDirection.Up, 20);
                 }
+
                 Destroy(entity);
             }
             else
