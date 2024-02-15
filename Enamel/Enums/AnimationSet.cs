@@ -7,5 +7,6 @@ public enum AnimationSet
     CharButton,
     EndTurnButton,
     RedeployWizardButton,
-    Orb
+    Orb,
+    Socket
 }

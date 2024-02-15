@@ -7,6 +7,8 @@ namespace Enamel.Systems;
 
 public class ScreenMoveSystem : MoonTools.ECS.System
 {
+    private const double TOLERANCE = 0.001;
+
     private Filter MovingFilter { get; }
 
     public ScreenMoveSystem(World world) : base(world)
@@ -32,6 +34,11 @@ public class ScreenMoveSystem : MoonTools.ECS.System
             );
 
             Set(entity, new ScreenPositionComponent(updatedPosition.X, updatedPosition.Y));
+
+            if (Math.Abs(updatedPosition.X - targetPosition.X) < TOLERANCE && Math.Abs(updatedPosition.Y - targetPosition.Y) < TOLERANCE)
+            {
+                Remove<MovingToScreenPositionComponent>(entity);
+            }
         }
     }
 

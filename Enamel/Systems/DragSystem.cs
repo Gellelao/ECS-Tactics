@@ -44,21 +44,11 @@ public class DragSystem : MoonTools.ECS.System
 
         foreach (var entity in BeingDraggedFilter.Entities)
         {
-            var socket = GetSocketUnderMouse();
-            if (socket != null)
-            {
-                var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
-                Set(entity, new MovingToScreenPositionComponent(socketCoords.X, socketCoords.Y, 100));
-            }
-            else
-            {
-                var (mouseX, mouseY) = _screenUtils.GetMouseCoords();
-                var dimensions = Get<DimensionsComponent>(entity);
-                mouseX -= dimensions.Width / 2;
-                mouseY -= dimensions.Height / 2;
-                Set(entity, new ScreenPositionComponent(mouseX, mouseY));
-                Remove<MovingToScreenPositionComponent>(entity);
-            }
+            var (mouseX, mouseY) = _screenUtils.GetMouseCoords();
+            var dimensions = Get<DimensionsComponent>(entity);
+            mouseX -= dimensions.Width / 2;
+            mouseY -= dimensions.Height / 2;
+            Set(entity, new ScreenPositionComponent(mouseX, mouseY));
         }
     }
 
