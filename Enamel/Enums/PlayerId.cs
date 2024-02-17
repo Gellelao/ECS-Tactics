@@ -1,6 +1,6 @@
 ﻿namespace Enamel.Enums;
 
-public enum Player
+public enum PlayerId
 {
     One,
     Two,

@@ -28,7 +28,7 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
         {
             var count = 0;
             ImGui.SliderInt("size", ref _buttonSize, 5, 100);
-            var entitiesToShow = Debug_GetEntities(typeof(PlayerNumberComponent));
+            var entitiesToShow = Debug_GetEntities(typeof(PlayerIdComponent));
             entitiesToShow = entitiesToShow.Concat(Debug_GetEntities(typeof(TextureIndexComponent)).Reverse());
             foreach (var entity in entitiesToShow)
             {

@@ -17,7 +17,7 @@ public class MainMenuSystem : MoonTools.ECS.System
     public MainMenuSystem(World world, MenuUtils menuUtils) : base(world)
     {
         _menuUtils = menuUtils;
-        PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
+        PlayerFilter = FilterBuilder.Include<PlayerIdComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)

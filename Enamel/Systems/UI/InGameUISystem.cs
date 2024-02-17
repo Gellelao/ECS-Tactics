@@ -15,7 +15,7 @@ public class InGameUiSystem : MoonTools.ECS.System
     private const int PORTRAIT_X = 296;
     private const int PORTRAIT_HEIGHT = 23;
     private readonly MenuUtils _menuUtils;
-    private readonly Dictionary<Player, Entity> _portraitsByPlayer;
+    private readonly Dictionary<PlayerId, Entity> _portraitsByPlayer;
     private int _numberOfPlayers;
 
     private Filter PlayerFilter { get; }
@@ -23,8 +23,8 @@ public class InGameUiSystem : MoonTools.ECS.System
     public InGameUiSystem(World world, MenuUtils menuUtils) : base(world)
     {
         _menuUtils = menuUtils;
-        _portraitsByPlayer = new Dictionary<Player, Entity>();
-        PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
+        _portraitsByPlayer = new Dictionary<PlayerId, Entity>();
+        PlayerFilter = FilterBuilder.Include<PlayerIdComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -84,17 +84,17 @@ public class InGameUiSystem : MoonTools.ECS.System
             _portraitsByPlayer.Clear();
             foreach (var playerEntity in PlayerFilter.Entities)
             {
-                var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
-                var characterNumber = Get<SelectedCharacterComponent>(playerEntity).Character;
-                var portraitSprite = characterNumber.ToPortraitSprite();
+                var playerId = Get<PlayerIdComponent>(playerEntity).PlayerId;
+                var characterId = Get<SelectedCharacterComponent>(playerEntity).CharacterId;
+                var portraitSprite = characterId.ToPortraitSprite();
 
                 var portrait = _menuUtils.CreateUiEntity(
                     PORTRAIT_X,
-                    (int) playerNumber * PORTRAIT_HEIGHT + 1 + (int) playerNumber
+                    (int) playerId * PORTRAIT_HEIGHT + 1 + (int) playerId
                 );
                 Set(portrait, new TextureIndexComponent(portraitSprite));
 
-                _portraitsByPlayer.Add(playerNumber, portrait);
+                _portraitsByPlayer.Add(playerId, portrait);
             }
 
             var selectedPortraitFrame = _menuUtils.CreateUiEntity(295, 0);
@@ -112,13 +112,13 @@ public class InGameUiSystem : MoonTools.ECS.System
 
     private void OrderPortraits()
     {
-        var currentPlayerNumber = Get<PlayerNumberComponent>(GetSingletonEntity<CurrentPlayerFlag>()).PlayerNumber;
+        var currentPlayerId = Get<PlayerIdComponent>(GetSingletonEntity<CurrentPlayerFlag>()).PlayerId;
         for (var i = 0; i < _numberOfPlayers; i++)
         {
-            var portrait = _portraitsByPlayer[currentPlayerNumber];
+            var portrait = _portraitsByPlayer[currentPlayerId];
             var speed = i == _numberOfPlayers - 1 ? 200 : 80;
             Set(portrait, new MovingToScreenPositionComponent(PORTRAIT_X, i * PORTRAIT_HEIGHT + 1 + i, speed));
-            currentPlayerNumber = Utils.Utils.GetNextPlayer(currentPlayerNumber, _numberOfPlayers);
+            currentPlayerId = Utils.Utils.GetNextPlayer(currentPlayerId, _numberOfPlayers);
         }
     }
 }

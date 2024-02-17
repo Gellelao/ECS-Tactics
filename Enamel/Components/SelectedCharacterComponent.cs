@@ -2,4 +2,4 @@
 
 namespace Enamel.Components;
 
-public readonly record struct SelectedCharacterComponent(Character Character);
+public readonly record struct SelectedCharacterComponent(CharacterId CharacterId);

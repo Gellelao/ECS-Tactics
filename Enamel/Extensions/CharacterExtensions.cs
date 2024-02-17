@@ -5,25 +5,25 @@ namespace Enamel.Extensions;
 
 public static class CharacterExtensions
 {
-    public static Sprite ToCharacterSprite(this Character character)
+    public static Sprite ToCharacterSprite(this CharacterId characterId)
     {
-        return character switch
+        return characterId switch
         {
-            Character.BlueWiz => Sprite.BlueWizard,
-            Character.Ember => Sprite.EmberWizard,
-            Character.Loam => Sprite.LoamWizard,
-            _ => throw new ArgumentOutOfRangeException(nameof(character), character, null)
+            CharacterId.BlueWiz => Sprite.BlueWizard,
+            CharacterId.Ember => Sprite.EmberWizard,
+            CharacterId.Loam => Sprite.LoamWizard,
+            _ => throw new ArgumentOutOfRangeException(nameof(characterId), characterId, null)
         };
     }
 
-    public static Sprite ToPortraitSprite(this Character character)
+    public static Sprite ToPortraitSprite(this CharacterId characterId)
     {
-        return character switch
+        return characterId switch
         {
-            Character.BlueWiz => Sprite.BlueWizPortrait,
-            Character.Ember => Sprite.EmberWizPortrait,
-            Character.Loam => Sprite.LoamWizPortrait,
-            _ => throw new ArgumentOutOfRangeException(nameof(character), character, null)
+            CharacterId.BlueWiz => Sprite.BlueWizPortrait,
+            CharacterId.Ember => Sprite.EmberWizPortrait,
+            CharacterId.Loam => Sprite.LoamWizPortrait,
+            _ => throw new ArgumentOutOfRangeException(nameof(characterId), characterId, null)
         };
     }
 }

@@ -32,10 +32,10 @@ public static class Utils
         return GridDirection.None;
     }
 
-    public static Player GetNextPlayer(Player playerNumber, int numberOfPlayers)
+    public static PlayerId GetNextPlayer(PlayerId playerId, int numberOfPlayers)
     {
-        var currentInt = (int) playerNumber;
-        var nextPlayerNumber = (currentInt + 1 + numberOfPlayers) % numberOfPlayers;
-        return (Player) nextPlayerNumber;
+        var currentInt = (int) playerId;
+        var nextPlayerId = (currentInt + 1 + numberOfPlayers) % numberOfPlayers;
+        return (PlayerId) nextPlayerId;
     }
 }

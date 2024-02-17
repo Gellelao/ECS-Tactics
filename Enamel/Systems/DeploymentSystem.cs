@@ -64,7 +64,7 @@ public class DeploymentSystem : MoonTools.ECS.System
         // If the current player clicks, delete any existing characters and place their selected char
         _deployingPlayer = GetSingletonEntity<CurrentPlayerFlag>();
         DestroyCharactersOfPlayer(_deployingPlayer);
-        var characterToDeploy = Get<SelectedCharacterComponent>(_deployingPlayer).Character;
+        var characterToDeploy = Get<SelectedCharacterComponent>(_deployingPlayer).CharacterId;
 
         var coords = ReadMessage<GridCoordSelectedMessage>();
         Entity character = _characterSpawner.SpawnCharacter(characterToDeploy, coords.X, coords.Y);

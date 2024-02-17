@@ -13,7 +13,7 @@ public class TurnSystem : MoonTools.ECS.System
 
     public TurnSystem(World world) : base(world)
     {
-        PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
+        PlayerFilter = FilterBuilder.Include<PlayerIdComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -24,13 +24,13 @@ public class TurnSystem : MoonTools.ECS.System
         var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
         Remove<CurrentPlayerFlag>(currentPlayer);
 
-        var nextPlayerNumber = GetNextPlayer(Get<PlayerNumberComponent>(currentPlayer).PlayerNumber, numberOfPlayers);
+        var nextPlayerId = GetNextPlayer(Get<PlayerIdComponent>(currentPlayer).PlayerId, numberOfPlayers);
 
         foreach (var playerEntity in PlayerFilter.Entities)
         {
-            var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
+            var playerId = Get<PlayerIdComponent>(playerEntity).PlayerId;
             var playersCharacters = OutRelations<ControlsRelation>(playerEntity);
-            if (playerNumber == nextPlayerNumber)
+            if (playerId == nextPlayerId)
             {
                 Set(playerEntity, new CurrentPlayerFlag());
 

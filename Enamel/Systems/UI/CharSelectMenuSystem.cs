@@ -23,8 +23,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
     public CharSelectMenuSystem(World world, MenuUtils menuUtils) : base(world)
     {
         _menuUtils = menuUtils;
-        _numberOfCharacters = Enum.GetNames(typeof(Character)).Length;
-        PlayerFilter = FilterBuilder.Include<PlayerNumberComponent>().Build();
+        _numberOfCharacters = Enum.GetNames(typeof(CharacterId)).Length;
+        PlayerFilter = FilterBuilder.Include<PlayerIdComponent>().Build();
     }
 
     public override void Update(TimeSpan delta)
@@ -81,13 +81,13 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
 
         if (SomeMessage<PreviousCharacterMessage>())
         {
-            var player = ReadMessage<PreviousCharacterMessage>().Player;
+            var player = ReadMessage<PreviousCharacterMessage>().PlayerId;
             CycleCharacterForPlayer(player, -1);
         }
 
         if (SomeMessage<NextCharacterMessage>())
         {
-            var player = ReadMessage<NextCharacterMessage>().Player;
+            var player = ReadMessage<NextCharacterMessage>().PlayerId;
             CycleCharacterForPlayer(player, 1);
         }
     }
@@ -116,9 +116,9 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
     {
         var existingPlayerCount = PlayerFilter.Count;
         var playerEntity = World.CreateEntity();
-        var playerNumber = (Player) existingPlayerCount;
-        Set(playerEntity, new PlayerNumberComponent(playerNumber));
-        Set(playerEntity, new SelectedCharacterComponent(Character.BlueWiz));
+        var playerId = (PlayerId) existingPlayerCount;
+        Set(playerEntity, new PlayerIdComponent(playerId));
+        Set(playerEntity, new SelectedCharacterComponent(CharacterId.BlueWiz));
 
         CreateCharacterSheetForPlayer(playerEntity);
 
@@ -130,15 +130,15 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Remove<DisabledFlag>(_deletePlayerButton);
     }
 
-    private void CycleCharacterForPlayer(Player player, int increment)
+    private void CycleCharacterForPlayer(PlayerId playerId, int increment)
     {
         foreach (var playerEntity in PlayerFilter.Entities)
         {
-            if (Get<PlayerNumberComponent>(playerEntity).PlayerNumber != player) continue;
+            if (Get<PlayerIdComponent>(playerEntity).PlayerId != playerId) continue;
             DeleteCharacterSheetForPlayer(playerEntity);
-            var selectedCharacter = (int) Get<SelectedCharacterComponent>(playerEntity).Character;
+            var selectedCharacter = (int) Get<SelectedCharacterComponent>(playerEntity).CharacterId;
             var newCharacter = (selectedCharacter + increment + _numberOfCharacters) % _numberOfCharacters;
-            Set(playerEntity, new SelectedCharacterComponent((Character) newCharacter));
+            Set(playerEntity, new SelectedCharacterComponent((CharacterId) newCharacter));
             CreateCharacterSheetForPlayer(playerEntity);
         }
     }
@@ -157,9 +157,9 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var characterSheet = _menuUtils.CreateUiEntity(80, 40, 40, 60);
         Set(characterSheet, new TextureIndexComponent(Sprite.CharacterSheet));
 
-        var playerNumber = Get<PlayerNumberComponent>(playerEntity).PlayerNumber;
+        var playerId = Get<PlayerIdComponent>(playerEntity).PlayerId;
 
-        Set(characterSheet, new OrderComponent((int) playerNumber));
+        Set(characterSheet, new OrderComponent((int) playerId));
         Relate(_sheetRow, characterSheet, new IsParentRelation());
         Relate(playerEntity, characterSheet, new IsParentRelation());
 
@@ -168,16 +168,16 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         Set(leftButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(leftButton, new ToggleFrameOnMouseHoverComponent(1));
         Set(leftButton, new ToggleFrameOnMouseDownComponent(2));
-        Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int) playerNumber));
+        Set(leftButton, new OnClickComponent(ClickEvent.PreviousCharacter, (int) playerId));
 
         var rightButton = _menuUtils.CreateRelativeUiEntity(characterSheet, 24, 44, 13, 13);
         Set(rightButton, new TextureIndexComponent(Sprite.RightCharButton));
         Set(rightButton, new AnimationSetComponent(AnimationSet.CharButton));
         Set(rightButton, new ToggleFrameOnMouseHoverComponent(1));
         Set(rightButton, new ToggleFrameOnMouseDownComponent(2));
-        Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int) playerNumber));
+        Set(rightButton, new OnClickComponent(ClickEvent.NextCharacter, (int) playerId));
 
-        var character = Get<SelectedCharacterComponent>(playerEntity).Character;
+        var character = Get<SelectedCharacterComponent>(playerEntity).CharacterId;
 
         var characterPreview = _menuUtils.CreateRelativeUiEntity(characterSheet, 10, 0, 13, 13);
         Set(characterPreview, new TextureIndexComponent(character.ToCharacterSprite()));
@@ -208,10 +208,10 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
 
         foreach (var player in PlayerFilter.Entities)
         {
-            var playerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
-            if ((int) playerNumber > highest)
+            var playerId = Get<PlayerIdComponent>(player).PlayerId;
+            if ((int) playerId > highest)
             {
-                highest = (int) playerNumber;
+                highest = (int) playerId;
                 highestPlayer = player;
             }
         }

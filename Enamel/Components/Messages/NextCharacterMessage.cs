@@ -2,4 +2,4 @@
 
 namespace Enamel.Components.Messages;
 
-public readonly record struct NextCharacterMessage(Player Player);
+public readonly record struct NextCharacterMessage(PlayerId PlayerId);

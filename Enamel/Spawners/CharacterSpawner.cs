@@ -9,16 +9,16 @@ namespace Enamel.Spawners;
 
 public class CharacterSpawner(World world) : Manipulator(world)
 {
-    public Entity SpawnCharacter(Character character, int x, int y)
+    public Entity SpawnCharacter(CharacterId characterId, int x, int y)
     {
-        var spawnedCharacter = character switch
+        var spawnedCharacter = characterId switch
         {
-            Character.BlueWiz => SpawnBlueWiz(x, y),
-            Character.Ember => SpawnEmber(x, y),
-            Character.Loam => SpawnLoam(x, y),
-            _ => throw new ArgumentOutOfRangeException(nameof(character), character, null)
+            CharacterId.BlueWiz => SpawnBlueWiz(x, y),
+            CharacterId.Ember => SpawnEmber(x, y),
+            CharacterId.Loam => SpawnLoam(x, y),
+            _ => throw new ArgumentOutOfRangeException(nameof(characterId), characterId, null)
         };
-        Set(spawnedCharacter, new TextureIndexComponent(character.ToCharacterSprite()));
+        Set(spawnedCharacter, new TextureIndexComponent(characterId.ToCharacterSprite()));
         return spawnedCharacter;
     }
 

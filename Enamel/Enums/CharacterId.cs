@@ -1,6 +1,6 @@
 ﻿namespace Enamel.Enums;
 
-public enum Character
+public enum CharacterId
 {
     BlueWiz,
     Ember,

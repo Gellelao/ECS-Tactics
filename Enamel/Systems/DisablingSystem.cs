@@ -43,12 +43,12 @@ public class DisablingSystem : MoonTools.ECS.System
             if (!Has<SelectedCharacterComponent>(currentPlayer))
             {
                 // If the player has a "selected character" we know they are deploying, so leave their characters disabled
-                var currentPlayerNumber = Get<PlayerNumberComponent>(currentPlayer).PlayerNumber;
+                var currentPlayerId = Get<PlayerIdComponent>(currentPlayer).PlayerId;
                 foreach (var (player, character) in Relations<ControlsRelation>())
                 {
                     // Remove disabled from all units on the caster's team, now that the spell has been cast
-                    var controllerNumber = Get<PlayerNumberComponent>(player).PlayerNumber;
-                    if (controllerNumber == currentPlayerNumber)
+                    var ownerId = Get<PlayerIdComponent>(player).PlayerId;
+                    if (ownerId == currentPlayerId)
                     {
                         Remove<DisabledFlag>(character);
                     }
