@@ -23,6 +23,7 @@ public static class Constants
 
     public const int DEFAULT_MILLIS_BETWEEN_FRAMES = 180;
 
-    public static readonly Color CurrentTurnTextColour = Color.White;
+    public const int TOME_ROW_STARTING_X = 30;
+    
     public static readonly Color TomeTextColour = Color.Black;
 }

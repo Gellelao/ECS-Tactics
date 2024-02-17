@@ -38,26 +38,6 @@ public class InGameUiSystem : MoonTools.ECS.System
             Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
-            
-            var tome = World.CreateEntity();
-            World.Set(tome, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome, new ScreenPositionComponent(30, 150));
-            World.Set(tome, new DrawLayerComponent(DrawLayer.UserInterface));
-            
-            var tome2 = World.CreateEntity();
-            World.Set(tome2, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome2, new ScreenPositionComponent(90, 150));
-            World.Set(tome2, new DrawLayerComponent(DrawLayer.UserInterface));
-            
-            var tome3 = World.CreateEntity();
-            World.Set(tome3, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome3, new ScreenPositionComponent(150, 150));
-            World.Set(tome3, new DrawLayerComponent(DrawLayer.UserInterface));
-            
-            var tome4 = World.CreateEntity();
-            World.Set(tome4, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome4, new ScreenPositionComponent(210, 150));
-            World.Set(tome4, new DrawLayerComponent(DrawLayer.UserInterface));
 
             var testOrb = World.CreateEntity();
             World.Set(testOrb, new TextureIndexComponent(Sprite.BlueOrb));

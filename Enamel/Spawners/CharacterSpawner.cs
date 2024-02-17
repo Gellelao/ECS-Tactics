@@ -44,6 +44,8 @@ public class CharacterSpawner(World world) : Manipulator(world)
     {
         var blueWiz = SpawnBaseWizard(x, y);
         Set(blueWiz, new LearningSpellComponent(SpellId.StepOnce));
+        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBlock));
+        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBubble));
 
         return blueWiz;
     }

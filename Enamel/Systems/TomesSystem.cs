@@ -31,7 +31,7 @@ public class TomesSystem : MoonTools.ECS.System
     {
         foreach (var entity in DisplayTomesFilter.Entities)
         {
-            // The outer loop only runs when we want to display new cards, so this is where we should destroy old ones
+            // The outer loop only runs when we want to display new tomes, so this is where we should destroy old ones
             foreach (var tome in _tomes)
             {
                 Destroy(tome);
@@ -46,23 +46,24 @@ public class TomesSystem : MoonTools.ECS.System
 
     private void CreateTomesForEntity(Entity entity)
     {
-        var screenX = 0;
+        var screenX = Constants.TOME_ROW_STARTING_X;
         var spells = OutRelations<HasSpellRelation>(entity);
         foreach (var spell in spells)
         {
             var spellIdComponent = Get<SpellIdComponent>(spell);
-
-            var tome = _world.CreateEntity();
-            Set(tome, new ScreenPositionComponent(screenX, 0));
-            Set(tome, new DimensionsComponent(30, 30));
-            Set(tome, new TextureIndexComponent(Sprite.YellowSquare));
+            
+            var tome = World.CreateEntity();
+            Set(tome, new TextureIndexComponent(Sprite.Tome));
+            Set(tome, new ScreenPositionComponent(screenX, 165));
             Set(tome, new DrawLayerComponent(DrawLayer.UserInterface));
+            Set(tome, new DimensionsComponent(56, 65));
             var textIndex = TextStorage.GetId(spellIdComponent.SpellId.ToName());
             Set(tome, new TextComponent(textIndex, Font.Absolute, Constants.TomeTextColour));
             Set(tome, new OnClickComponent(ClickEvent.PrepSpell, (int) spellIdComponent.SpellId));
+
             _tomes.Add(tome);
 
-            screenX += 40;
+            screenX += 60;
         }
     }
 }

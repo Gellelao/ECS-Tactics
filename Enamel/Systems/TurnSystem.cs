@@ -2,6 +2,7 @@
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Components.TempComponents;
 using MoonTools.ECS;
 using static Enamel.Utils.Utils;
 
@@ -43,7 +44,9 @@ public class TurnSystem : MoonTools.ECS.System
                 // If they just have 1 character then auto-select it
                 if (OutRelationCount<ControlsRelation>(playerEntity) == 1)
                 {
-                    Set(OutRelationSingleton<ControlsRelation>(playerEntity), new SelectedFlag());
+                    var character = OutRelationSingleton<ControlsRelation>(playerEntity);
+                    Set(character, new SelectedFlag());
+                    Set(character, new DisplayTomesComponent());
                 }
             }
             else

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Numerics;
 using Enamel.Components;
 using Enamel.Components.Relations;
+using Enamel.Extensions;
 using ImGuiNET;
 using MoonTools.ECS;
 
-namespace Enamel.Utils;
+namespace Enamel.Systems;
 
 public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Framework.Vector2)> textures)
     : MoonTools.ECS.DebugSystem(world)
@@ -78,10 +79,10 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
         }
     }
 
-    private void ShowEntityDetails(Entity entity)
+    private void ShowEntityDetails(Entity entity, string? name = null)
     {
         DrawSpriteForEntity(entity);
-        ShowComponentsForEntity(entity);
+        ShowComponentsForEntity(entity, name);
         ShowRelationsOfEntity(entity);
     }
 
@@ -148,11 +149,11 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
         }
     }
 
-    private void ShowComponentsForEntity(Entity? entity)
+    private void ShowComponentsForEntity(Entity? entity, string? name = null)
     {
         if (entity == null) return;
         ImGui.SetNextItemOpen(true, ImGuiCond.FirstUseEver);
-        if (ImGui.TreeNode($"Components for entity {entity.Value.ID.ToString()}"))
+        if (ImGui.TreeNode($"Components for entity {name ?? entity.Value.ID.ToString()}"))
         {
             foreach (var component in Debug_GetAllComponentTypes((Entity) entity))
             {
@@ -173,6 +174,20 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
                 foreach (var child in OutRelations<IsParentRelation>(entity))
                 {
                     ShowEntityDetails(child);
+                }
+
+                ImGui.TreePop();
+            }
+        }
+        if (HasOutRelation<HasSpellRelation>(entity))
+        {
+            if (ImGui.TreeNode("Spells"))
+            {
+                foreach (var child in OutRelations<HasSpellRelation>(entity))
+                {
+                    var spellId = Get<SpellIdComponent>(child).SpellId;
+                    var spellName = spellId.ToName();
+                    ShowEntityDetails(child, spellName);
                 }
 
                 ImGui.TreePop();

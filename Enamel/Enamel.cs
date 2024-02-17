@@ -13,7 +13,7 @@ using Enamel.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonTools.ECS;
-using DebugSystem = Enamel.Utils.DebugSystem;
+using DebugSystem = Enamel.Systems.DebugSystem;
 
 namespace Enamel;
 
