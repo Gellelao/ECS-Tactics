@@ -34,7 +34,7 @@ public class Enamel : Game
     private static GridMoveSystem? _gridMoveSystem;
     private static TurnSystem? _turnSystem;
     private static SpellManagementSystem? _spellManagementSystem;
-    private static PlayerButtonsSystem? _playerButtonsSystem;
+    private static TomesSystem? _tomesSystem;
     private static SpellCastingSystem? _spellCastingSystem;
     private static ProjectileSystem? _projectileSystem;
     private static DamageSystem? _damageSystem;
@@ -140,7 +140,7 @@ public class Enamel : Game
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World, spellUtils);
-        _playerButtonsSystem = new PlayerButtonsSystem(World);
+        _tomesSystem = new TomesSystem(World);
 
         var spellCastSpawner = new SpellCastSpawner(World);
         _spellCastingSystem = new SpellCastingSystem(World, spellUtils, spellCastSpawner);
@@ -232,7 +232,7 @@ public class Enamel : Game
         // Should run after pushSystem because the pushSystem sends DamageMessages
         _damageSystem?.Update(elapsedTime);
         _spellManagementSystem?.Update(elapsedTime);
-        _playerButtonsSystem?.Update(elapsedTime);
+        _tomesSystem?.Update(elapsedTime);
         // Put before the disablingSystem so the buttons can "untoggle" before they get disabled
         _toggleFrameSystem?.Update(elapsedTime);
         _disablingSystem?.Update(elapsedTime);

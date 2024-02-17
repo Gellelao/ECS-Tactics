@@ -37,7 +37,7 @@ public class UnitSelectionSystem : MoonTools.ECS.System
             }
 
             Set(entity, new SelectedFlag());
-            Set(entity, new DisplaySpellCardsComponent());
+            Set(entity, new DisplayTomesComponent());
         }
     }
 }

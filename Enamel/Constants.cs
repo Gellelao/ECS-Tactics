@@ -24,5 +24,5 @@ public static class Constants
     public const int DEFAULT_MILLIS_BETWEEN_FRAMES = 180;
 
     public static readonly Color CurrentTurnTextColour = Color.White;
-    public static readonly Color SpellCardTextColour = Color.Black;
+    public static readonly Color TomeTextColour = Color.Black;
 }
