@@ -46,13 +46,18 @@ public class InGameUiSystem : MoonTools.ECS.System
             
             var tome2 = World.CreateEntity();
             World.Set(tome2, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome2, new ScreenPositionComponent(100, 150));
+            World.Set(tome2, new ScreenPositionComponent(90, 150));
             World.Set(tome2, new DrawLayerComponent(DrawLayer.UserInterface));
             
             var tome3 = World.CreateEntity();
             World.Set(tome3, new TextureIndexComponent(Sprite.Tome));
-            World.Set(tome3, new ScreenPositionComponent(170, 150));
+            World.Set(tome3, new ScreenPositionComponent(150, 150));
             World.Set(tome3, new DrawLayerComponent(DrawLayer.UserInterface));
+            
+            var tome4 = World.CreateEntity();
+            World.Set(tome4, new TextureIndexComponent(Sprite.Tome));
+            World.Set(tome4, new ScreenPositionComponent(210, 150));
+            World.Set(tome4, new DrawLayerComponent(DrawLayer.UserInterface));
 
             var testOrb = World.CreateEntity();
             World.Set(testOrb, new TextureIndexComponent(Sprite.BlueOrb));
