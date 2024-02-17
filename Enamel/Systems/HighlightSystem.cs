@@ -40,6 +40,12 @@ public class HighlightSystem : MoonTools.ECS.System
             Remove<HighlightedFlag>(selectedEntity);
         }
 
+        if (Some<BeingDraggedFlag>())
+        {
+            // Don't highlight stuff while dragging is happening
+            return;
+        }
+
         // Button hovers
         foreach (var button in ClickableUiFilter.Entities)
         {

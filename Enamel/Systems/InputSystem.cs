@@ -81,6 +81,9 @@ public class InputSystem : MoonTools.ECS.System
         {
             Remove<BeingDraggedFlag>(entity);
             Set(entity, new DroppedComponent());
+            // Don't want to trigger any buttons by dropping a dragged entity.
+            // Does have implications if you are dragging multiple entities but not sure if that's supported?
+            return;
         }
 
         // Button clicks
