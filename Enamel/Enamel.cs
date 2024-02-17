@@ -140,7 +140,7 @@ public class Enamel : Game
         _gridMoveSystem = new GridMoveSystem(World, cameraX, cameraY);
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World, spellUtils);
-        _tomesSystem = new TomesSystem(World);
+        _tomesSystem = new TomesSystem(World, menuUtils);
 
         var spellCastSpawner = new SpellCastSpawner(World);
         _spellCastingSystem = new SpellCastingSystem(World, spellUtils, spellCastSpawner);
@@ -159,7 +159,7 @@ public class Enamel : Game
         _relativePositionSystem = new RelativePositionSystem(World);
         _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
 
-        var characterSpawner = new CharacterSpawner(World);
+        var characterSpawner = new CharacterSpawner(World, spellUtils);
         _deploymentSystem = new DeploymentSystem(World, characterSpawner, menuUtils);
         _inGameUiSystem = new InGameUiSystem(World, menuUtils);
         _dragSystem = new DragSystem(World, _screenUtils);

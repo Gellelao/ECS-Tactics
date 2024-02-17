@@ -24,6 +24,7 @@ public static class Constants
     public const int DEFAULT_MILLIS_BETWEEN_FRAMES = 180;
 
     public const int TOME_ROW_STARTING_X = 30;
+    public const int TOME_ROW_DEFAULT_Y = 150;
     
     public static readonly Color TomeTextColour = Color.Black;
 }

@@ -49,18 +49,6 @@ public class InGameUiSystem : MoonTools.ECS.System
             World.Set(testOrb, new ToggleFrameOnMouseDownComponent(2));
             World.Set(testOrb, new AnimationSetComponent(AnimationSet.Orb));
 
-            var testSocket = World.CreateEntity();
-            World.Set(testSocket, new TextureIndexComponent(Sprite.Socket));
-            World.Set(testSocket, new ScreenPositionComponent(70, 130));
-            World.Set(testSocket, new DimensionsComponent(12, 12));
-            World.Set(testSocket, new SocketComponent());
-            World.Set(testSocket, new DrawLayerComponent(DrawLayer.UserInterface));
-            World.Set(testSocket, new ToggleFrameOnMouseHoverComponent(1));
-            // TODO Some smart system which
-            // 1. lets you know which sockets accept the orb you are holding
-            // 2. lets you know which socket will take the orb you are holding if you release it now
-            World.Set(testSocket, new AnimationSetComponent(AnimationSet.Socket));
-
             _portraitsByPlayer.Clear();
             foreach (var playerEntity in PlayerFilter.Entities)
             {

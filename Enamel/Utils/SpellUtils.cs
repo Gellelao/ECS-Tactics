@@ -1,4 +1,6 @@
 ﻿using Enamel.Components;
+using Enamel.Components.Relations;
+using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using Enamel.Exceptions;
 using MoonTools.ECS;
@@ -23,5 +25,11 @@ public class SpellUtils : Manipulator
         }
 
         throw new SpellNotFoundException($"Did not find spell with id {spellId}");
+    }
+
+    public void TeachSpellToEntity(Entity entity, SpellId spell)
+    {
+        var spellEntity = GetSpell(spell);
+        Relate(entity, spellEntity, new HasSpellRelation());
     }
 }

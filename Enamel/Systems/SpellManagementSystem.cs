@@ -22,9 +22,7 @@ public class SpellManagementSystem : MoonTools.ECS.System
         foreach (var entity in LearningSpellFilter.Entities)
         {
             var spell = Get<LearningSpellComponent>(entity);
-            var spellEntity = _spellUtils.GetSpell(spell.SpellId);
-            Relate(entity, spellEntity, new HasSpellRelation());
-            Remove<LearningSpellComponent>(entity);
+            _spellUtils.TeachSpellToEntity(entity, spell.SpellId);
         }
     }
 }

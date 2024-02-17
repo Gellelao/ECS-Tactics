@@ -3,12 +3,18 @@ using Enamel.Components;
 using Enamel.Components.TempComponents;
 using Enamel.Enums;
 using Enamel.Extensions;
+using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Spawners;
 
-public class CharacterSpawner(World world) : Manipulator(world)
+public class CharacterSpawner(World world, SpellUtils spellUtils) : Manipulator(world)
 {
+    private SpellUtils SpellUtils { get; } = spellUtils;
+
+    // In this class we use spell utils to teach spells directly, bypassing the SpellManagementSystem because it relies on
+    // LearningSpellComponents. An entity can only have one component of each type, so we wouldn't be able to teach our new 
+    // units multiple spells at once here.
     public Entity SpawnCharacter(CharacterId characterId, int x, int y)
     {
         var spawnedCharacter = characterId switch
@@ -25,8 +31,8 @@ public class CharacterSpawner(World world) : Manipulator(world)
     private Entity SpawnLoam(int x, int y)
     {
         var loam = SpawnBaseWizard(x, y);
-        Set(loam, new LearningSpellComponent(SpellId.StepOnce));
-        Set(loam, new LearningSpellComponent(SpellId.RockCharge));
+        SpellUtils.TeachSpellToEntity(loam, SpellId.StepOnce);
+        SpellUtils.TeachSpellToEntity(loam, SpellId.RockCharge);
 
         return loam;
     }
@@ -34,8 +40,8 @@ public class CharacterSpawner(World world) : Manipulator(world)
     private Entity SpawnEmber(int x, int y)
     {
         var ember = SpawnBaseWizard(x, y);
-        Set(ember, new LearningSpellComponent(SpellId.StepOnce));
-        Set(ember, new LearningSpellComponent(SpellId.Fireball));
+        SpellUtils.TeachSpellToEntity(ember, SpellId.StepOnce);
+        SpellUtils.TeachSpellToEntity(ember, SpellId.Fireball);
 
         return ember;
     }
@@ -43,9 +49,9 @@ public class CharacterSpawner(World world) : Manipulator(world)
     private Entity SpawnBlueWiz(int x, int y)
     {
         var blueWiz = SpawnBaseWizard(x, y);
-        Set(blueWiz, new LearningSpellComponent(SpellId.StepOnce));
-        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBlock));
-        Set(blueWiz, new LearningSpellComponent(SpellId.ArcaneBubble));
+        SpellUtils.TeachSpellToEntity(blueWiz, SpellId.StepOnce);
+        SpellUtils.TeachSpellToEntity(blueWiz, SpellId.ArcaneBlock);
+        SpellUtils.TeachSpellToEntity(blueWiz, SpellId.ArcaneBubble);
 
         return blueWiz;
     }
