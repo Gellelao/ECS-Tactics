@@ -69,7 +69,7 @@ public class InputSystem : MoonTools.ECS.System
         {
             if (_screenUtils.MouseOverEntity(entity))
             {
-                Set(entity, new BeingDraggedFlag());
+                Set(entity, new StartDragComponent());
             }
         }
     }
@@ -79,8 +79,7 @@ public class InputSystem : MoonTools.ECS.System
         // Release dragged entities
         foreach (var entity in BeingDraggedFilter.Entities)
         {
-            Remove<BeingDraggedFlag>(entity);
-            Set(entity, new DroppedComponent());
+            Set(entity, new EndDragComponent());
             // Don't want to trigger any buttons by dropping a dragged entity.
             // Does have implications if you are dragging multiple entities but not sure if that's supported?
             return;

@@ -8,5 +8,8 @@ public enum DrawLayer
     Units,
     Overgrowth,
     UserInterface,
-    UserInterfaceOverlay // Terrible, I know
+    UserInterfaceOverlay,
+    Dimmer,
+    Lit,
+    LitOverlay
 }

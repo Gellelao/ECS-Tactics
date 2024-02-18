@@ -70,6 +70,7 @@ public static class ContentUtils
         textures[(int) Sprite.BlueOrb] = content.Load<Texture2D>("BlueOrb");
         textures[(int) Sprite.Socket] = content.Load<Texture2D>("Socket");
         textures[(int) Sprite.Tome] = content.Load<Texture2D>("Tome");
+        textures[(int) Sprite.Dimmer] = content.Load<Texture2D>("Dimmer");
 
         return textures;
     }

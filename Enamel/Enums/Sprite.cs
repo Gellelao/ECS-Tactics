@@ -32,5 +32,6 @@ public enum Sprite
     RedeployWizardButton,
     BlueOrb,
     Socket,
-    Tome
+    Tome,
+    Dimmer
 }
