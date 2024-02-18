@@ -59,7 +59,12 @@ public class TomesSystem : MoonTools.ECS.System
             var textIndex = TextStorage.GetId(spellIdComponent.SpellId.ToName());
             Set(tome, new TextComponent(textIndex, Font.Absolute, Constants.TomeTextColour));
 
-            CreateSocket(tome, 5, 15);
+            // This should pretty much always be true, DeployWizards doesn't have requirements but it shouldn't render a tome...
+            if (Has<OrbRequirementComponent>(spell))
+            {
+                var requirements = Get<OrbRequirementComponent>(spell);
+                CreateSockets(tome, requirements);
+            }
 
             _tomes.Add(tome);
 
@@ -67,11 +72,28 @@ public class TomesSystem : MoonTools.ECS.System
         }
     }
 
-    private void CreateSocket(Entity tome, int x, int y)
+    private void CreateSockets(Entity tome, OrbRequirementComponent requirements)
+    {
+        var x = 4;
+        var xIncrement = 15;
+        var y = 15;
+        for (var i = 0; i < requirements.AnyType; i++)
+        {
+            CreateSocket(tome, true, OrbType.Any, x, y);
+            x += xIncrement;
+        }
+        for (var i = 0; i < requirements.Arcane; i++)
+        {
+            CreateSocket(tome, true, OrbType.Arcane, x, y);
+            x += xIncrement;
+        }
+    }
+
+    private void CreateSocket(Entity tome, bool required, OrbType expectedOrbType, int x, int y)
     {
         var testSocket = _menuUtils.CreateRelativeUiEntity(tome, x, y, 12, 12);
         World.Set(testSocket, new TextureIndexComponent(Sprite.Socket));
-        World.Set(testSocket, new SocketComponent());
+        World.Set(testSocket, new SocketComponent(required, expectedOrbType));
         World.Set(testSocket, new ToggleFrameOnMouseHoverComponent(1));
         // TODO Some smart system which
         // 1. lets you know which sockets accept the orb you are holding

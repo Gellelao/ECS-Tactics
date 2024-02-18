@@ -1,3 +1,5 @@
-﻿namespace Enamel.Components;
+﻿using Enamel.Enums;
 
-public readonly record struct SocketComponent();
+namespace Enamel.Components;
+
+public readonly record struct SocketComponent(bool Required, OrbType ExpectedOrbType);

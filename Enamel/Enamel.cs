@@ -323,6 +323,7 @@ public class Enamel : Game
         var stepOnceSpell = World.CreateEntity();
         World.Set(stepOnceSpell, new SpellIdComponent(SpellId.StepOnce));
         World.Set(stepOnceSpell, new CastRangeComponent(1));
+        World.Set(stepOnceSpell, new OrbRequirementComponent(1, 1));
 
         var fireballSpell = World.CreateEntity();
         World.Set(fireballSpell, new SpellIdComponent(SpellId.Fireball));
