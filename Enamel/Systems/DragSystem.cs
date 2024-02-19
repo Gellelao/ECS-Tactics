@@ -60,16 +60,20 @@ public class DragSystem : MoonTools.ECS.System
             RemoveSocketHighlights();
             
             var socket = GetSocketUnderMouse();
+            var orbType = Get<OrbTypeComponent>(entity).OrbType;
             if (socket != null)
             {
-                var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
-                Set(entity, socketCoords);
+                var socketAcceptsOrbType = Get<SocketComponent>((Entity) socket).ExpectedOrbType.HasFlag(orbType);
+                if (socketAcceptsOrbType)
+                {
+                    var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
+                    Set(entity, socketCoords);
+                    return;
+                }
             }
-            else
-            {
-                var draggableComponent = Get<DraggableComponent>(entity);
-                Set(entity, new MovingToScreenPositionComponent(draggableComponent.OriginalX, draggableComponent.OriginalY, 1000));
-            }
+            
+            var draggableComponent = Get<DraggableComponent>(entity);
+            Set(entity, new MovingToScreenPositionComponent(draggableComponent.OriginalX, draggableComponent.OriginalY, 1000));
         }
     }
 
@@ -78,9 +82,10 @@ public class DragSystem : MoonTools.ECS.System
         foreach (var socket in SocketFilter.Entities)
         {
             var expectedOrbType = Get<SocketComponent>(socket).ExpectedOrbType;
-            if (orbType == expectedOrbType)
+            if (expectedOrbType.HasFlag(orbType))
             {
                 Set(socket, new DrawLayerComponent(DrawLayer.Lit));
+                Set(socket, new ToggleFrameOnMouseHoverComponent(1));
                 _litSockets.Add(socket);
             }
         }
@@ -91,6 +96,7 @@ public class DragSystem : MoonTools.ECS.System
         foreach (var socket in _litSockets)
         {
             Set(socket, new DrawLayerComponent(DrawLayer.UserInterface));
+            Remove<ToggleFrameOnMouseHoverComponent>(socket);
         }
         _litSockets.Clear();
     }
