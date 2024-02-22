@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Enamel.Components;
+using Enamel.Components.Relations;
 using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Enums;
@@ -38,6 +39,7 @@ public class DragSystem : MoonTools.ECS.System
         {
             Set(entity, new BeingDraggedFlag());
             Remove<StartDragComponent>(entity);
+            UnrelateAll<SocketedRelation>(entity);
             CreateDimmer();
             var orbType = Get<OrbTypeComponent>(entity).OrbType;
             HighlightSockets(orbType);
@@ -68,6 +70,7 @@ public class DragSystem : MoonTools.ECS.System
                 {
                     var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
                     Set(entity, socketCoords);
+                    Relate((Entity)socket, entity, new SocketedRelation());
                     return;
                 }
             }

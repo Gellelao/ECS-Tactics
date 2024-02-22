@@ -193,5 +193,17 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
                 ImGui.TreePop();
             }
         }
+        if (HasOutRelation<SocketedRelation>(entity))
+        {
+            if (ImGui.TreeNode("SocketedEntities"))
+            {
+                foreach (var child in OutRelations<SocketedRelation>(entity))
+                {
+                    ShowEntityDetails(child);
+                }
+
+                ImGui.TreePop();
+            }
+        }
     }
 }

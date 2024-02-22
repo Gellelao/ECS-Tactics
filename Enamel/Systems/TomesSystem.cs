@@ -8,6 +8,7 @@ using Enamel.Components.UI;
 using Enamel.Enums;
 using Enamel.Extensions;
 using Enamel.Utils;
+using System.Net.Sockets;
 
 namespace Enamel.Systems;
 
@@ -41,6 +42,15 @@ public class TomesSystem : MoonTools.ECS.System
 
             CreateTomesForEntity(entity);
             Remove<DisplayTomesComponent>(entity);
+        }
+
+        foreach(var tome in _tomes){
+            if(SocketsSatisfied(tome)){
+                Remove<DisabledFlag>(tome);
+            }
+            else{
+                Set(tome, new DisabledFlag());
+            }
         }
     }
 
@@ -98,5 +108,20 @@ public class TomesSystem : MoonTools.ECS.System
         // 1. lets you know which sockets accept the orb you are holding
         // 2. lets you know which socket will take the orb you are holding if you release it now
         World.Set(testSocket, new AnimationSetComponent(AnimationSet.Socket));
+    }
+
+    private bool SocketsSatisfied(Entity tome){
+        var children = OutRelations<IsParentRelation>(tome);
+        foreach(var child in children){
+            if(Has<SocketComponent>(child)){
+                var socketComponent = Get<SocketComponent>(child);
+                if(!socketComponent.Required) continue;
+                // If it has an orb in it, it must be satisfied
+                if(!HasOutRelation<SocketedRelation>(child)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
