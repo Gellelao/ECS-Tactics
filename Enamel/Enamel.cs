@@ -107,20 +107,6 @@ public class Enamel : Game
         var animations = ContentUtils.LoadAnimations();
         var fonts = ContentUtils.LoadFonts(Content, GraphicsDevice);
 
-#if DEBUG
-        _imGuiRenderer = new ImGuiRenderer(this);
-        _imGuiRenderer.RebuildFontAtlas();
-        var imGuiTextures = new Dictionary<int, (IntPtr, Vector2)>();
-        for (var i = 0; i < textures.Length; i++)
-        {
-            var texture = textures[i];
-            if (texture == null) continue;
-            imGuiTextures.Add(i, (_imGuiRenderer.BindTexture(texture), new Vector2(texture.Width, texture.Height)));
-        }
-
-        _debugSystem = new DebugSystem(World, imGuiTextures);
-#endif
-
         /*
         SYSTEMS
         */
@@ -131,6 +117,9 @@ public class Enamel : Game
         _screenUtils = new ScreenUtils(World, cameraX, cameraY);
         var spellUtils = new SpellUtils(World);
         var menuUtils = new MenuUtils(World);
+        var orbSpawner = new OrbSpawner(World);
+        var spellCastSpawner = new SpellCastSpawner(World);
+        var particleSpawner = new ParticleSpawner(World, animations);
 
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
         _inputSystem = new InputSystem(World, _screenUtils);
@@ -141,12 +130,8 @@ public class Enamel : Game
         _turnSystem = new TurnSystem(World);
         _spellManagementSystem = new SpellManagementSystem(World, spellUtils);
         _tomesSystem = new TomesSystem(World, menuUtils);
-
-        var spellCastSpawner = new SpellCastSpawner(World);
         _spellCastingSystem = new SpellCastingSystem(World, spellUtils, spellCastSpawner);
         _projectileSystem = new ProjectileSystem(World);
-
-        var particleSpawner = new ParticleSpawner(World, animations);
         _damageSystem = new DamageSystem(World, particleSpawner);
         _disablingSystem = new DisablingSystem(World);
         _pushSystem = new PushSystem(World);
@@ -163,7 +148,24 @@ public class Enamel : Game
         _deploymentSystem = new DeploymentSystem(World, characterSpawner, menuUtils);
         _inGameUiSystem = new InGameUiSystem(World, menuUtils);
         _dragSystem = new DragSystem(World, _screenUtils);
+        
+        /*
+         * Debug
+         */
+#if DEBUG
+        _imGuiRenderer = new ImGuiRenderer(this);
+        _imGuiRenderer.RebuildFontAtlas();
+        var imGuiTextures = new Dictionary<int, (IntPtr, Vector2)>();
+        for (var i = 0; i < textures.Length; i++)
+        {
+            var texture = textures[i];
+            if (texture == null) continue;
+            imGuiTextures.Add(i, (_imGuiRenderer.BindTexture(texture), new Vector2(texture.Width, texture.Height)));
+        }
 
+        _debugSystem = new DebugSystem(World, imGuiTextures, orbSpawner);
+#endif
+        
         /*
         RENDERERS
         */

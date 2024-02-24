@@ -5,14 +5,19 @@ using System.Numerics;
 using Enamel.Components;
 using Enamel.Components.Relations;
 using Enamel.Extensions;
+using Enamel.Spawners;
 using ImGuiNET;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Framework.Vector2)> textures)
+public class DebugSystem(
+    World world,
+    Dictionary<int, (IntPtr, Microsoft.Xna.Framework.Vector2)> textures,
+    OrbSpawner orbSpawner)
     : MoonTools.ECS.DebugSystem(world)
 {
+    public OrbSpawner OrbSpawner { get; } = orbSpawner;
     private bool _showTestWindow;
     private readonly Dictionary<uint, bool> _selectionStatus = new();
     private int _buttonSize = 50;
@@ -67,6 +72,11 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
             ImGui.TreePop();
         }
 
+        if (ImGui.TreeNode("Spawn"))
+        {
+            
+        }
+
         if (ImGui.Button("Test Window")) _showTestWindow = !_showTestWindow;
         ImGui.Text(
             $"Application average {1000f / ImGui.GetIO().Framerate:F3} ms/frame ({ImGui.GetIO().Framerate:F1} FPS)"
@@ -92,8 +102,7 @@ public class DebugSystem(World world, Dictionary<int, (IntPtr, Microsoft.Xna.Fra
         {
             return ImGui.Button(entity.ID.ToString(), new Vector2(_buttonSize, _buttonSize));
         }
-
-        ;
+        
         var textureIndex = (int) Get<TextureIndexComponent>(entity).Index;
         var originalTextureWidth = textures[textureIndex].Item2.X;
         var originalTextureHeight = textures[textureIndex].Item2.Y;
