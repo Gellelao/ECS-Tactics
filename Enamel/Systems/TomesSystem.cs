@@ -101,7 +101,7 @@ public class TomesSystem : MoonTools.ECS.System
     private void CreateSocket(Entity tome, bool required, OrbType expectedOrbType, int x, int y)
     {
         var socket = _menuUtils.CreateRelativeUiEntity(tome, x, y, 12, 12);
-        World.Set(socket, new TextureIndexComponent(Sprite.Socket));
+        World.Set(socket, new TextureIndexComponent(expectedOrbType.ToSocketSprite()));
         World.Set(socket, new SocketComponent(required, expectedOrbType));
         World.Set(socket, new AnimationSetComponent(AnimationSet.Socket));
     }

@@ -30,8 +30,10 @@ public enum Sprite
     LoamWizPortrait,
     SelectedPortrait,
     RedeployWizardButton,
-    Orb,
-    Socket,
+    BlueOrb,
+    BlueSocket,
     Tome,
-    Dimmer
+    Dimmer,
+    GreyOrb,
+    GreySocket
 }
