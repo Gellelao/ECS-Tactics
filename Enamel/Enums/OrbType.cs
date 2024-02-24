@@ -5,8 +5,9 @@ namespace Enamel.Enums;
 [Flags]
 public enum OrbType
 {
-    None = 1,
+    Colourless = 1,
     Arcane = 2,
     Solar = 4,
-    Any = None | Arcane | Solar
+    None = 256, // Keep this one last and don't include it in "Any"
+    Any = Colourless | Arcane | Solar
 }

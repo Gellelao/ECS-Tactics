@@ -46,9 +46,8 @@ public class InGameUiSystem : MoonTools.ECS.System
             World.Set(testOrb, new DraggableComponent(30, 120));
             World.Set(testOrb, new DrawLayerComponent(DrawLayer.LitOverlay));
             World.Set(testOrb, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb, new ToggleFrameOnMouseDownComponent(2));
             World.Set(testOrb, new AnimationSetComponent(AnimationSet.Orb));
-            World.Set(testOrb, new OrbTypeComponent(OrbType.Solar));
+            World.Set(testOrb, new OrbTypeComponent(OrbType.Colourless));
             
             var testOrb1 = World.CreateEntity();
             World.Set(testOrb1, new TextureIndexComponent(Sprite.Orb));
@@ -57,7 +56,6 @@ public class InGameUiSystem : MoonTools.ECS.System
             World.Set(testOrb1, new DraggableComponent(30, 80));
             World.Set(testOrb1, new DrawLayerComponent(DrawLayer.LitOverlay));
             World.Set(testOrb1, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb1, new ToggleFrameOnMouseDownComponent(2));
             World.Set(testOrb1, new AnimationSetComponent(AnimationSet.Orb));
             World.Set(testOrb1, new OrbTypeComponent(OrbType.Arcane));
 

@@ -100,13 +100,10 @@ public class TomesSystem : MoonTools.ECS.System
 
     private void CreateSocket(Entity tome, bool required, OrbType expectedOrbType, int x, int y)
     {
-        var testSocket = _menuUtils.CreateRelativeUiEntity(tome, x, y, 12, 12);
-        World.Set(testSocket, new TextureIndexComponent(Sprite.Socket));
-        World.Set(testSocket, new SocketComponent(required, expectedOrbType));
-        // TODO Some smart system which
-        // 1. lets you know which sockets accept the orb you are holding
-        // 2. lets you know which socket will take the orb you are holding if you release it now
-        World.Set(testSocket, new AnimationSetComponent(AnimationSet.Socket));
+        var socket = _menuUtils.CreateRelativeUiEntity(tome, x, y, 12, 12);
+        World.Set(socket, new TextureIndexComponent(Sprite.Socket));
+        World.Set(socket, new SocketComponent(required, expectedOrbType));
+        World.Set(socket, new AnimationSetComponent(AnimationSet.Socket));
     }
 
     private bool SocketsSatisfied(Entity tome){

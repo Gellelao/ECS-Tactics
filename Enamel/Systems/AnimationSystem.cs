@@ -11,6 +11,8 @@ public class AnimationSystem : MoonTools.ECS.System
 {
     private readonly AnimationData[] _animations;
 
+    private Filter MissingRegionFilter { get; }
+    
     private Filter AnimationFilter { get; }
 
     public Filter TempAnimationFilter { get; }
@@ -18,6 +20,9 @@ public class AnimationSystem : MoonTools.ECS.System
     public AnimationSystem(World world, AnimationData[] animations) : base(world)
     {
         _animations = animations;
+        MissingRegionFilter = FilterBuilder
+            .Include<AnimationSetComponent>()
+            .Exclude<SpriteRegionComponent>().Build();
         AnimationFilter = FilterBuilder
             .Include<AnimationSetComponent>()
             .Include<AnimationStatusComponent>().Build();
@@ -30,6 +35,8 @@ public class AnimationSystem : MoonTools.ECS.System
         HandleMessages();
         // Just a helper to simplify repeated code
         HandleTempAnimations();
+        // Don't want to display a spritesheet when an object is created so if it has an AnimationSet but no region, give it a default region
+        SetDefaultSpriteRegions();
         // Update frames of existing animations
         foreach (var entity in AnimationFilter.Entities)
         {
@@ -93,6 +100,16 @@ public class AnimationSystem : MoonTools.ECS.System
         }
     }
 
+    private void SetDefaultSpriteRegions()
+    {
+        foreach (var entity in MissingRegionFilter.Entities)
+        {
+            var animationSet = Get<AnimationSetComponent>(entity);
+            var spriteWidth = _animations[(int)animationSet.AnimationSetId].SpriteWidth;
+            var spriteHeight = _animations[(int)animationSet.AnimationSetId].SpriteHeight;
+            Set(entity, new SpriteRegionComponent(0, 0, spriteWidth, spriteHeight));
+        }
+    }
     private void HandleMessages()
     {
         if (!Some<SelectedFlag>()) return;
