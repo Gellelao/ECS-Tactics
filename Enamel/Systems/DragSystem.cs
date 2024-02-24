@@ -38,6 +38,7 @@ public class DragSystem : MoonTools.ECS.System
         foreach (var entity in StartDragFilter.Entities)
         {
             Set(entity, new BeingDraggedFlag());
+            Set(entity, new DrawLayerComponent(DrawLayer.LitOverlay));
             Remove<StartDragComponent>(entity);
             UnrelateAll<SocketedRelation>(entity);
             CreateDimmer();
@@ -60,6 +61,7 @@ public class DragSystem : MoonTools.ECS.System
             Remove<EndDragComponent>(entity);
             DestroyDimmer();
             RemoveSocketHighlights();
+            Set(entity, new DrawLayerComponent(DrawLayer.UserInterfaceOverlay));
             
             var socket = GetSocketUnderMouse();
             var orbType = Get<OrbTypeComponent>(entity).OrbType;
@@ -107,7 +109,7 @@ public class DragSystem : MoonTools.ECS.System
         foreach (var socket in _litSockets)
         {
             Set(socket, new DrawLayerComponent(DrawLayer.UserInterface));
-            Remove<ToggleFrameOnMouseHoverComponent>(socket);
+            Set(socket, new RemoveToggleHoverComponent());
         }
         _litSockets.Clear();
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Enamel.Components;
+using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
 using Enamel.Utils;
 using Microsoft.Xna.Framework.Input;
@@ -15,6 +16,7 @@ public class ToggleFrameSystem : MoonTools.ECS.System
 
     private Filter ToggleOnMouseDownFilter { get; }
     private Filter ToggleOnMouseHoverFilter { get; }
+    private Filter RemoveToggleHoverFilter { get; }
 
     public ToggleFrameSystem(World world, ScreenUtils screenUtils, AnimationData[] animations) : base(world)
     {
@@ -26,10 +28,19 @@ public class ToggleFrameSystem : MoonTools.ECS.System
         ToggleOnMouseHoverFilter = FilterBuilder
             .Include<ToggleFrameOnMouseHoverComponent>()
             .Exclude<DisabledFlag>().Build();
+        RemoveToggleHoverFilter = FilterBuilder.Include<RemoveToggleHoverComponent>().Build();
+
     }
 
     public override void Update(TimeSpan delta)
     {
+        foreach (var entity in RemoveToggleHoverFilter.Entities)
+        {
+            SetEntityFrame(entity, 0);
+            Remove<RemoveToggleHoverComponent>(entity);
+            Remove<ToggleFrameOnMouseHoverComponent>(entity);
+        }
+        
         foreach (var entity in ToggleOnMouseHoverFilter.Entities)
         {
             var toggleStatus = Get<ToggleFrameOnMouseHoverComponent>(entity);
