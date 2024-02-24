@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MoonTools.ECS;
 using Enamel.Components;
+using Enamel.Components.Messages;
 using Enamel.Components.Relations;
 using Enamel.Components.TempComponents;
 using Enamel.Components.UI;
@@ -50,6 +51,31 @@ public class TomesSystem : MoonTools.ECS.System
             else{
                 Set(tome, new DisabledFlag());
             }
+        }
+
+        if (SomeMessage<SpellWasCastMessage>())
+        {
+            var justCastSpellId = ReadMessage<SpellWasCastMessage>().SpellId;
+            foreach (var tome in _tomes)
+            {
+                if (Has<DisabledFlag>(tome)) continue;
+                var tomeSpellId = (SpellId)Get<OnClickComponent>(tome).Id; // As in the InputSystem, we are assuming this id refers to a spellId...
+                if (tomeSpellId == justCastSpellId)
+                {
+                    DestroyOrbsInTome(tome);
+                }
+            }
+        }
+    }
+
+    private void DestroyOrbsInTome(Entity tome)
+    {
+        var sockets = OutRelations<IsParentRelation>(tome);
+        foreach (var socket in sockets)
+        {
+            if (!HasOutRelation<SocketedRelation>(socket)) continue;
+            var socketedEntity = OutRelationSingleton<SocketedRelation>(socket);
+            Destroy(socketedEntity);
         }
     }
 

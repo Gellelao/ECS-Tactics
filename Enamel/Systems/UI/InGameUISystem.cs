@@ -49,6 +49,16 @@ public class InGameUiSystem : MoonTools.ECS.System
             World.Set(testOrb, new AnimationSetComponent(AnimationSet.Orb));
             World.Set(testOrb, new OrbTypeComponent(OrbType.Colourless));
             
+            var testOrb0 = World.CreateEntity();
+            World.Set(testOrb0, new TextureIndexComponent(Sprite.GreyOrb));
+            World.Set(testOrb0, new ScreenPositionComponent(120, 110));
+            World.Set(testOrb0, new DimensionsComponent(12, 12));
+            World.Set(testOrb0, new DraggableComponent(30, 110));
+            World.Set(testOrb0, new DrawLayerComponent(DrawLayer.LitOverlay));
+            World.Set(testOrb0, new ToggleFrameOnMouseHoverComponent(1));
+            World.Set(testOrb0, new AnimationSetComponent(AnimationSet.Orb));
+            World.Set(testOrb0, new OrbTypeComponent(OrbType.Colourless));
+            
             var testOrb1 = World.CreateEntity();
             World.Set(testOrb1, new TextureIndexComponent(Sprite.BlueOrb));
             World.Set(testOrb1, new ScreenPositionComponent(100, 100));
@@ -58,6 +68,17 @@ public class InGameUiSystem : MoonTools.ECS.System
             World.Set(testOrb1, new ToggleFrameOnMouseHoverComponent(1));
             World.Set(testOrb1, new AnimationSetComponent(AnimationSet.Orb));
             World.Set(testOrb1, new OrbTypeComponent(OrbType.Arcane));
+            
+            var testOrb2 = World.CreateEntity();
+            World.Set(testOrb2, new TextureIndexComponent(Sprite.BlueOrb));
+            World.Set(testOrb2, new ScreenPositionComponent(100, 110));
+            World.Set(testOrb2, new DimensionsComponent(12, 12));
+            World.Set(testOrb2, new DraggableComponent(30, 90));
+            World.Set(testOrb2, new DrawLayerComponent(DrawLayer.LitOverlay));
+            World.Set(testOrb2, new ToggleFrameOnMouseHoverComponent(1));
+            World.Set(testOrb2, new AnimationSetComponent(AnimationSet.Orb));
+            World.Set(testOrb2, new OrbTypeComponent(OrbType.Arcane));
+            
 
             _portraitsByPlayer.Clear();
             foreach (var playerEntity in PlayerFilter.Entities)
