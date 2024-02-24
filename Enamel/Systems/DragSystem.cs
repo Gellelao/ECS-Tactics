@@ -65,8 +65,7 @@ public class DragSystem : MoonTools.ECS.System
             var orbType = Get<OrbTypeComponent>(entity).OrbType;
             if (socket != null)
             {
-                var socketAcceptsOrbType = Get<SocketComponent>((Entity) socket).ExpectedOrbType.HasFlag(orbType);
-                if (socketAcceptsOrbType)
+                if (SocketIsValidTarget((Entity) socket, orbType))
                 {
                     var socketCoords = Get<ScreenPositionComponent>((Entity) socket);
                     Set(entity, socketCoords);
@@ -80,17 +79,26 @@ public class DragSystem : MoonTools.ECS.System
         }
     }
 
+    private bool SocketIsValidTarget(Entity socket, OrbType incomingOrbType)
+    {
+        if (HasOutRelation<SocketedRelation>(socket))
+        {
+            // Ignore sockets with something already in them
+            return false;
+        }
+        var expectedOrbType = Get<SocketComponent>(socket).ExpectedOrbType;
+        return expectedOrbType.HasFlag(incomingOrbType);
+    }
+
     private void HighlightSockets(OrbType orbType)
     {
         foreach (var socket in SocketFilter.Entities)
         {
-            var expectedOrbType = Get<SocketComponent>(socket).ExpectedOrbType;
-            if (expectedOrbType.HasFlag(orbType))
-            {
-                Set(socket, new DrawLayerComponent(DrawLayer.Lit));
-                Set(socket, new ToggleFrameOnMouseHoverComponent(1));
-                _litSockets.Add(socket);
-            }
+            if (!SocketIsValidTarget(socket, orbType)) continue;
+            
+            Set(socket, new DrawLayerComponent(DrawLayer.Lit));
+            Set(socket, new ToggleFrameOnMouseHoverComponent(1));
+            _litSockets.Add(socket);
         }
     }
 
