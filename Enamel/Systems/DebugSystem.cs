@@ -17,10 +17,13 @@ public class DebugSystem(
     OrbSpawner orbSpawner)
     : MoonTools.ECS.DebugSystem(world)
 {
-    public OrbSpawner OrbSpawner { get; } = orbSpawner;
-    private bool _showTestWindow;
+    private OrbSpawner OrbSpawner { get; } = orbSpawner;
+    
     private readonly Dictionary<uint, bool> _selectionStatus = new();
+    
+    private bool _showTestWindow;
     private int _buttonSize = 50;
+    private int _orbSpawnX = 5;
 
     public override void Update(TimeSpan delta)
     {
@@ -74,7 +77,22 @@ public class DebugSystem(
 
         if (ImGui.TreeNode("Spawn"))
         {
-            
+            if (ImGui.Button("Reset X"))
+            {
+                _orbSpawnX = 5;
+            }
+            if (ImGui.Button("Blue Orb"))
+            {
+                OrbSpawner.SpawnBlueOrb(_orbSpawnX, 10);
+                _orbSpawnX += 15;
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("Grey Orb"))
+            {
+                OrbSpawner.SpawnColourlessOrb(_orbSpawnX, 10);
+                _orbSpawnX += 15;
+            }
+            ImGui.TreePop();
         }
 
         if (ImGui.Button("Test Window")) _showTestWindow = !_showTestWindow;
