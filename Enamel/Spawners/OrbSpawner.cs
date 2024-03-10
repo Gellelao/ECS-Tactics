@@ -11,25 +11,35 @@ public class OrbSpawner(World world) : Manipulator(world)
     {
         var orb = World.CreateEntity();
         Set(orb, new TextureIndexComponent(Sprite.GreyOrb));
-        Set(orb, new ScreenPositionComponent(x, y));
-        Set(orb, new DimensionsComponent(12, 12));
-        Set(orb, new DraggableComponent(x, y));
-        Set(orb, new DrawLayerComponent(DrawLayer.UserInterface));
-        Set(orb, new ToggleFrameOnMouseHoverComponent(1));
-        Set(orb, new AnimationSetComponent(AnimationSet.Orb));
         Set(orb, new OrbTypeComponent(OrbType.Colourless));
+        MaterializeOrb(orb, x, y);
     }
     
     public void SpawnBlueOrb(int x, int y)
     {
         var orb = World.CreateEntity();
         Set(orb, new TextureIndexComponent(Sprite.BlueOrb));
+        Set(orb, new OrbTypeComponent(OrbType.Arcane));
+        MaterializeOrb(orb, x, y);
+    }
+
+    public void MaterializeOrb(Entity orb, int x, int y)
+    {
         Set(orb, new ScreenPositionComponent(x, y));
         Set(orb, new DimensionsComponent(12, 12));
         Set(orb, new DraggableComponent(x, y));
         Set(orb, new DrawLayerComponent(DrawLayer.UserInterface));
         Set(orb, new ToggleFrameOnMouseHoverComponent(1));
         Set(orb, new AnimationSetComponent(AnimationSet.Orb));
-        Set(orb, new OrbTypeComponent(OrbType.Arcane));
+    }
+
+    public void DematerializeOrb(Entity orb)
+    {
+        Remove<ScreenPositionComponent>(orb);
+        Remove<DimensionsComponent>(orb);
+        Remove<DraggableComponent>(orb);
+        Remove<DrawLayerComponent>(orb);
+        Remove<ToggleFrameOnMouseHoverComponent>(orb);
+        Remove<AnimationSetComponent>(orb);
     }
 }
