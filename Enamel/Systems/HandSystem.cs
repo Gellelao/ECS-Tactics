@@ -3,41 +3,90 @@ using System.Collections.Generic;
 using Enamel.Components;
 using Enamel.Components.Messages;
 using Enamel.Components.Relations;
+using Enamel.Components.TempComponents;
+using Enamel.Enums;
 using Enamel.Spawners;
 using Enamel.Utils;
 using MoonTools.ECS;
 
 namespace Enamel.Systems;
 
-public class HandSystem(World world, OrbSpawner orbSpawner) : MoonTools.ECS.System(world)
+public class HandSystem : MoonTools.ECS.System
 {
-    private const int HAND_X = 10;
-    private const int HAND_Y_START = 160;
-    private const int ORB_BUFFER = 16;
+    private Filter PlayerFilter { get; }
+    private Filter ToDiscardFilter { get; }
+    
     private readonly List<Entity> _orbsInPlay = [];
+    private readonly OrbSpawner _orbSpawner;
+
+    public HandSystem(World world, OrbSpawner orbSpawner) : base(world)
+    {
+        _orbSpawner = orbSpawner;
+        PlayerFilter = FilterBuilder.Include<PlayerIdComponent>().Build();
+        ToDiscardFilter = FilterBuilder.Include<ToBeDiscardedComponent>().Build();
+    }
 
     public override void Update(TimeSpan delta)
     {
         if (SomeMessage<CleanupOrbsInPlayMessage>())
         {
+            var playerId = ReadMessage<CleanupOrbsInPlayMessage>().PlayerId;
+            var player = GetPlayer(playerId);
             foreach (var orb in _orbsInPlay)
             {
-                orbSpawner.DematerializeOrb(orb);
+                DiscardOrb(player, orb);
+                _orbSpawner.DematerializeOrb(orb);
             }
         }
 
-        if (SomeMessage<DrawOrbsMessage>())
+        if (SomeMessage<DrawHandMessage>())
         {
-            var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
-            var numberOfOrbs = ReadMessage<DrawOrbsMessage>().NumberOfOrbsToDraw;
-            DrawOrbs(currentPlayer, numberOfOrbs);
+            var message = ReadMessage<DrawHandMessage>();
+            var player = GetPlayer(message.PlayerId);
+            var numberOfOrbsToDraw = Get<HandSizeComponent>(player).NumberOfOrbsInHand;
+            DrawOrbs(player, numberOfOrbsToDraw);
         }
+        
+        if (SomeMessage<SetStartingOrbsForPlayerMessage>())
+        {
+            var message = ReadMessage<SetStartingOrbsForPlayerMessage>();
+            var player = GetPlayer(message.PlayerId);
+            var character = message.CharacterId;
+            _orbSpawner.AddCharacterOrbsToPlayerBag(player, character);
+        }
+
+        foreach (var orb in ToDiscardFilter.Entities)
+        {
+            var playerId = Get<ToBeDiscardedComponent>(orb).PlayerId;
+            Remove<ToBeDiscardedComponent>(orb);
+            DiscardOrb(GetPlayer(playerId), orb);
+        }
+    }
+
+    private void DiscardOrb(Entity player, Entity orb)
+    {
+        Unrelate<OrbInPlayRelation>(player, orb);
+        Relate(player, orb, new OrbInDiscardRelation());
+        _orbSpawner.DematerializeOrb(orb);
+    }
+
+    private Entity GetPlayer(PlayerId playerId)
+    {
+        foreach (var player in PlayerFilter.Entities)
+        {
+            if (Get<PlayerIdComponent>(player).PlayerId == playerId)
+            {
+                return player;
+            }
+        }
+
+        throw new Exception($"Could not find player with id {playerId}");
     }
 
     private void DrawOrbs(Entity player, int numberOfOrbs)
     {
         var existingOrbsInPlay = OutRelationCount<OrbInPlayRelation>(player);
-        var handY = HAND_Y_START - ORB_BUFFER * existingOrbsInPlay;
+        var handY = Constants.HAND_Y_START - Constants.HAND_ORB_BUFFER * existingOrbsInPlay;
         for (var i = 0; i < numberOfOrbs; i++)
         {
             var orb = SelectRandomOrbFromBag(player);
@@ -45,9 +94,9 @@ public class HandSystem(World world, OrbSpawner orbSpawner) : MoonTools.ECS.Syst
             Unrelate<OrbInBagRelation>(player, orb);
             Relate(player, orb, new OrbInPlayRelation());
             
-            orbSpawner.MaterializeOrb(orb, HAND_X, handY);
+            _orbSpawner.MaterializeOrb(orb, Constants.HAND_X, handY);
             _orbsInPlay.Add(orb);
-            handY -= ORB_BUFFER;
+            handY -= Constants.HAND_ORB_BUFFER;
         }
     }
 

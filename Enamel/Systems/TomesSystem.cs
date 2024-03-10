@@ -75,7 +75,8 @@ public class TomesSystem : MoonTools.ECS.System
         {
             if (!HasOutRelation<SocketedRelation>(socket)) continue;
             var socketedEntity = OutRelationSingleton<SocketedRelation>(socket);
-            Destroy(socketedEntity);
+            var currentPlayerId = Get<PlayerIdComponent>(GetSingletonEntity<CurrentPlayerFlag>()).PlayerId;
+            Set(socketedEntity, new ToBeDiscardedComponent(currentPlayerId));
         }
     }
 

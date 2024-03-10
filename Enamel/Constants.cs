@@ -26,5 +26,12 @@ public static class Constants
     public const int TOME_ROW_STARTING_X = 30;
     public const int TOME_ROW_DEFAULT_Y = 150;
     
+    public const int HAND_X = 10;
+    public const int HAND_Y_START = 160;
+    public const int HAND_ORB_BUFFER = 16;
+    public const int HAND_ORB_SPEED = 10;
+    
+    public const int DEFAULT_HAND_SIZE = 5;
+
     public static readonly Color TomeTextColour = Color.Black;
 }

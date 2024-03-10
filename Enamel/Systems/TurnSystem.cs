@@ -24,6 +24,9 @@ public class TurnSystem : MoonTools.ECS.System
         var numberOfPlayers = PlayerFilter.Count;
         var currentPlayer = GetSingletonEntity<CurrentPlayerFlag>();
         Remove<CurrentPlayerFlag>(currentPlayer);
+        
+        // Get the HandSystem to remove any of the current players orbs that were in play
+        Send(new CleanupOrbsInPlayMessage(Get<PlayerIdComponent>(currentPlayer).PlayerId));
 
         var nextPlayerId = GetNextPlayer(Get<PlayerIdComponent>(currentPlayer).PlayerId, numberOfPlayers);
 
@@ -34,6 +37,9 @@ public class TurnSystem : MoonTools.ECS.System
             if (playerId == nextPlayerId)
             {
                 Set(playerEntity, new CurrentPlayerFlag());
+                
+                // Tell the HandSystem to draw the new player's hand
+                Send(new DrawHandMessage(playerId));
 
                 // Each unit controlled by the next player becomes selectable
                 foreach (var character in playersCharacters)

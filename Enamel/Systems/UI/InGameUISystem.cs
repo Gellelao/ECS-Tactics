@@ -38,47 +38,6 @@ public class InGameUiSystem : MoonTools.ECS.System
             Set(endTurnButton, new ToggleFrameOnMouseHoverComponent(1));
             Set(endTurnButton, new ToggleFrameOnMouseDownComponent(2));
             Set(endTurnButton, new OnClickComponent(ClickEvent.EndTurn));
-            
-            var testOrb = World.CreateEntity();
-            World.Set(testOrb, new TextureIndexComponent(Sprite.GreyOrb));
-            World.Set(testOrb, new ScreenPositionComponent(110, 110));
-            World.Set(testOrb, new DimensionsComponent(12, 12));
-            World.Set(testOrb, new DraggableComponent(30, 120));
-            World.Set(testOrb, new DrawLayerComponent(DrawLayer.LitOverlay));
-            World.Set(testOrb, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb, new AnimationSetComponent(AnimationSet.Orb));
-            World.Set(testOrb, new OrbTypeComponent(OrbType.Colourless));
-            
-            var testOrb0 = World.CreateEntity();
-            World.Set(testOrb0, new TextureIndexComponent(Sprite.GreyOrb));
-            World.Set(testOrb0, new ScreenPositionComponent(120, 110));
-            World.Set(testOrb0, new DimensionsComponent(12, 12));
-            World.Set(testOrb0, new DraggableComponent(30, 110));
-            World.Set(testOrb0, new DrawLayerComponent(DrawLayer.LitOverlay));
-            World.Set(testOrb0, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb0, new AnimationSetComponent(AnimationSet.Orb));
-            World.Set(testOrb0, new OrbTypeComponent(OrbType.Colourless));
-            
-            var testOrb1 = World.CreateEntity();
-            World.Set(testOrb1, new TextureIndexComponent(Sprite.BlueOrb));
-            World.Set(testOrb1, new ScreenPositionComponent(100, 100));
-            World.Set(testOrb1, new DimensionsComponent(12, 12));
-            World.Set(testOrb1, new DraggableComponent(30, 80));
-            World.Set(testOrb1, new DrawLayerComponent(DrawLayer.LitOverlay));
-            World.Set(testOrb1, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb1, new AnimationSetComponent(AnimationSet.Orb));
-            World.Set(testOrb1, new OrbTypeComponent(OrbType.Arcane));
-            
-            var testOrb2 = World.CreateEntity();
-            World.Set(testOrb2, new TextureIndexComponent(Sprite.BlueOrb));
-            World.Set(testOrb2, new ScreenPositionComponent(100, 110));
-            World.Set(testOrb2, new DimensionsComponent(12, 12));
-            World.Set(testOrb2, new DraggableComponent(30, 90));
-            World.Set(testOrb2, new DrawLayerComponent(DrawLayer.LitOverlay));
-            World.Set(testOrb2, new ToggleFrameOnMouseHoverComponent(1));
-            World.Set(testOrb2, new AnimationSetComponent(AnimationSet.Orb));
-            World.Set(testOrb2, new OrbTypeComponent(OrbType.Arcane));
-            
 
             _portraitsByPlayer.Clear();
             foreach (var playerEntity in PlayerFilter.Entities)

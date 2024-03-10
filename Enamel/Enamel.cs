@@ -51,6 +51,7 @@ public class Enamel : Game
     private static DeploymentSystem? _deploymentSystem;
     private static InGameUiSystem? _inGameUiSystem;
     private static DragSystem? _dragSystem;
+    private static HandSystem? _handSystem;
 
     private static SpriteRenderer? _mapRenderer;
     private static TextRenderer? _textRenderer;
@@ -120,6 +121,7 @@ public class Enamel : Game
         var orbSpawner = new OrbSpawner(World);
         var spellCastSpawner = new SpellCastSpawner(World);
         var particleSpawner = new ParticleSpawner(World, animations);
+        var characterSpawner = new CharacterSpawner(World, spellUtils);
 
         _gridToScreenCoordSystem = new GridToScreenCoordSystem(World, cameraX, cameraY);
         _inputSystem = new InputSystem(World, _screenUtils);
@@ -143,11 +145,10 @@ public class Enamel : Game
         _centerChildrenSystem = new CenterChildrenSystem(World);
         _relativePositionSystem = new RelativePositionSystem(World);
         _toggleFrameSystem = new ToggleFrameSystem(World, _screenUtils, animations);
-
-        var characterSpawner = new CharacterSpawner(World, spellUtils);
         _deploymentSystem = new DeploymentSystem(World, characterSpawner, menuUtils);
         _inGameUiSystem = new InGameUiSystem(World, menuUtils);
         _dragSystem = new DragSystem(World, _screenUtils);
+        _handSystem = new HandSystem(World, orbSpawner);
         
         /*
          * Debug
@@ -219,6 +220,8 @@ public class Enamel : Game
         // Must run before TurnSystem so the currentPlayer can have their SelectedCharacterComponent removed before the TurnSystem changes the current player. Should run before spellManagement system to spells can be learned on the frame characters are spawned.
         _deploymentSystem?.Update(elapsedTime);
         _turnSystem?.Update(elapsedTime);
+        // Must run after both the TurnSystem and CharSelectMenuSystem, since they both send messages to the HandSystem
+        _handSystem?.Update(elapsedTime);
         // Must run after turnSystem so that the currentPlayer has been updated when the portraits are reordered
         _inGameUiSystem?.Update(elapsedTime);
         // Must run before the projectileSystem because the spellPreviewSystem runs as soon as a spell is cast, and if the spell kills a unit that unit needs to be deleted by the DamageMessage in ProjectileSystem before the movements previews are displayed

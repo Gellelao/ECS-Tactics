@@ -1,3 +1,5 @@
-﻿namespace Enamel.Components.Messages;
+﻿using Enamel.Enums;
 
-public readonly record struct CleanupOrbsInPlayMessage();
+namespace Enamel.Components.Messages;
+
+public readonly record struct CleanupOrbsInPlayMessage(PlayerId PlayerId);
