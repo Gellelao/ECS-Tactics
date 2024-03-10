@@ -118,7 +118,8 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
         var playerEntity = World.CreateEntity();
         var playerId = (PlayerId) existingPlayerCount;
         Set(playerEntity, new PlayerIdComponent(playerId));
-        Set(playerEntity, new SelectedCharacterComponent(CharacterId.BlueWiz));
+        Set(playerEntity, new SelectedCharacterComponent(Constants.DEFAULT_CHARACTER_ID));
+        Send(new SetStartingOrbsForPlayerMessage(Get<PlayerIdComponent>(playerEntity).PlayerId, Constants.DEFAULT_CHARACTER_ID));
         Set(playerEntity, new HandSizeComponent(Constants.DEFAULT_HAND_SIZE));
 
         CreateCharacterSheetForPlayer(playerEntity);
@@ -143,7 +144,7 @@ public class CharSelectMenuSystem : MoonTools.ECS.System
             var newCharacter = (CharacterId) ((selectedCharacter + increment + _numberOfCharacters) % _numberOfCharacters);
             
             Set(playerEntity, new SelectedCharacterComponent(newCharacter));
-            Send(new SetStartingOrbsForPlayerMessage(Get<PlayerIdComponent>(playerEntity).PlayerId), newCharacter);
+            Send(new SetStartingOrbsForPlayerMessage(Get<PlayerIdComponent>(playerEntity).PlayerId, newCharacter));
             CreateCharacterSheetForPlayer(playerEntity);
         }
     }

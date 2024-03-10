@@ -43,7 +43,7 @@ public class OrbSpawner(World world) : Manipulator(world)
         Remove<AnimationSetComponent>(orb);
     }
 
-    public void AddCharacterOrbsToPlayerBag(Entity player, CharacterId character)
+    public List<Entity> GetStartingOrbsForCharacter(CharacterId character)
     {
         var orbs = new List<Entity>();
         switch (character)
@@ -52,14 +52,13 @@ public class OrbSpawner(World world) : Manipulator(world)
                 orbs.Add(CreateMinimalOrb(Sprite.BlueOrb, OrbType.Arcane));
                 orbs.Add(CreateMinimalOrb(Sprite.BlueOrb, OrbType.Arcane));
                 orbs.Add(CreateMinimalOrb(Sprite.BlueOrb, OrbType.Arcane));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
-                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
                 break;
             case CharacterId.Ember:
+                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
+                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
+                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
+                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
+                orbs.Add(CreateMinimalOrb(Sprite.GreyOrb, OrbType.Colourless));
                 break;
             case CharacterId.Loam:
                 break;
@@ -67,10 +66,7 @@ public class OrbSpawner(World world) : Manipulator(world)
                 throw new ArgumentOutOfRangeException(nameof(character), character, null);
         }
 
-        foreach (var orb in orbs)
-        {
-            Relate(player, orb, new OrbInBagRelation());
-        }
+        return orbs;
     }
 
     private Entity CreateMinimalOrb(Sprite sprite, OrbType orbType)
@@ -78,5 +74,6 @@ public class OrbSpawner(World world) : Manipulator(world)
         var orb = CreateEntity();
         Set(orb, new TextureIndexComponent(sprite));
         Set(orb, new OrbTypeComponent(orbType));
+        return orb;
     }
 }

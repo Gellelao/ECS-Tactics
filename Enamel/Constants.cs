@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Enamel.Enums;
+using Microsoft.Xna.Framework;
 
 namespace Enamel;
 
@@ -29,9 +30,11 @@ public static class Constants
     public const int HAND_X = 10;
     public const int HAND_Y_START = 160;
     public const int HAND_ORB_BUFFER = 16;
-    public const int HAND_ORB_SPEED = 10;
+    public const int HAND_ORB_SPEED = 200;
     
     public const int DEFAULT_HAND_SIZE = 5;
+    
+    public const CharacterId DEFAULT_CHARACTER_ID = CharacterId.BlueWiz;
 
     public static readonly Color TomeTextColour = Color.Black;
 }

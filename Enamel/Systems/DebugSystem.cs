@@ -232,5 +232,41 @@ public class DebugSystem(
                 ImGui.TreePop();
             }
         }
+        if (HasOutRelation<OrbInBagRelation>(entity))
+        {
+            if (ImGui.TreeNode("OrbInBagRelation"))
+            {
+                foreach (var child in OutRelations<OrbInBagRelation>(entity))
+                {
+                    ShowEntityDetails(child);
+                }
+
+                ImGui.TreePop();
+            }
+        }
+        if (HasOutRelation<OrbInPlayRelation>(entity))
+        {
+            if (ImGui.TreeNode("OrbInPlayRelation"))
+            {
+                foreach (var child in OutRelations<OrbInPlayRelation>(entity))
+                {
+                    ShowEntityDetails(child);
+                }
+
+                ImGui.TreePop();
+            }
+        }
+        if (HasOutRelation<OrbInDiscardRelation>(entity))
+        {
+            if (ImGui.TreeNode("OrbInDiscardRelation"))
+            {
+                foreach (var child in OutRelations<OrbInDiscardRelation>(entity))
+                {
+                    ShowEntityDetails(child);
+                }
+
+                ImGui.TreePop();
+            }
+        }
     }
 }
